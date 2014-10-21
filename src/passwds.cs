@@ -1,0 +1,120 @@
+//  
+//  passwds.cs
+//  
+//  Author:
+//       keldzh <keldzh@gmail.com>
+// 
+//  Copyright (c) 2014 Anton Kovalyov
+// 
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+// 
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+// 
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+
+/* Возможно надо сделать чтение не строки а массива символов. В общем надо сейчас будет поработать над тем как хранить данные */
+namespace passwdsaver
+{
+	public class passwds
+	{
+		private List<passwd> _passwds;
+
+		/* Create _passwds array from string from file */
+		public passwds(string data)
+		{
+			_passwds = new List<passwd>();
+			string[] a = data.Split(new char[] {'\n'});
+			foreach (string str in a)
+				if (str != "")
+					_passwds.Add(new passwd(str));
+		}
+
+		/* Add new password to the list */
+		public int add()
+		{
+			string password, note;
+
+			try {
+				Console.Write("Enter password: ");
+				password = Console.ReadLine();
+				Console.Write("Enter note: ");
+				note = Console.ReadLine();
+			} catch (IOException e) {
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				return 2;
+			} catch (OutOfMemoryException e) {
+				passwdsaver.print(e.Message, false);
+				return 2;
+			} catch (ArgumentOutOfRangeException e) {
+				passwdsaver.print(e.Message, false);
+				return 2;
+			}
+			_passwds.Add(new passwd(password, note));
+			return 0;
+		}
+
+		/* Show the list of notes */
+		public int show()
+		{
+			if (_passwds.Count == 0) {
+				passwdsaver.print("there are no passwords in this file", false);
+				return 1;
+			}
+			try {
+				Console.WriteLine("Passwords' notes:");
+				for (int i = 0; i < _passwds.Count; ++i)
+					Console.WriteLine("{0,3}) {1}", i+1, _passwds[i].note);
+			} catch (IOException e) {
+				passwdsaver.print(e.Message, true);
+				return 2;
+			}
+			return 0;
+		}
+
+		/* Show password with number n
+		 * if on_screen == true then password will be
+		 * printed on the screen, otherwise it will be
+		 * copied to clipboard */
+		public int get(byte n, Boolean on_screen)
+		{
+			if (n > _passwds.Count) {
+				passwdsaver.print(string.Format("there is no password with number {0} in this file", n), true);
+				return 1;
+			}
+			if (on_screen)
+				Console.WriteLine(_passwds[(int) n - 1].password);
+			else {
+			#if WINDOWS
+				Clipboard.SetText(_passwds[(int) n - 1].password, TextDataFormat.Text);
+			#elif GTK
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+				clipboard.Text = _passwds[(int) n - 1].password;
+			#endif
+			}
+			return 0;
+		}
+
+		/* Convert array to string for writing to the file */
+		public override string ToString()
+		{
+			StringBuilder str = new StringBuilder();
+
+			foreach (passwd p in _passwds) {
+				if (p != null)
+					str.AppendLine(p.ToString());
+			}
+			return str.ToString();
+		}
+	}
+}
