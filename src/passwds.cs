@@ -81,6 +81,36 @@ namespace passwdsaver
 			}
 		}
 
+		/* Change password with number n */
+		public int change(byte n)
+		{
+			string password, note;
+			if (check_limits(n, false))
+				return 1;
+			passwd new_passwd = new passwd(_passwds[n - 1]);
+			try {
+				Console.Write("Enter new password (if you press ENTER password will stay the same): ");
+				password = Console.ReadLine();
+				if (password.Length != 0)
+					new_passwd.password = password;
+				Console.Write("Enter new note [{0}]: ", new_passwd.note);
+				note = Console.ReadLine();
+				if (note.Length != 0)
+					new_passwd.note = note;
+			} catch (IOException e) {
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				return 2;
+			} catch (OutOfMemoryException e) {
+				passwdsaver.print(e.Message, false);
+				return 2;
+			} catch (ArgumentOutOfRangeException e) {
+				passwdsaver.print(e.Message, false);
+				return 2;
+			}
+			_passwds[n - 1] = new_passwd;
+			return 0;
+		}
+
 		private bool check_limits(byte n, bool full)
 		{
 			if (n == 0) {

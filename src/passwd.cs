@@ -42,6 +42,13 @@ namespace passwdsaver
 			_note = a[1];
 		}
 
+		/* Constructor for copying password from another object */
+		public passwd(passwd p)
+		{
+			_passwd = p.password;
+			_note = p.note;
+		}
+
 		public string password
 		{
 			get { return _passwd; }

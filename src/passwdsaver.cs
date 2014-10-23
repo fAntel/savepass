@@ -39,7 +39,7 @@ namespace passwdsaver
 #else
 			bool on_screen = true;
 #endif
-			byte del = 0, get = 0;
+			byte change = 0, del = 0, get = 0;
 			int exit_value = 0;
 			string f = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
@@ -48,6 +48,7 @@ namespace passwdsaver
 				"",
 				"Options:",
 				{ "a|add", "Add new password to the list", v => add = v != null },
+				{ "c|change=", "Change password with number {N}", v => change = Convert.ToByte(v) },
 				{ "d|delete=", "Delete password with number {N}", v => del = Convert.ToByte(v) },
 				{ "g|get=", "Get password with number {N}", v => get = Convert.ToByte(v) },
 #if WINDOWS || GTK
@@ -100,6 +101,8 @@ namespace passwdsaver
 				exit_value = p.get(get, on_screen);
 			else if (add)
 				exit_value = p.add();
+			else if (change > 0)
+				exit_value = p.change(change);
 			else if (del > 0)
 				exit_value = p.del(del);
 			if (exit_value == 0)
