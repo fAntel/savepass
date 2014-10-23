@@ -36,7 +36,7 @@ namespace passwdsaver
 #else
 			bool on_screen = true;
 #endif
-			byte get = 0;
+			byte del = 0, get = 0;
 			int exit_value = 0;
 			string f = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
@@ -45,6 +45,7 @@ namespace passwdsaver
 				"",
 				"Options:",
 				{ "a|add", "Add new password to the list", v => add = v != null },
+				{ "d|delete=", "Delete password with number {N}", v => del = Convert.ToByte(v) },
 				{ "g|get=", "Get password with number {N}", v => get = Convert.ToByte(v) },
 #if WINDOWS || GTK
 				{ "C|on_screen", "Get password on screen. Must be used with --get", v => on_screen = (v == null ? false : true)},
@@ -62,6 +63,12 @@ namespace passwdsaver
 				options.Parse(args);
 			} catch (OptionException e) {
 				print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.", e.Message, name), true);
+				return 2;
+			} catch (FormatException e) {
+				print(string.Format("number was written wrong: {0}", e.Message), true);
+				return 2;
+			} catch (Exception e) {
+				print(e.Message, true);
 				return 2;
 			}
 			if (help == true) {
@@ -90,11 +97,14 @@ namespace passwdsaver
 				exit_value = p.get(get, on_screen);
 			else if (add)
 				exit_value = p.add();
+			else if (del > 0)
+				exit_value = p.del(del);
 			if (exit_value == 0)
 				file.write_to_file(f, p.ToString());
 			return exit_value;
 		}
 
+		/* Print errors to the screen in certain format */
 		public static void print(string msg, bool full, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
 		{
 			if (full)

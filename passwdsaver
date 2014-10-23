@@ -1,2 +1,2 @@
 #!/bin/sh
-mono bin/Release/passwdsaver.exe $@
+mono bin/Debug/passwdsaver.exe $@

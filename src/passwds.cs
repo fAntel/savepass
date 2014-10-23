@@ -64,13 +64,76 @@ namespace passwdsaver
 			return 0;
 		}
 
+		private static int are_you_sure()
+		{
+			string answer;
+
+			try {
+				Console.Write("Are you sure? (y/n) ");
+				answer = Console.ReadLine();
+				return (string.Compare(answer, "y", true) == 0) ? 0 : 1;
+			} catch (IOException e) {
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				return 2;
+			} catch (Exception e) {
+				passwdsaver.print(e.Message, false);
+				return 2;
+			}
+		}
+
+		private bool check_limits(byte n, bool full)
+		{
+			if (n == 0) {
+				if (_passwds.Count == 0) {
+					passwdsaver.print("there are no passwords in this file", full);
+					return true;
+				}
+			} else if (n > _passwds.Count) {
+				passwdsaver.print(string.Format("there is no password with number {0} in this file", n), full);
+				return true;
+			}
+			return false;
+		}
+
+		/* Delete password with number n from array */
+		public  int del (byte n)
+		{
+			int return_value;
+
+			if (check_limits(n, true))
+				return 1;
+			return_value = are_you_sure();
+			if (return_value == 0)
+				_passwds.RemoveAt(n - 1);
+			return return_value == 2 ? 2 : 0;
+		}
+	
+		/* Show password with number n
+		 * if on_screen == true then password will be
+		 * printed on the screen, otherwise it will be
+		 * copied to clipboard */
+		public int get(byte n, Boolean on_screen)
+		{
+			if (check_limits(n, true))
+				return 1;
+			if (on_screen)
+				Console.WriteLine(_passwds[(int) n - 1].password);
+			else {
+				#if WINDOWS
+				Clipboard.SetText(_passwds[(int) n - 1].password, TextDataFormat.Text);
+				#elif GTK
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+				clipboard.Text = _passwds[(int) n - 1].password;
+				#endif
+			}
+			return 0;
+		}
+
 		/* Show the list of notes */
 		public int show()
 		{
-			if (_passwds.Count == 0) {
-				passwdsaver.print("there are no passwords in this file", false);
+			if (check_limits(0, true))
 				return 1;
-			}
 			try {
 				Console.WriteLine("Passwords' notes:");
 				for (int i = 0; i < _passwds.Count; ++i)
@@ -78,29 +141,6 @@ namespace passwdsaver
 			} catch (IOException e) {
 				passwdsaver.print(e.Message, true);
 				return 2;
-			}
-			return 0;
-		}
-
-		/* Show password with number n
-		 * if on_screen == true then password will be
-		 * printed on the screen, otherwise it will be
-		 * copied to clipboard */
-		public int get(byte n, Boolean on_screen)
-		{
-			if (n > _passwds.Count) {
-				passwdsaver.print(string.Format("there is no password with number {0} in this file", n), true);
-				return 1;
-			}
-			if (on_screen)
-				Console.WriteLine(_passwds[(int) n - 1].password);
-			else {
-			#if WINDOWS
-				Clipboard.SetText(_passwds[(int) n - 1].password, TextDataFormat.Text);
-			#elif GTK
-				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = _passwds[(int) n - 1].password;
-			#endif
 			}
 			return 0;
 		}
