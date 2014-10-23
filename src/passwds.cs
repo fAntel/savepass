@@ -159,6 +159,26 @@ namespace passwdsaver
 			return 0;
 		}
 
+		/* Search password in array with given note */
+		public int search(string note)
+		{
+			if (check_limits(0, true))
+				return 1;
+			if (note == "") {
+				passwdsaver.print("string for search cannot be an empty string.\n" +
+					"If you want to see all passwords use --show", true);
+				return 1;
+			}
+			List<passwd> result = _passwds.FindAll(
+				delegate(passwd p) {
+					return p.note.Contains(note);
+				});
+			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
+			foreach (passwd p in result)
+				Console.WriteLine("{0,3}) {1}", _passwds.IndexOf(p) + 1, p.note);
+			return 0;
+		}
+
 		/* Show the list of notes */
 		public int show()
 		{
