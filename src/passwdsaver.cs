@@ -24,10 +24,13 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using Mono.Options;
 
+
 namespace passwdsaver
 {
 	public class passwdsaver
 	{
+		private static string version_number = "0.3";
+
 		static int Main(string [] args)
 		{
 			bool add = false, help = false, show = false, version = false;
@@ -77,13 +80,13 @@ namespace passwdsaver
 			}
 			if (version == true) {
 				Console.WriteLine(
-					"{0}\n" +
+					"{0} {1}\n" +
 					"Copyright (C) 2014 Anton Kovalyov\n" +
 					"License GPLv3: GNU GPL version 3 or later <http://www.gnu.org/licenses/gpl-3.0.html>\n" +
 					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n" +
 					"This is free software, and you are welcome to redistribute it\n" +
 					"under certain conditions.",
-					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
+					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
 				return 0;
 			}
 			if (f == null) {
