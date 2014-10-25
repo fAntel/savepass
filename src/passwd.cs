@@ -33,7 +33,7 @@ namespace passwdsaver
 		{
 			_passwd = passwd;
 			_note = note;
-			_added = DateTime.UtcNow;
+			_added = DateTime.Now;
 		}
 
 		/* Constructor for creating password from file */
@@ -42,7 +42,11 @@ namespace passwdsaver
 			string[] a = data.Split(new Char[] {'\t'}, 3);
 			_passwd = a[0];
 			_note = a[1];
-			_added = new DateTime(Convert.ToInt64(a[2]), DateTimeKind.Utc);
+			try {
+				_added = new DateTime(Convert.ToInt64(a[2]), DateTimeKind.Local);
+			} catch (ArgumentOutOfRangeException e) {
+				passwdsaver.print(e.Message, true);
+			}
 		}
 
 		/* Constructor for copying password from another object */
@@ -66,6 +70,11 @@ namespace passwdsaver
 		}
 
 		public DateTime added
+		{
+			get { return _added; }
+		}
+
+		public DateTime time
 		{
 			get { return _added; }
 		}

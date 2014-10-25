@@ -189,7 +189,7 @@ namespace passwdsaver
 				Console.WriteLine("Passwords' notes:");
 				for (int i = 0; i < _passwds.Count; ++i)
 					Console.WriteLine("{0,3}) ({1})\t{2}", i+1,
-						_passwds[i].added.ToLocalTime().ToString(CultureInfo.CurrentCulture),
+						_passwds[i].time.ToString(CultureInfo.CurrentCulture),
 						_passwds[i].note);
 			} catch (IOException e) {
 				passwdsaver.print(e.Message, true);
