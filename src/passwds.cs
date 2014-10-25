@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Globalization;
 
 /* Возможно надо сделать чтение не строки а массива символов. В общем надо сейчас будет поработать над тем как хранить данные */
 namespace passwdsaver
@@ -187,7 +188,9 @@ namespace passwdsaver
 			try {
 				Console.WriteLine("Passwords' notes:");
 				for (int i = 0; i < _passwds.Count; ++i)
-					Console.WriteLine("{0,3}) {1}", i+1, _passwds[i].note);
+					Console.WriteLine("{0,3}) ({1})\t{2}", i+1,
+						_passwds[i].added.ToLocalTime().ToString(CultureInfo.CurrentCulture),
+						_passwds[i].note);
 			} catch (IOException e) {
 				passwdsaver.print(e.Message, true);
 				return 2;

@@ -26,20 +26,23 @@ namespace passwdsaver
 	{
 		private string _passwd;
 		private string _note;
+		private DateTime _added;
 
 		/* Constructor for adding new passwords */
 		public passwd(string passwd, string note)
 		{
 			_passwd = passwd;
 			_note = note;
+			_added = DateTime.UtcNow;
 		}
 
 		/* Constructor for creating password from file */
 		public passwd(string data)
 		{
-			string[] a = data.Split(new Char[] {'\t'}, 2);
+			string[] a = data.Split(new Char[] {'\t'}, 3);
 			_passwd = a[0];
 			_note = a[1];
+			_added = new DateTime(Convert.ToInt64(a[2]), DateTimeKind.Utc);
 		}
 
 		/* Constructor for copying password from another object */
@@ -47,6 +50,7 @@ namespace passwdsaver
 		{
 			_passwd = p.password;
 			_note = p.note;
+			_added = p.added;
 		}
 
 		public string password
@@ -61,10 +65,15 @@ namespace passwdsaver
 			set { _note = value; }
 		}
 
+		public DateTime added
+		{
+			get { return _added; }
+		}
+
 		/* Convert fields to string for writing to file */
 		public override string ToString()
 		{
-			return String.Format("{0}\t{1}", _passwd, _note);
+			return String.Format("{0}\t{1}\t{2}", _passwd, _note, _added.Ticks);
 		}
 
 		public string ToString(string format)
