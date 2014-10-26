@@ -85,19 +85,20 @@ namespace passwdsaver
 		/* Change password with number n */
 		public int change(byte n)
 		{
-			string password, note;
+			string str;
+
 			if (check_limits(n, false))
 				return 1;
 			passwd new_passwd = new passwd(_passwds[n - 1]);
 			try {
 				Console.Write("Enter new password (if you press ENTER password will stay the same): ");
-				password = Console.ReadLine();
-				if (password.Length != 0)
-					new_passwd.password = password;
+				str = Console.ReadLine();
+				if (str.Length != 0)
+					new_passwd.password = str;
 				Console.Write("Enter new note [{0}]: ", new_passwd.note);
-				note = Console.ReadLine();
-				if (note.Length != 0)
-					new_passwd.note = note;
+				str = Console.ReadLine();
+				if (str.Length != 0)
+					new_passwd.note = str;
 			} catch (IOException e) {
 				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
 				return 2;
