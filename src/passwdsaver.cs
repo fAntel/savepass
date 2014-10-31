@@ -33,7 +33,7 @@ namespace passwdsaver
 
 		static int Main(string [] args)
 		{
-			bool add = false, help = false, show = false, version = false;
+			bool add = false, help = false, list = false, version = false;
 #if WINDOWS || GTK
 			bool on_screen = false;
 #else
@@ -41,7 +41,7 @@ namespace passwdsaver
 #endif
 			byte change = 0, del = 0, get = 0;
 			int exit_value = 0;
-			string f = null, search = null;
+			string f = null, get_pass = null, search = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
 			OptionSet options = new OptionSet() {
 				"Usage: passwdsaver [OPTIONS] -f FILE - password saver",
@@ -54,8 +54,9 @@ namespace passwdsaver
 #if WINDOWS || GTK
 				{ "C|on_screen", "Get password on screen. Must be used with --get", v => on_screen = (v == null ? false : true)},
 #endif
-				{ "G|search=", "Get password with note {NOTE}", v => search = v},
-				{ "s|show", "Show list of passwords' notes", v => show = v != null },
+				{ "G|get_pass=", "Get password with note {NOTE}", v => get_pass = v},
+				{ "l|list", "Show list of passwords' notes", v => list = v != null },
+				{ "s|search=", "Show list of passwords' notes like {NOTE}", v => search = v},
 				{ "f|file=", "{FILE} with the list of passwords", v => f = v },
 				{ "version", "Show version", v => version = v != null },
 				{ "h|help",  "Show this text", v => help = v != null }
@@ -96,12 +97,14 @@ namespace passwdsaver
 				return 1;
 			}
 			passwds p = new passwds(file.read_from_file(f));
-			if (show)
-				exit_value = p.show();
+			if (list)
+				exit_value = p.list();
 			else if (search != null)
 				exit_value = p.search(search);
 			else if (get > 0)
 				exit_value = p.get(get, on_screen);
+			else if (get_pass != null)
+				exit_value = p.get_pass(get_pass, on_screen);
 			else if (add)
 				exit_value = p.add();
 			else if (change > 0)

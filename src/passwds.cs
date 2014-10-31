@@ -52,13 +52,13 @@ namespace passwdsaver
 				Console.Write("Enter note: ");
 				note = Console.ReadLine();
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
-				passwdsaver.print(e.Message, false);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			} catch (ArgumentOutOfRangeException e) {
-				passwdsaver.print(e.Message, false);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			}
 			_passwds.Add(new passwd(password, note));
@@ -74,10 +74,10 @@ namespace passwdsaver
 				answer = Console.ReadLine();
 				return (string.Compare(answer, "y", true) == 0) ? 0 : 1;
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (Exception e) {
-				passwdsaver.print(e.Message, false);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			}
 		}
@@ -100,13 +100,13 @@ namespace passwdsaver
 				if (str.Length != 0)
 					new_passwd.note = str;
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), false);
+				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
-				passwdsaver.print(e.Message, false);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			} catch (ArgumentOutOfRangeException e) {
-				passwdsaver.print(e.Message, false);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			}
 			_passwds[n - 1] = new_passwd;
@@ -144,7 +144,7 @@ namespace passwdsaver
 		 * if on_screen == true then password will be
 		 * printed on the screen, otherwise it will be
 		 * copied to clipboard */
-		public int get(byte n, Boolean on_screen)
+		public int get(byte n, bool on_screen)
 		{
 			if (check_limits(n, true))
 				return 1;
@@ -162,27 +162,43 @@ namespace passwdsaver
 		}
 
 		/* Search password in array with given note */
-		public int search(string note)
+		public int get_pass(string note, bool on_screen)
 		{
 			if (check_limits(0, true))
 				return 1;
 			if (note == "") {
 				passwdsaver.print("string for search cannot be an empty string.\n" +
-					"If you want to see all passwords use --show", true);
+					"If you want to see all passwords use --show", false);
 				return 1;
 			}
 			List<passwd> result = _passwds.FindAll(
 				delegate(passwd p) {
 					return p.note.Contains(note);
 				});
-			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
-			foreach (passwd p in result)
-				Console.WriteLine("{0,3}) {1}", _passwds.IndexOf(p) + 1, p.note);
+			if (result.Count == 0) {
+				passwdsaver.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+					note), false);
+				return 1;
+			} else if (result.Count > 1) {
+				passwdsaver.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
+					note), false);
+				return 1;
+			}
+			if (on_screen)
+				Console.WriteLine(result[0].password);
+			else {
+				#if WINDOWS
+				Clipboard.SetText(result[0].password, TextDataFormat.Text);
+				#elif GTK
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+				clipboard.Text = result[0].password;
+				#endif
+			}
 			return 0;
 		}
 
 		/* Show the list of notes */
-		public int show()
+		public int list()
 		{
 			if (check_limits(0, true))
 				return 1;
@@ -196,6 +212,31 @@ namespace passwdsaver
 				passwdsaver.print(e.Message, true);
 				return 2;
 			}
+			return 0;
+		}
+
+		/* Find all notes in array with given note as a substring */
+		public int search(string note)
+		{
+			if (check_limits(0, true))
+				return 1;
+			if (note == "") {
+				passwdsaver.print("string for search cannot be an empty string.\n" +
+					"If you want to see all passwords use --show", false);
+				return 1;
+			}
+			List<passwd> result = _passwds.FindAll(
+				delegate(passwd p) {
+					return p.note.Contains(note);
+				});
+			if (result.Count == 0) {
+				passwdsaver.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+					note), false);
+				return 1;
+			}
+			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
+			foreach (passwd p in result)
+				Console.WriteLine("{0,3}) {1}", _passwds.IndexOf(p) + 1, p.note);
 			return 0;
 		}
 
