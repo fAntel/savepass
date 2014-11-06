@@ -37,7 +37,7 @@ namespace passwdsaver
 			_passwds = new List<passwd>();
 			string[] a = data.Split(new char[] {'\n'});
 			foreach (string str in a)
-				if (str != "")
+				if (!String.IsNullOrWhiteSpace(str))
 					_passwds.Add(new passwd(str));
 		}
 
@@ -148,7 +148,7 @@ namespace passwdsaver
 		{
 			if (check_limits(n, true))
 				return 1;
-			if (on_screen)
+			if (on_screen || !passwdsaver.c.always_in_clipboard)
 				Console.WriteLine(_passwds[(int) n - 1].password);
 			else {
 				#if WINDOWS
@@ -161,14 +161,37 @@ namespace passwdsaver
 			return 0;
 		}
 
+		/* Print note with given format */
+		private int print_note(int i, passwd p)
+		{
+			if (!passwdsaver.c.show_date_time) {
+				Console.WriteLine("{0,3}) {1}", i, p.note);
+				return 0;
+			}
+
+			try {
+				Console.WriteLine("{0,3}) {1} {2}", i,
+					p.time.ToString(passwdsaver.c.format_date_time, CultureInfo.CurrentCulture),
+					p.note);
+			} catch (FormatException e) {
+				passwdsaver.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
+				return 1;
+			} catch (Exception e) {
+				passwdsaver.print(String.Format(e.Message), true);
+				return 2;
+			}
+			return 0;
+		}
+
 		/* Search password in array with given note */
 		public int get_pass(string note, bool on_screen)
 		{
 			if (check_limits(0, true))
 				return 1;
-			if (note == "") {
-				passwdsaver.print("string for search cannot be an empty string.\n" +
-					"If you want to see all passwords use --show", false);
+			if (!String.IsNullOrWhiteSpace(note)) {
+				passwdsaver.print("string for search cannot be an empty string\n" +
+					"or cosists exclusively of white-space characters.\n" +
+					"If you want to see all passwords use --show", true);
 				return 1;
 			}
 			List<passwd> result = _passwds.FindAll(
@@ -200,14 +223,15 @@ namespace passwdsaver
 		/* Show the list of notes */
 		public int list()
 		{
+			int result;
+
 			if (check_limits(0, true))
 				return 1;
 			try {
 				Console.WriteLine("Passwords' notes:");
 				for (int i = 0; i < _passwds.Count; ++i)
-					Console.WriteLine("{0,3}) ({1})\t{2}", i+1,
-						_passwds[i].time.ToString(CultureInfo.CurrentCulture),
-						_passwds[i].note);
+					if ((result = print_note(i + 1, _passwds[i])) != 0)
+						return result;
 			} catch (IOException e) {
 				passwdsaver.print(e.Message, true);
 				return 2;
@@ -218,6 +242,7 @@ namespace passwdsaver
 		/* Find all notes in array with given note as a substring */
 		public int search(string note)
 		{
+			int val;
 			if (check_limits(0, true))
 				return 1;
 			if (note == "") {
@@ -236,7 +261,8 @@ namespace passwdsaver
 			}
 			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
 			foreach (passwd p in result)
-				Console.WriteLine("{0,3}) {1}", _passwds.IndexOf(p) + 1, p.note);
+				if ((val = print_note(_passwds.IndexOf(p) + 1, p)) != 0)
+					return val;
 			return 0;
 		}
 
