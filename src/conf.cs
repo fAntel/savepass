@@ -131,7 +131,6 @@ namespace passwdsaver
 			}
 			set {
 				_conf.SetBoolean("Passwords", "always_in_clipboard", value);
-				settings_changed = true;
 				try {
 					_conf.GetComment("Passwords", "always_in_clipboard");
 				} catch (GLib.GException e) {
@@ -158,7 +157,6 @@ namespace passwdsaver
 			}
 			set {
 				_conf.SetBoolean("View", "show_date_time", value);
-				settings_changed = true;
 				try {
 					_conf.GetComment("View", "show_date_time");
 				} catch (GLib.GException e) {
@@ -185,7 +183,6 @@ namespace passwdsaver
 			}
 			set {
 				_conf.SetString("View", "format_date_time", value);
-				settings_changed = true;
 				try {
 					_conf.GetComment("View", "format_date_time");
 				} catch (GLib.GException e) {
@@ -193,6 +190,11 @@ namespace passwdsaver
 						default_settings[(int) settings.format_date_time].comment);
 				}
 			}
+		}
+
+		public void Save()
+		{
+			_conf.Save(_conf_file);
 		}
 	}
 }

@@ -35,6 +35,7 @@ namespace passwdsaver
 		static int Main(string [] args)
 		{
 			bool add = false, help = false, show = false, version = false;
+			bool A = false, A_seted = false, h = false, H = false, S = false;
 #if WINDOWS || GTK
 			bool on_screen = false;
 #else
@@ -42,7 +43,7 @@ namespace passwdsaver
 #endif
 			byte change = 0, del = 0, get = 0;
 			int exit_value = 0;
-			string conf_file = null, f = null, search = null;
+			string conf_file = null, f = null, format = null, search = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
 			OptionSet options = new OptionSet() {
 				"Usage: passwdsaver [OPTIONS] -f FILE - password saver",
@@ -59,9 +60,14 @@ namespace passwdsaver
 				{ "s|show", "Show list of passwords' notes", v => show = v != null },
 				{ "f|file=", "{FILE} with the list of passwords", v => f = v },
 				{ "version", "Show version", v => version = v != null },
-				{ "h|help",  "Show this text", v => help = v != null },
+				{ "help",  "Show this text", v => help = v != null },
 				"Settings options:",
-				{ "conf_file=", "{.conf} file with settings", v => conf_file = v }
+				{ "conf_file=", "{.conf} file with settings", v => conf_file = v },
+				{"A|always_in_clipboard=", "Set {mod} (true or false) of --get option", v => { A = Convert.ToBoolean(v); A_seted = true;} },
+				{"h|show_date_time", "Show date and time when used --show and --search options", v => h = v != null},
+				{"H|no_date_time", "Don't show date and time when use --show and --search options", v => H = v != null},
+				{"format=", "Set {format} for date and time output", v => format = v},
+				{"S|save", "Save new settings passed via the command line", v => S = v != null},
 			};
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
@@ -95,11 +101,23 @@ namespace passwdsaver
 				return 0;
 			}
 			c = new conf(conf_file);
+			/* Process the command line parameters related with the settings */
+			if (A_seted)
+				c.always_in_clipboard = A;
+			if (h || H)
+				c.show_date_time = H ? false : true;
+			if (!String.IsNullOrWhiteSpace(format))
+				c.format_date_time = format;
+			if (S)
+				c.Save();
 			if (f == null) {
+				if (S)
+					return 0;
 				print(string.Format("File name must be specified\nTry run {0} --help for more information", name), false);
 				return 1;
 			}
 			passwds p = new passwds(file.read_from_file(f));
+			/* Process the other command line parameters */
 			if (show)
 				exit_value = p.show();
 			else if (search != null)
