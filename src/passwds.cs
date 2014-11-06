@@ -37,7 +37,7 @@ namespace passwdsaver
 			_passwds = new List<passwd>();
 			string[] a = data.Split(new char[] {'\n'});
 			foreach (string str in a)
-				if (str != "")
+				if (!String.IsNullOrWhiteSpace(str))
 					_passwds.Add(new passwd(str));
 		}
 
@@ -190,8 +190,9 @@ namespace passwdsaver
 
 			if (check_limits(0, true))
 				return 1;
-			if (note == "") {
-				passwdsaver.print("string for search cannot be an empty string.\n" +
+			if (!String.IsNullOrWhiteSpace(note)) {
+				passwdsaver.print("string for search cannot be an empty string\n" +
+					"or cosists exclusively of white-space characters.\n" +
 					"If you want to see all passwords use --show", true);
 				return 1;
 			}
