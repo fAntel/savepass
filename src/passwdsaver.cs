@@ -29,7 +29,8 @@ namespace passwdsaver
 {
 	public class passwdsaver
 	{
-		private static string version_number = "0.3";
+		private const string version_number = "0.3";
+		public static conf c;
 
 		static int Main(string [] args)
 		{
@@ -41,7 +42,7 @@ namespace passwdsaver
 #endif
 			byte change = 0, del = 0, get = 0;
 			int exit_value = 0;
-			string f = null, search = null;
+			string conf_file = null, f = null, search = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
 			OptionSet options = new OptionSet() {
 				"Usage: passwdsaver [OPTIONS] -f FILE - password saver",
@@ -58,7 +59,9 @@ namespace passwdsaver
 				{ "s|show", "Show list of passwords' notes", v => show = v != null },
 				{ "f|file=", "{FILE} with the list of passwords", v => f = v },
 				{ "version", "Show version", v => version = v != null },
-				{ "h|help",  "Show this text", v => help = v != null }
+				{ "h|help",  "Show this text", v => help = v != null },
+				"Settings options:",
+				{ "conf_file=", "{.conf} file with settings", v => conf_file = v }
 			};
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
@@ -91,6 +94,7 @@ namespace passwdsaver
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
 				return 0;
 			}
+			c = new conf(conf_file);
 			if (f == null) {
 				print(string.Format("File name must be specified\nTry run {0} --help for more information", name), false);
 				return 1;

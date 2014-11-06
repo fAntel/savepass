@@ -48,11 +48,16 @@ namespace passwdsaver
 		/* Default values for settings */
 		private static readonly IList<conf_settings> default_settings = new ReadOnlyCollection<conf_settings>(new[] {
 			/* always_in_clipboard */ new conf_settings("true",
-				"Set this to \"false\" to option --get print password\n" +
-				"# on the screen by default"),
+				"Set this to \"false\" that program print password\n" +
+				"# on the screen by default rather than to clipboard"),
 			/* show_date_time */ new conf_settings("false",
 				"Show date/time of adding or last changing password or comment"),
-			/* format_date_time */ new conf_settings("", "")
+			/* format_date_time */ new conf_settings("",
+				"For format of string with date/time program use\n" +
+				"# C# format for date/time. You can read more about\n" +
+				"# it in Microsoft Developer Network article\n" +
+				"# \"Custom Date and Time Format Strings\"\n" +
+				"# (http://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx)")
 		});
 
 		/* Key file */
@@ -70,7 +75,14 @@ namespace passwdsaver
 				_conf_file = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName) + ".conf";
 			} else
 				_conf_file = conf_file;
-			if (File.Exists(conf_file)) {
+			if (File.Exists(_conf_file)) {
+				try {
+					_conf = new GKeyFile(_conf_file, Flags.KeepComments | Flags.KeepTranslations);
+				} catch (Exception e) {
+					passwdsaver.print(String.Format("openging configuration file {0} failed: {1}",
+						conf_file, e.Message), true);
+				}
+			} else {
 				if (!default_file)
 					Console.WriteLine("File {0} doesn't exist. It will be created if any parametrs to be used", conf_file);
 				settings_changed = true;
@@ -80,25 +92,18 @@ namespace passwdsaver
 						"[Passwords]\n" +
 						"# " + default_settings[(int) settings.always_in_clipboard].comment + "\n" +
 						"always_in_clipboard=" +
-							default_settings[(int) settings.always_in_clipboard].default_value + "\n" +
+						default_settings[(int) settings.always_in_clipboard].default_value + "\n" +
 						"[View]\n" +
 						"# " + default_settings[(int) settings.show_date_time].comment + "\n" +
 						"show_date_time=" +
-							default_settings[(int) settings.show_date_time].default_value + "\n" +
+						default_settings[(int) settings.show_date_time].default_value + "\n" +
 						"# " + default_settings[(int) settings.format_date_time].comment + "\n" +
 						"format_date_time=" + 
-							default_settings[(int) settings.format_date_time].default_value,
+						default_settings[(int) settings.format_date_time].default_value,
 						Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
 					passwdsaver.print(String.Format("creating object for settings failed: {0}", e.Message),
 						true);
-				}
-			} else {
-				try {
-					_conf = new GKeyFile(_conf_file, Flags.KeepComments | Flags.KeepTranslations);
-				} catch (Exception e) {
-					passwdsaver.print(String.Format("openging configuration file {0} failed: {1}",
-						conf_file, e.Message), true);
 				}
 			}
 		}
