@@ -18,12 +18,12 @@
 // 
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#define GTK
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using Mono.Options;
-
 
 namespace passwdsaver
 {
