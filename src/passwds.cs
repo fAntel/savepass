@@ -189,7 +189,7 @@ namespace passwdsaver
 		{
 			if (check_limits(0, true))
 				return 1;
-			if (!String.IsNullOrWhiteSpace(note)) {
+			if (String.IsNullOrWhiteSpace(note)) {
 				passwdsaver.print("string for search cannot be an empty string\n" +
 					"or cosists exclusively of white-space characters.\n" +
 					"If you want to see all passwords use --show", true);
