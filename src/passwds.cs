@@ -49,7 +49,7 @@ namespace passwdsaver
 
 			try {
 				Console.Write("Enter password: ");
-				password = Console.ReadLine();
+				password = read_password();
 				Console.Write("Enter note: ");
 				note = Console.ReadLine();
 			} catch (IOException e) {
@@ -93,7 +93,7 @@ namespace passwdsaver
 			passwd new_passwd = new passwd(_passwds[n - 1]);
 			try {
 				Console.Write("Enter new password (if you press ENTER password will stay the same): ");
-				str = Console.ReadLine();
+				str = read_password();
 				if (str.Length != 0)
 					new_passwd.password = str;
 				Console.Write("Enter new note [{0}]: ", new_passwd.note);
@@ -238,6 +238,30 @@ namespace passwdsaver
 				return 2;
 			}
 			return 0;
+		}
+
+		/* Read characters from stdin but do not echo them */
+		private static String read_password()
+		{
+			StringBuilder password = new StringBuilder();
+			ConsoleKeyInfo key;
+
+			do {
+				key = Console.ReadKey(true);
+				if (((key.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt) ||
+				    ((key.Modifiers & ConsoleModifiers.Control) == ConsoleModifiers.Control) ||
+				    (key.KeyChar == '\u0000') ||
+				    (key.Key == ConsoleKey.Tab) ||
+				    (key.Key == ConsoleKey.Enter))
+					continue;
+				else if (key.Key == ConsoleKey.Backspace) {
+					if (!String.IsNullOrEmpty(password.ToString()))
+						password.Remove(password.Length - 1, 1);
+				} else
+					password.Append(key.KeyChar);
+			} while (key.Key != ConsoleKey.Enter);
+			Console.WriteLine();
+			return password.ToString();
 		}
 
 		/* Find all notes in array with given note as a substring */
