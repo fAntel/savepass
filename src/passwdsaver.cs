@@ -36,7 +36,7 @@ namespace passwdsaver
 		{
 			bool add = false, help = false, list = false, version = false;
 			bool A = false, A_seted = false, h = false, H = false, S = false;
-#if WINDOWS || GTK
+#if WINDOWS
 			bool on_screen = false;
 #else
 			bool on_screen = true;
@@ -70,6 +70,9 @@ namespace passwdsaver
 				{"format=", "Set {format} for date and time output", v => format = v},
 				{"S|save", "Save new settings passed via the command line", v => S = v != null},
 			};
+#if GTK
+			Gtk.Application.Init();
+#endif
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
 				return 1;
