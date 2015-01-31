@@ -35,7 +35,7 @@ namespace passwdsaver
 				using (StreamReader f = new StreamReader(path)) {
 					data = f.ReadToEnd();
 				}
-			} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException) {
 				return "";
 			} catch (Exception e) {
 				passwdsaver.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);

@@ -120,7 +120,7 @@ namespace passwdsaver
 				bool v;
 				try {
 					v = _conf.GetBoolean("Passwords", "always_in_clipboard");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetBoolean("Passwords", "always_in_clipboard",
 						v = Convert.ToBoolean(default_settings[(int) settings.always_in_clipboard].default_value));
 					_conf.SetComment("Passwords", "always_in_clipboard",
@@ -133,7 +133,7 @@ namespace passwdsaver
 				_conf.SetBoolean("Passwords", "always_in_clipboard", value);
 				try {
 					_conf.GetComment("Passwords", "always_in_clipboard");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetComment("Passwords", "always_in_clipboard",
 						default_settings[(int) settings.always_in_clipboard].comment);
 				}
@@ -146,7 +146,7 @@ namespace passwdsaver
 				bool v;
 				try {
 					v = _conf.GetBoolean("View", "show_date_time");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetBoolean("View", "show_date_time",
 						v = Convert.ToBoolean(default_settings[(int) settings.show_date_time].default_value));
 					_conf.SetComment("View", "show_date_time",
@@ -159,7 +159,7 @@ namespace passwdsaver
 				_conf.SetBoolean("View", "show_date_time", value);
 				try {
 					_conf.GetComment("View", "show_date_time");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetComment("View", "show_date_time",
 						default_settings[(int) settings.show_date_time].comment);
 				}
@@ -172,7 +172,7 @@ namespace passwdsaver
 				string v;
 				try {
 					v = _conf.GetString("View", "format_date_time");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetString("View", "format_date_time",
 						v = default_settings[(int) settings.format_date_time].default_value);
 					_conf.SetComment("View", "format_date_time",
@@ -185,7 +185,7 @@ namespace passwdsaver
 				_conf.SetString("View", "format_date_time", value);
 				try {
 					_conf.GetComment("View", "format_date_time");
-				} catch (GLib.GException e) {
+				} catch (GLib.GException) {
 					_conf.SetComment("View", "format_date_time",
 						default_settings[(int) settings.format_date_time].comment);
 				}
