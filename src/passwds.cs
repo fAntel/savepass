@@ -157,6 +157,7 @@ namespace passwdsaver
 				#elif GTK
 				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
 				clipboard.Text = _passwds[(int) n - 1].password;
+				clipboard.Store();
 				#endif
 			}
 			return 0;
@@ -208,7 +209,7 @@ namespace passwdsaver
 					note), false);
 				return 1;
 			}
-			if (on_screen)
+			if (on_screen  || !passwdsaver.c.always_in_clipboard)
 				Console.WriteLine(result[0].password);
 			else {
 				#if WINDOWS
@@ -216,6 +217,7 @@ namespace passwdsaver
 				#elif GTK
 				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
 				clipboard.Text = result[0].password;
+				clipboard.Store();
 				#endif
 			}
 			return 0;

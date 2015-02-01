@@ -36,7 +36,7 @@ namespace passwdsaver
 		{
 			bool add = false, help = false, list = false, version = false;
 			bool A = false, A_seted = false, h = false, H = false, S = false;
-#if WINDOWS
+#if WINDOWS || GTK
 			bool on_screen = false;
 #else
 			bool on_screen = true;
