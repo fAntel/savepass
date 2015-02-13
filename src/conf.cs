@@ -209,24 +209,28 @@ namespace passwdsaver
 				else if (_user_conf != null)
 					_user_conf.SetBoolean("Passwords", "always_in_clipboard", value);
 				try {
-					_conf.GetComment("Passwords", "always_in_clipboard");
-				} catch (GException) {
-					_conf.SetComment("Passwords", "always_in_clipboard",
-						default_settings[(int) settings.always_in_clipboard].comment);
+					if (String.IsNullOrWhiteSpace(_conf.GetComment("Passwords", "always_in_clipboard")))
+						_conf.SetComment("Passwords", "always_in_clipboard",
+							default_settings[(int) settings.always_in_clipboard].comment);
+				} catch (GException e) {
+					passwdsaver.print(String.Format("{0}", e.Message), true);
+
 				}
 				if (_sys)
 					try {
-						_system_conf.GetComment("Passwords", "always_in_clipboard");
-					} catch (GException) {
-						_system_conf.SetComment("Passwords", "always_in_clipboard",
-							default_settings[(int) settings.always_in_clipboard].comment);
+						if (String.IsNullOrWhiteSpace(_system_conf.GetComment("Passwords", "always_in_clipboard")))
+							_system_conf.SetComment("Passwords", "always_in_clipboard",
+								default_settings[(int) settings.always_in_clipboard].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 				else if (_user_conf != null)
 					try {
-						_user_conf.GetComment("Passwords", "always_in_clipboard");
-					} catch (GException) {
-						_user_conf.SetComment("Passwords", "always_in_clipboard",
-							default_settings[(int) settings.always_in_clipboard].comment);
+						if (String.IsNullOrWhiteSpace(_user_conf.GetComment("Passwords", "always_in_clipboard")))
+							_user_conf.SetComment("Passwords", "always_in_clipboard",
+								default_settings[(int) settings.always_in_clipboard].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 			}
 		}
@@ -250,24 +254,27 @@ namespace passwdsaver
 				else if (_user_conf != null)
 					_user_conf.SetBoolean("View", "show_date_time", value);
 				try {
-					_conf.GetComment("View", "show_date_time");
-				} catch (GException) {
-					_conf.SetComment("View", "show_date_time",
-						default_settings[(int) settings.show_date_time].comment);
+					if (String.IsNullOrWhiteSpace(_conf.GetComment("View", "show_date_time")))
+						_conf.SetComment("View", "show_date_time",
+							default_settings[(int) settings.show_date_time].comment);
+				} catch (GException e) {
+					passwdsaver.print(String.Format("{0}", e.Message), true);
 				}
 				if (_sys)
 					try {
-						_system_conf.GetComment("View", "show_date_time");
-					} catch (GException) {
-						_system_conf.SetComment("View", "show_date_time",
-							default_settings[(int) settings.show_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_system_conf.GetComment("View", "show_date_time")))
+							_system_conf.SetComment("View", "show_date_time",
+								default_settings[(int) settings.show_date_time].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 				else if (_user_conf != null)
 					try {
-						_user_conf.GetComment("View", "show_date_time");
-					} catch (GException) {
-						_user_conf.SetComment("View", "show_date_time",
-							default_settings[(int) settings.show_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_user_conf.GetComment("View", "show_date_time")))
+							_user_conf.SetComment("View", "show_date_time",
+								default_settings[(int) settings.show_date_time].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 			}
 		}
@@ -278,7 +285,7 @@ namespace passwdsaver
 				string v;
 				try {
 					v = _conf.GetString("View", "format_date_time");
-				} catch (GLib.GException) {
+				} catch (GException) {
 					_conf.SetString("View", "format_date_time",
 						v = default_settings[(int) settings.format_date_time].default_value);
 				}
@@ -291,24 +298,27 @@ namespace passwdsaver
 				else if (_user_conf != null)
 					_user_conf.SetString("View", "format_date_time", value);
 				try {
-					_conf.GetComment("View", "format_date_time");
-				} catch (GException) {
-					_conf.SetComment("View", "format_date_time",
-						default_settings[(int) settings.format_date_time].comment);
+					if (String.IsNullOrWhiteSpace(_conf.GetComment("View", "format_date_time")))
+						_conf.SetComment("View", "format_date_time",
+							default_settings[(int) settings.format_date_time].comment);
+				} catch (GException e) {
+					passwdsaver.print(String.Format("{0}", e.Message), true);
 				}
 				if (_sys)
 					try {
-						_system_conf.GetComment("View", "format_date_time");
-					} catch (GException) {
-						_system_conf.SetComment("View", "format_date_time",
-							default_settings[(int) settings.format_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_system_conf.GetComment("View", "format_date_time")))
+							_system_conf.SetComment("View", "format_date_time",
+								default_settings[(int) settings.format_date_time].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 				else if (_user_conf != null)
 					try {
-						_user_conf.GetComment("View", "format_date_time");
-					} catch (GException) {
-						_user_conf.SetComment("View", "format_date_time",
-							default_settings[(int) settings.format_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_user_conf.GetComment("View", "format_date_time")))
+							_user_conf.SetComment("View", "format_date_time",
+								default_settings[(int) settings.format_date_time].comment);
+					} catch (GException e) {
+						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 			}
 		}
