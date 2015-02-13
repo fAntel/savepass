@@ -36,6 +36,7 @@ namespace passwdsaver
 		{
 			bool add = false, help = false, list = false, version = false;
 			bool A = false, A_seted = false, h = false, H = false, S = false;
+			bool sys = false;
 #if WINDOWS || GTK
 			bool on_screen = false;
 #else
@@ -69,6 +70,7 @@ namespace passwdsaver
 				{"H|no_date_time", "Don't show date and time when use --show and --search options", v => H = v != null},
 				{"format=", "Set {format} for date and time output", v => format = v},
 				{"S|save", "Save new settings passed via the command line", v => S = v != null},
+				{"system", "Work with settings in system configuration file", v => sys = v != null}
 			};
 #if GTK
 			Gtk.Application.Init();
@@ -104,7 +106,7 @@ namespace passwdsaver
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
 				return 0;
 			}
-			c = new conf(conf_file);
+			c = new conf(conf_file, sys);
 			/* Process the command line parameters related with the settings */
 			if (A_seted)
 				c.always_in_clipboard = A;
