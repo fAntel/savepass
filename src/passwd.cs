@@ -70,7 +70,11 @@ namespace passwdsaver
 		public string note
 		{
 			get { return _note; }
-			set { _note = value; _changed = DateTime.Now;  }
+			set {
+				_note = value;
+				if (passwdsaver.c.always_save_time_of_change)
+					_changed = DateTime.Now;
+			}
 		}
 
 		public DateTime added

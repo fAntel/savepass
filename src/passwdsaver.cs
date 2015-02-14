@@ -35,8 +35,9 @@ namespace passwdsaver
 		static int Main(string [] args)
 		{
 			bool add = false, help = false, list = false, version = false;
-			bool A = false, A_seted = false, h = false, H = false, S = false;
+			bool A = false, A_setted = false, h = false, H = false, S = false;
 			bool sys = false;
+			bool t = false, t_setted = false;
 #if WINDOWS || GTK
 			bool on_screen = false;
 #else
@@ -65,7 +66,8 @@ namespace passwdsaver
 				{ "help",  "Show this text", v => help = v != null },
 				"Settings options:",
 				{ "conf_file=", "{.conf} file with settings", v => conf_file = v },
-				{"A|always_in_clipboard=", "Set {mod} (true or false) of --get option", v => { A = Convert.ToBoolean(v); A_seted = true;} },
+				{"A|always_in_clipboard=", "Set {mod} (true or false) of --get option", v => { A = Convert.ToBoolean(v); A_setted = true;} },
+				{"t|always_save_time_of_change=", "Set {mod} (true or false) of --change option", v => { t = Convert.ToBoolean(v); t_setted = true;} },
 				{"h|show_date_time", "Show date and time when used --show and --search options", v => h = v != null},
 				{"H|no_date_time", "Don't show date and time when use --show and --search options", v => H = v != null},
 				{"format=", "Set {format} for date and time output", v => format = v},
@@ -108,8 +110,10 @@ namespace passwdsaver
 			}
 			c = new conf(conf_file, sys);
 			/* Process the command line parameters related with the settings */
-			if (A_seted)
+			if (A_setted)
 				c.always_in_clipboard = A;
+			if (t_setted)
+				c.always_save_time_of_change = t;
 			if (h || H)
 				c.show_date_time = H ? false : true;
 			if (!String.IsNullOrWhiteSpace(format))

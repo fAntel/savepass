@@ -179,7 +179,7 @@ namespace passwdsaver
 				passwdsaver.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
 				return 1;
 			} catch (Exception e) {
-				passwdsaver.print(String.Format(e.Message), true);
+				passwdsaver.print(e.Message, true);
 				return 2;
 			}
 			return 0;
