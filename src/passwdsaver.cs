@@ -47,8 +47,9 @@ namespace passwdsaver
 			int exit_value = 0;
 			string conf_file = null, f = null, format = null, get_pass = null, search = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
+			string filename = null;
 			OptionSet options = new OptionSet() {
-				"Usage: passwdsaver [OPTIONS] -f FILE - password saver",
+				"Usage: passwdsaver [OPTIONS] FILE - password saver",
 				"",
 				"Options:",
 				{ "a|add", "Add new password to the list", v => add = v != null },
@@ -56,12 +57,12 @@ namespace passwdsaver
 				{ "d|delete=", "Delete password with number {N}", v => del = Convert.ToByte(v) },
 				{ "g|get=", "Get password with number {N}", v => get = Convert.ToByte(v) },
 #if WINDOWS || GTK
-				{ "C|on_screen", "Get password on screen. Must be used with --get", v => on_screen = (v == null ? false : true)},
+				{ "C|on_screen", "Get password on screen. Must be used with --get", v => on_screen = (v != null)},
 #endif
 				{ "G|get_pass=", "Get password with note {NOTE}", v => get_pass = v},
 				{ "l|list", "Show list of passwords' notes", v => list = v != null },
 				{ "s|search=", "Show list of passwords' notes like {NOTE}", v => search = v},
-				{ "f|file=", "{FILE} with the list of passwords", v => f = v },
+				{ "f|file=", "Set the default {FILE}", v => f = v },
 				{ "version", "Show version", v => version = v != null },
 				{ "help",  "Show this text", v => help = v != null },
 				"Settings options:",
@@ -82,7 +83,13 @@ namespace passwdsaver
 				return 1;
 			}
 			try {
-				options.Parse(args);
+				System.Collections.Generic.List<string> rest = options.Parse(args);
+				if (rest.Count > 1) {
+					print("too much options", false);
+					return 1;
+				}
+				if (rest.Count == 1)
+					filename = rest[0];
 			} catch (OptionException e) {
 				print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.", e.Message, name), true);
 				return 2;
@@ -110,23 +117,32 @@ namespace passwdsaver
 			}
 			c = new conf(conf_file, sys);
 			/* Process the command line parameters related with the settings */
+			if (!String.IsNullOrWhiteSpace(f)) {
+				c.default_file = f;
+				c.Save();
+				filename = f;
+			}
 			if (A_setted)
 				c.always_in_clipboard = A;
 			if (t_setted)
 				c.always_save_time_of_change = t;
 			if (h || H)
-				c.show_date_time = H ? false : true;
+				c.show_date_time = !H;
 			if (!String.IsNullOrWhiteSpace(format))
 				c.format_date_time = format;
 			if (S)
 				c.Save();
-			if (f == null) {
-				if (S)
+			if (filename == null) {
+				if (c.default_file != null) {
+					filename = c.default_file;
+				} else if (S)
 					return 0;
-				print(string.Format("File name must be specified\nTry run {0} --help for more information", name), false);
-				return 1;
+				else {
+					print(string.Format("File name must be specified\nTry run {0} --help for more information", name), false);
+					return 1;
+				}
 			}
-			passwds p = new passwds(file.read_from_file(f));
+			passwds p = new passwds(file.read_from_file(filename));
 			/* Process the other command line parameters */
 			if (list)
 				exit_value = p.list();
@@ -143,7 +159,7 @@ namespace passwdsaver
 			else if (del > 0)
 				exit_value = p.del(del);
 			if (exit_value == 0)
-				file.write_to_file(f, p.ToString());
+				file.write_to_file(filename, p.ToString());
 			return exit_value;
 		}
 

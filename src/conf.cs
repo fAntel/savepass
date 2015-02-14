@@ -80,7 +80,7 @@ namespace passwdsaver
 			default_settings[(int) settings.format_date_time].default_value;
 
 		/* Key file */
-		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time };
+		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,  };
 		private GKeyFile _conf = null, _system_conf = null, _user_conf = null;
 		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
 		private bool _sys;
@@ -314,6 +314,30 @@ namespace passwdsaver
 					} catch (Exception e) {
 						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
+			}
+		}
+
+		public string default_file
+		{
+			get {
+				if (_conf.HasGroup("File") && _conf.HasKey("File", "default_file"))
+					return _conf.GetString("File", "default_file");
+				return null;
+			}
+			set {
+				string v;
+				try {
+					v = Path.GetFullPath(value);
+				} catch (Exception e){
+					passwdsaver.print(String.Format("saving default file failed: {0}",
+						e.Message), false);
+					return;
+				}
+				_conf.SetString("File", "default_file", v);
+				if (_sys)
+					_system_conf.SetString("File", "default_file", v);
+				else if (_user_conf != null)
+					_user_conf.SetString("File", "default_file", v);
 			}
 		}
 
