@@ -34,10 +34,9 @@ namespace passwdsaver
 
 		static int Main(string [] args)
 		{
-			bool add = false, help = false, list = false, version = false;
-			bool A = false, A_setted = false, h = false, H = false, S = false;
-			bool sys = false;
-			bool t = false, t_setted = false;
+			bool add = false, A = false, A_setted = false, H = false, h = false;
+			bool help = false, list = false, S = false, sys = false;
+			bool t = false, t_setted = false, version = false;
 #if WINDOWS || GTK
 			bool on_screen = false;
 #else
@@ -45,9 +44,11 @@ namespace passwdsaver
 #endif
 			byte change = 0, del = 0, get = 0;
 			int exit_value = 0;
-			string conf_file = null, f = null, format = null, get_pass = null, search = null;
+			string conf_file = null, config = null, f = null, format = null;
+			string get_pass = null, search = null;
 			string name = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
 			string filename = null;
+			System.Collections.Generic.List<string> rest;
 			OptionSet options = new OptionSet() {
 				"Usage: passwdsaver [OPTIONS] FILE - password saver",
 				"",
@@ -73,7 +74,8 @@ namespace passwdsaver
 				{"H|no_date_time", "Don't show date and time when use --show and --search options", v => H = v != null},
 				{"format=", "Set {format} for date and time output", v => format = v},
 				{"S|save", "Save new settings passed via the command line", v => S = v != null},
-				{"system", "Work with settings in system configuration file", v => sys = v != null}
+				{"system", "Work with settings in system configuration file", v => sys = v != null},
+				{"config=", "Show values of all/setted/system/user settings", v => config = v }
 			};
 #if GTK
 			Gtk.Application.Init();
@@ -83,13 +85,7 @@ namespace passwdsaver
 				return 1;
 			}
 			try {
-				System.Collections.Generic.List<string> rest = options.Parse(args);
-				if (rest.Count > 1) {
-					print("too much options", false);
-					return 1;
-				}
-				if (rest.Count == 1)
-					filename = rest[0];
+				rest = options.Parse(args);
 			} catch (OptionException e) {
 				print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.", e.Message, name), true);
 				return 2;
@@ -115,13 +111,31 @@ namespace passwdsaver
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
 				return 0;
 			}
-			c = new conf(conf_file, sys);
-			/* Process the command line parameters related with the settings */
+			c = new conf(conf_file, sys || String.Compare(config, "system") == 0);
 			if (!String.IsNullOrWhiteSpace(f)) {
 				c.default_file = f;
 				c.Save();
 				filename = f;
-			}
+			} 
+			if (config != null) {
+				if (String.Compare(config, "all") == 0)
+					c.list_all();
+				else if (String.Compare(config, "setted") == 0)
+					c.list_setted(null);
+				else if (String.Compare(config, "system") == 0)
+					c.list(true);
+				else if (String.Compare(config, "user") == 0)
+					c.list(false);
+				else {
+					print("wrong argument for config option", false);
+					return 1;
+				}
+				return 0;
+			} else if (rest.Count > 1) {
+				print("too much options", false);
+				return 1;
+			} else if (rest.Count == 1)
+				filename = rest[0];
 			if (A_setted)
 				c.always_in_clipboard = A;
 			if (t_setted)

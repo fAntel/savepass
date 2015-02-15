@@ -31,15 +31,21 @@ namespace passwdsaver
 		/* Types for default values */
 		private struct conf_settings
 		{
+			private readonly string _group;
+			private readonly string _name;
 			private readonly string _default_value;
 			private readonly string _comment;
 
-			public conf_settings(string default_value, string comment)
+			public conf_settings(string g, string name, string default_value, string comment)
 			{
+				_group = g;
+				_name = name;
 				_default_value = default_value;
 				_comment = comment;
 			}
 
+			public string group { get { return _group; } }
+			public string name { get { return _name; } }
 			public string default_value { get { return _default_value; } }
 			public string comment { get { return _comment; } }
 
@@ -47,40 +53,43 @@ namespace passwdsaver
 
 		/* Default values for settings */
 		private static readonly IList<conf_settings> default_settings = new ReadOnlyCollection<conf_settings>(new[] {
-			/* always_in_clipboard */ new conf_settings("true",
+			new conf_settings("Passwords", "always_in_clipboard", "true",
 				"Set this to \"false\" that program print password\n" +
 				"# on the screen by default rather than to clipboard"),
-			/* change_time_only_when_password_changed */ new conf_settings("true",
+			new conf_settings("Passwords", "always_save_time_of_change", "true",
 				"By default program will save date/time of changing\n" +
 				"# password or note. Set this to \"false\" that program\n" +
 				"# will save date/time only when changing password"),
-			/* show_date_time */ new conf_settings("false",
+			new conf_settings("View", "show_date_time", "false",
 				"Show date/time of adding or last changing password or comment"),
-			/* format_date_time */ new conf_settings("G",
+			new conf_settings("View", "format_date_time", "G",
 				"For format of string with date/time program use\n" +
 				"# C# format for date/time. You can read more about\n" +
 				"# it in Microsoft Developer Network article\n" +
 				"# \"Custom Date and Time Format Strings\"\n" +
-				"# (http://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx)")
+				"# (http://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx)"),
+			new conf_settings("File", "default_file", "", "Absolute path to default file with passwords")
 		});
 
 		private string default_settings_data =
-			"[Passwords]\n" +
+			"[" + default_settings[(int) settings.always_in_clipboard].group + "]\n" +
 			"# " + default_settings[(int) settings.always_in_clipboard].comment + "\n" +
-			"always_in_clipboard=" +
+			default_settings[(int) settings.always_in_clipboard].name + "=" +
 			default_settings[(int) settings.always_in_clipboard].default_value + "\n" +
 			"# " + default_settings[(int) settings.always_save_time_of_change].comment + "\n" +
+			default_settings[(int) settings.always_save_time_of_change].name + "=" +
 			default_settings[(int) settings.always_save_time_of_change].default_value + "\n" +
-			"[View]\n" +
+			"[" + default_settings[(int) settings.show_date_time].group + "]\n" +
 			"# " + default_settings[(int) settings.show_date_time].comment + "\n" +
-			"show_date_time=" +
+			default_settings[(int) settings.show_date_time].name + "=" +
 			default_settings[(int) settings.show_date_time].default_value + "\n" +
 			"# " + default_settings[(int) settings.format_date_time].comment + "\n" +
-			"format_date_time=" + 
+			default_settings[(int) settings.format_date_time].name + "=" + 
 			default_settings[(int) settings.format_date_time].default_value;
 
 		/* Key file */
-		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,  };
+		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
+			default_file};
 		private GKeyFile _conf = null, _system_conf = null, _user_conf = null;
 		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
 		private bool _sys;
@@ -195,43 +204,49 @@ namespace passwdsaver
 			return conf;
 		}
 
-		private bool get_boolean(string g, string key, int code)
+		private bool get_boolean(int code)
 		{
 			bool v;
 			try {
-				v = _conf.GetBoolean(g, key);
+				v = _conf.GetBoolean(default_settings[code].group, default_settings[code].name);
 			} catch (Exception) {
-				_conf.SetBoolean(g, key,
+				_conf.SetBoolean(default_settings[code].group, default_settings[code].name,
 					v = Convert.ToBoolean(default_settings[code].default_value));
 			}
 			return v;
 		}
 
-		private void set_boolean(string g, string key, bool v, int code)
+		private void set_boolean(bool v, int code)
 		{
-			_conf.SetBoolean(g, key, v);
+			_conf.SetBoolean(default_settings[code].group, default_settings[code].name, v);
 			if (_sys)
-				_system_conf.SetBoolean(g, key, v);
+				_system_conf.SetBoolean(default_settings[code].group, default_settings[code].name, v);
 			else if (_user_conf != null)
-				_user_conf.SetBoolean(g, key, v);
+				_user_conf.SetBoolean(default_settings[code].group, default_settings[code].name, v);
 			try {
-				if (String.IsNullOrWhiteSpace(_conf.GetComment(g, key)))
-					_conf.SetComment(g, key, default_settings[code].comment);
+				if (String.IsNullOrWhiteSpace(_conf.GetComment(default_settings[code].group,
+					default_settings[code].name)))
+					_conf.SetComment(default_settings[code].group,
+						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
 				passwdsaver.print(String.Format("{0}", e.Message), true);
 
 			}
 			if (_sys)
 				try {
-				if (String.IsNullOrWhiteSpace(_system_conf.GetComment(g, key)))
-					_system_conf.SetComment(g, key,	default_settings[code].comment);
+				if (String.IsNullOrWhiteSpace(_system_conf.GetComment(default_settings[code].group,
+					default_settings[code].name)))
+					_system_conf.SetComment(default_settings[code].group,
+						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
 				passwdsaver.print(String.Format("{0}", e.Message), true);
 			}
 			else if (_user_conf != null)
 				try {
-					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(g, key)))
-						_user_conf.SetComment(g, key, default_settings[code].comment);
+				if (String.IsNullOrWhiteSpace(_user_conf.GetComment(default_settings[code].group,
+					default_settings[code].name)))
+					_user_conf.SetComment(default_settings[code].group,
+						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
 				passwdsaver.print(String.Format("{0}", e.Message), true);
 			}
@@ -240,36 +255,30 @@ namespace passwdsaver
 		public bool always_in_clipboard
 		{
 			get {
-				return get_boolean("Passwords", "always_in_clipboard",
-					(int) settings.always_in_clipboard);
+				return get_boolean((int) settings.always_in_clipboard);
 			}
 			set {
-				set_boolean("Passwords", "always_in_clipboard", value,
-					(int) settings.always_in_clipboard);
+				set_boolean(value, (int) settings.always_in_clipboard);
 			}
 		}
 
 		public bool always_save_time_of_change
 		{
 			get {
-				return get_boolean("Passwords", "always_save_time_of_change",
-					(int) settings.always_save_time_of_change);
+				return get_boolean((int) settings.always_save_time_of_change);
 			}
 			set {
-				set_boolean("Passwords", "always_save_time_of_change", value,
-					(int) settings.always_save_time_of_change);
+				set_boolean(value, (int) settings.always_save_time_of_change);
 			}
 		}
 
 		public bool show_date_time
 		{
 			get {
-				return get_boolean("View", "show_date_time",
-					(int) settings.show_date_time);
+				return get_boolean((int) settings.show_date_time);
 			}
 			set {
-				set_boolean("View", "show_date_time", value,
-					(int) settings.show_date_time);
+				set_boolean(value, (int) settings.show_date_time);
 			}
 		}
 
@@ -278,38 +287,51 @@ namespace passwdsaver
 			get {
 				string v;
 				try {
-					v = _conf.GetString("View", "format_date_time");
+					v = _conf.GetString(default_settings[(int) settings.format_date_time].group,
+						default_settings[(int) settings.format_date_time].name);
 				} catch (Exception) {
-					_conf.SetString("View", "format_date_time",
+					_conf.SetString(default_settings[(int) settings.format_date_time].group,
+						default_settings[(int) settings.format_date_time].name,
 						v = default_settings[(int) settings.format_date_time].default_value);
 				}
 				return v;
 			}
 			set {
-				_conf.SetString("View", "format_date_time", value);
+				_conf.SetString(default_settings[(int) settings.format_date_time].group,
+					default_settings[(int) settings.format_date_time].name, value);
 				if (_sys)
-					_system_conf.SetString("View", "format_date_time", value);
+					_system_conf.SetString(default_settings[(int) settings.format_date_time].group,
+						default_settings[(int) settings.format_date_time].name, value);
 				else if (_user_conf != null)
-					_user_conf.SetString("View", "format_date_time", value);
+					_user_conf.SetString(default_settings[(int) settings.format_date_time].group,
+						default_settings[(int) settings.format_date_time].name, value);
 				try {
-					if (String.IsNullOrWhiteSpace(_conf.GetComment("View", "format_date_time")))
-						_conf.SetComment("View", "format_date_time",
+					if (String.IsNullOrWhiteSpace(_conf.GetComment(default_settings[(int) settings.format_date_time].group,
+						default_settings[(int) settings.format_date_time].name)))
+						_conf.SetComment(default_settings[(int) settings.format_date_time].group,
+							default_settings[(int) settings.format_date_time].name,
 							default_settings[(int) settings.format_date_time].comment);
 				} catch (Exception e) {
-					passwdsaver.print(String.Format("{0}", e.Message), true);
+					passwdsaver.print(e.Message, true);
 				}
 				if (_sys)
 					try {
-						if (String.IsNullOrWhiteSpace(_system_conf.GetComment("View", "format_date_time")))
-							_system_conf.SetComment("View", "format_date_time",
+					if (String.IsNullOrWhiteSpace(_system_conf.GetComment(
+							default_settings[(int) settings.format_date_time].group,
+							default_settings[(int) settings.format_date_time].name)))
+						_system_conf.SetComment(default_settings[(int) settings.format_date_time].group,
+								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
 						passwdsaver.print(String.Format("{0}", e.Message), true);
 					}
 				else if (_user_conf != null)
 					try {
-						if (String.IsNullOrWhiteSpace(_user_conf.GetComment("View", "format_date_time")))
-							_user_conf.SetComment("View", "format_date_time",
+					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(
+							default_settings[(int) settings.format_date_time].group,
+							default_settings[(int) settings.format_date_time].name)))
+						_user_conf.SetComment(default_settings[(int) settings.format_date_time].group,
+								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
 						passwdsaver.print(String.Format("{0}", e.Message), true);
@@ -320,8 +342,11 @@ namespace passwdsaver
 		public string default_file
 		{
 			get {
-				if (_conf.HasGroup("File") && _conf.HasKey("File", "default_file"))
-					return _conf.GetString("File", "default_file");
+				if (_conf.HasGroup(default_settings[(int) settings.default_file].group) &&
+					_conf.HasKey(default_settings[(int) settings.default_file].group,
+						default_settings[(int) settings.default_file].name))
+					return _conf.GetString(default_settings[(int) settings.default_file].group,
+						default_settings[(int) settings.default_file].name);
 				return null;
 			}
 			set {
@@ -333,11 +358,14 @@ namespace passwdsaver
 						e.Message), false);
 					return;
 				}
-				_conf.SetString("File", "default_file", v);
+				_conf.SetString(default_settings[(int) settings.default_file].group,
+					default_settings[(int) settings.default_file].name, v);
 				if (_sys)
-					_system_conf.SetString("File", "default_file", v);
+					_system_conf.SetString(default_settings[(int) settings.default_file].group,
+						default_settings[(int) settings.default_file].name, v);
 				else if (_user_conf != null)
-					_user_conf.SetString("File", "default_file", v);
+					_user_conf.SetString(default_settings[(int) settings.default_file].group,
+						default_settings[(int) settings.default_file].name, v);
 			}
 		}
 
@@ -353,6 +381,47 @@ namespace passwdsaver
 			} else {
 				Directory.CreateDirectory(Path.GetDirectoryName(_user_conf_file));
 				_conf.Save(_user_conf_file);
+			}
+		}
+
+		public void list(bool sys)
+		{
+			GKeyFile conf = sys ? _system_conf : _user_conf;
+			list_setted(conf);
+		}
+				
+		public void list_all()
+		{
+			string g = null;
+			foreach (conf_settings s in default_settings) {
+				if (String.Compare(g, s.group) != 0) {
+					g = s.group;
+					Console.WriteLine('[' + g + ']');
+				}
+				Console.Write(String.Format("{0} = ", s.name));
+				if (_conf.HasGroup(s.group) && _conf.HasKey(s.group, s.name))
+					Console.WriteLine(_conf.GetValue(s.group, s.name));
+				else
+					Console.WriteLine(String.Format("{0} (default)", s.default_value));
+			}
+		}
+
+		public void list_setted(GKeyFile conf)
+		{
+			if (conf == null)
+				conf = _conf;
+			string[] keys;
+			string[] groups = conf.GetGroups();
+			foreach (string g in groups) {
+				keys = conf.GetKeys(g);
+				if (keys.Length > 0) {
+					Console.WriteLine('[' + g + ']');
+					foreach (string key in keys) {
+						Console.WriteLine(String.Format(
+							"{0} = {1}",
+							key, conf.GetValue(g, key)));
+					}
+				}
 			}
 		}
 	}
