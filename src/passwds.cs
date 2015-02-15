@@ -73,12 +73,12 @@ namespace passwdsaver
 			return 0;
 		}
 
-		private static int are_you_sure()
+		private static int are_you_sure(string str)
 		{
 			string answer;
 
 			try {
-				Console.Write("Are you sure? (y/n) ");
+				Console.Write(String.Format("Are you sure{0}? (y/n) ", str));
 				answer = Console.ReadLine();
 				return String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0 ? 0 : 1;
 			} catch (IOException e) {
@@ -150,7 +150,9 @@ namespace passwdsaver
 
 			if (check_limits(n, true))
 				return 1;
-			return_value = are_you_sure();
+			return_value = are_you_sure(
+				String.Format(" you want to delete password with note \"{0}\"",
+					_passwds[n - 1].note));
 			if (return_value == 0)
 				_passwds.RemoveAt(n - 1);
 			return return_value == 2 ? 2 : 0;
