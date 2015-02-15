@@ -45,11 +45,18 @@ namespace passwdsaver
 		/* Add new password to the list */
 		public int add()
 		{
-			string password, note;
+			string password0, password1, note;
 
 			try {
-				Console.Write("Enter password: ");
-				password = read_password();
+				do {
+					Console.Write("Enter password: ");
+					password0 = read_password();
+					Console.Write("Enter password again: ");
+					password1 = read_password();
+					if (String.Compare(password0, password1) != 0) {
+						Console.WriteLine("Passwords doesn't match. Try again");
+					}
+				} while (String.Compare(password0, password1) != 0);
 				Console.Write("Enter note: ");
 				note = Console.ReadLine();
 			} catch (IOException e) {
@@ -62,7 +69,7 @@ namespace passwdsaver
 				passwdsaver.print(e.Message, true);
 				return 2;
 			}
-			_passwds.Add(new passwd(password, note));
+			_passwds.Add(new passwd(password0, note));
 			return 0;
 		}
 
@@ -73,7 +80,7 @@ namespace passwdsaver
 			try {
 				Console.Write("Are you sure? (y/n) ");
 				answer = Console.ReadLine();
-				return (string.Compare(answer, "y", true) == 0) ? 0 : 1;
+				return String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0 ? 0 : 1;
 			} catch (IOException e) {
 				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
@@ -86,20 +93,28 @@ namespace passwdsaver
 		/* Change password with number n */
 		public int change(byte n)
 		{
-			string str;
+			string str0, str1;
 
 			if (check_limits(n, false))
 				return 1;
 			passwd new_passwd = new passwd(_passwds[n - 1]);
 			try {
-				Console.Write("Enter new password (if you press ENTER password will stay the same): ");
-				str = read_password();
-				if (str.Length != 0)
-					new_passwd.password = str;
+				do {
+					Console.Write("Enter new password (if you press ENTER password will stay the same): ");
+					str0 = read_password();
+					if (str0.Length == 0)
+						break;
+					Console.Write("Enter new password again: ");
+					str1 = read_password();
+					if (String.Compare(str0, str1) != 0)
+						Console.WriteLine("Passwords doesn't match. Try again");
+				} while (String.Compare(str0, str1) != 0);
+				if (str0.Length > 0)
+					new_passwd.password = str0;
 				Console.Write("Enter new note [{0}]: ", new_passwd.note);
-				str = Console.ReadLine();
-				if (str.Length != 0)
-					new_passwd.note = str;
+				str0 = Console.ReadLine();
+				if (str0.Length != 0)
+					new_passwd.note = str0;
 			} catch (IOException e) {
 				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
@@ -252,14 +267,15 @@ namespace passwdsaver
 				key = Console.ReadKey(true);
 				if (((key.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt) ||
 				    ((key.Modifiers & ConsoleModifiers.Control) == ConsoleModifiers.Control) ||
-				    (key.KeyChar == '\u0000') ||
 				    (key.Key == ConsoleKey.Tab) ||
 				    (key.Key == ConsoleKey.Enter))
 					continue;
-				else if (key.Key == ConsoleKey.Backspace) {
+				if (key.Key == ConsoleKey.Backspace) {
 					if (!String.IsNullOrEmpty(password.ToString()))
 						password.Remove(password.Length - 1, 1);
-				} else
+				} else if ((key.KeyChar == '\u0000'))
+					continue;
+				else
 					password.Append(key.KeyChar);
 			} while (key.Key != ConsoleKey.Enter);
 			Console.WriteLine();
