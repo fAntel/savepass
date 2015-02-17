@@ -185,7 +185,7 @@ Global
 		$33.MessageStyle = $34
 		$34.IncludeDirectoryPaths = True
 		$33.inheritsSet = Mono
-		version = 0.5
-		outputpath = ..\savepass\build\bin
+		version = 0.6
+		outputpath = build\bin
 	EndGlobalSection
 EndGlobal
