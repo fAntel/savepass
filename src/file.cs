@@ -21,7 +21,7 @@
 using System;
 using System.IO;
 
-namespace passwdsaver
+namespace savepass
 {
 	public static class file
 	{
@@ -35,10 +35,10 @@ namespace passwdsaver
 				using (StreamReader f = new StreamReader(path)) {
 					data = f.ReadToEnd();
 				}
-			} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException) {
 				return "";
 			} catch (Exception e) {
-				passwdsaver.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);
+				savepass.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);
 				return null;
 			}
 			return data;
@@ -53,7 +53,7 @@ namespace passwdsaver
 					}
 				}
 			} catch (Exception e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 			}
 		}
 	}

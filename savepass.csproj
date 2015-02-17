@@ -7,10 +7,11 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{04E17A1D-636C-451B-AB94-3DDA8FEF3331}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>passwdsaver</RootNamespace>
-    <AssemblyName>passwdsaver</AssemblyName>
-    <StartupObject>passwdsaver.passwdsaver</StartupObject>
+    <RootNamespace>savepass</RootNamespace>
+    <AssemblyName>savepass</AssemblyName>
+    <StartupObject>savepass.savepass</StartupObject>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ReleaseVersion>0.6</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,19 +32,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <LangVersion>5</LangVersion>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Package>glib-sharp-3.0</Package>
-    </Reference>
     <Reference Include="gtk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-sharp-3.0</Package>
     </Reference>
+    <Reference Include="gkeyfile-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e886e4e52ee77480" />
     <Reference Include="gdk-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>gtk-sharp-3.0</Package>
+    </Reference>
+    <Reference Include="gio-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gio-sharp-3.0</Package>
+    </Reference>
+    <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>glib-sharp-3.0</Package>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -53,8 +59,9 @@
     </Compile>
     <Compile Include="src\file.cs" />
     <Compile Include="src\passwd.cs" />
-    <Compile Include="src\passwdsaver.cs" />
     <Compile Include="src\passwds.cs" />
+    <Compile Include="src\conf.cs" />
+    <Compile Include="src\savepass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mono-source-libs\" />

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "passwdsaver", "passwdsaver.csproj", "{04E17A1D-636C-451B-AB94-3DDA8FEF3331}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "savepass", "savepass.csproj", "{04E17A1D-636C-451B-AB94-3DDA8FEF3331}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,7 +15,7 @@ Global
 		{04E17A1D-636C-451B-AB94-3DDA8FEF3331}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = passwdsaver.csproj
+		StartupItem = savepass.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = Hierarchical
@@ -185,5 +185,7 @@ Global
 		$33.MessageStyle = $34
 		$34.IncludeDirectoryPaths = True
 		$33.inheritsSet = Mono
+		version = 0.6
+		outputpath = build\bin
 	EndGlobalSection
 EndGlobal
