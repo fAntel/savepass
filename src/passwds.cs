@@ -26,7 +26,7 @@ using System.IO;
 using System.Globalization;
 
 /* Возможно надо сделать чтение не строки а массива символов. В общем надо сейчас будет поработать над тем как хранить данные */
-namespace passwdsaver
+namespace savepass
 {
 	public class passwds
 	{
@@ -60,13 +60,13 @@ namespace passwdsaver
 				Console.Write("Enter note: ");
 				note = Console.ReadLine();
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (ArgumentOutOfRangeException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			}
 			_passwds.Add(new passwd(password0, note));
@@ -82,10 +82,10 @@ namespace passwdsaver
 				answer = Console.ReadLine();
 				return String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0 ? 0 : 1;
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (Exception e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			}
 		}
@@ -116,13 +116,13 @@ namespace passwdsaver
 				if (str0.Length != 0)
 					new_passwd.note = str0;
 			} catch (IOException e) {
-				passwdsaver.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (ArgumentOutOfRangeException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			}
 			_passwds[n - 1] = new_passwd;
@@ -133,11 +133,11 @@ namespace passwdsaver
 		{
 			if (n == 0) {
 				if (_passwds.Count == 0) {
-					passwdsaver.print("there are no passwords in this file", full);
+					savepass.print("there are no passwords in this file", full);
 					return true;
 				}
 			} else if (n > _passwds.Count) {
-				passwdsaver.print(string.Format("there is no password with number {0} in this file", n), full);
+				savepass.print(string.Format("there is no password with number {0} in this file", n), full);
 				return true;
 			}
 			return false;
@@ -166,7 +166,7 @@ namespace passwdsaver
 		{
 			if (check_limits(n, true))
 				return 1;
-			if (on_screen || !passwdsaver.c.always_in_clipboard)
+			if (on_screen || !savepass.c.always_in_clipboard)
 				Console.WriteLine(_passwds[(int) n - 1].password);
 			else {
 				#if WINDOWS
@@ -183,20 +183,20 @@ namespace passwdsaver
 		/* Print note with given format */
 		private int print_note(int i, passwd p)
 		{
-			if (!passwdsaver.c.show_date_time) {
+			if (!savepass.c.show_date_time) {
 				Console.WriteLine("{0,3}) {1}", i, p.note);
 				return 0;
 			}
 
 			try {
 				Console.WriteLine("{0,3}) {1} {2}", i,
-					p.time.ToString(passwdsaver.c.format_date_time, CultureInfo.CurrentCulture),
+					p.time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
 					p.note);
 			} catch (FormatException e) {
-				passwdsaver.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
+				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
 				return 1;
 			} catch (Exception e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			}
 			return 0;
@@ -208,7 +208,7 @@ namespace passwdsaver
 			if (check_limits(0, true))
 				return 1;
 			if (String.IsNullOrWhiteSpace(note)) {
-				passwdsaver.print("string for search cannot be an empty string\n" +
+				savepass.print("string for search cannot be an empty string\n" +
 					"or cosists exclusively of white-space characters.\n" +
 					"If you want to see all passwords use --show", true);
 				return 1;
@@ -218,15 +218,15 @@ namespace passwdsaver
 					return p.note.Contains(note);
 				});
 			if (result.Count == 0) {
-				passwdsaver.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
 					note), false);
 				return 1;
 			} else if (result.Count > 1) {
-				passwdsaver.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
+				savepass.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
 					note), false);
 				return 1;
 			}
-			if (on_screen  || !passwdsaver.c.always_in_clipboard)
+			if (on_screen  || !savepass.c.always_in_clipboard)
 				Console.WriteLine(result[0].password);
 			else {
 				#if WINDOWS
@@ -253,7 +253,7 @@ namespace passwdsaver
 					if ((result = print_note(i + 1, _passwds[i])) != 0)
 						return result;
 			} catch (IOException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 				return 2;
 			}
 			return 0;
@@ -291,7 +291,7 @@ namespace passwdsaver
 			if (check_limits(0, true))
 				return 1;
 			if (note == "") {
-				passwdsaver.print("string for search cannot be an empty string.\n" +
+				savepass.print("string for search cannot be an empty string.\n" +
 					"If you want to see all passwords use --show", false);
 				return 1;
 			}
@@ -300,7 +300,7 @@ namespace passwdsaver
 					return p.note.Contains(note);
 				});
 			if (result.Count == 0) {
-				passwdsaver.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
 					note), false);
 				return 1;
 			}

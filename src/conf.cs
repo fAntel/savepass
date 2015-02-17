@@ -24,7 +24,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using KeyFile;
 
-namespace passwdsaver
+namespace savepass
 {
 	public class conf
 	{
@@ -100,7 +100,7 @@ namespace passwdsaver
 			if (conf_file != null) {
 				_conf_file = conf_file;
 				if (!File.Exists(conf_file)) {
-					passwdsaver.print(String.Format("configuration file {0} doesn't exists. " +
+					savepass.print(String.Format("configuration file {0} doesn't exists. " +
 						"If -S option used it will be created", conf_file), false);
 					_conf = new GKeyFile();
 					return;
@@ -108,7 +108,7 @@ namespace passwdsaver
 				try {
 					_conf = new GKeyFile(conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					passwdsaver.print(String.Format("openging configuration file {0} failed: {1}",
+					savepass.print(String.Format("openging configuration file {0} failed: {1}",
 						conf_file, e.Message), true);
 				}
 				return;
@@ -121,7 +121,7 @@ namespace passwdsaver
 					_conf.LoadFromData(default_settings_data,
 						Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					passwdsaver.print(String.Format("creating object for default settings failed: {0}", e.Message),
+					savepass.print(String.Format("creating object for default settings failed: {0}", e.Message),
 						true);
 				}
 				return;
@@ -158,7 +158,7 @@ namespace passwdsaver
 				try {
 					file = new GKeyFile(_system_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					passwdsaver.print(String.Format("openging system configuration file {0} failed: {1}",
+					savepass.print(String.Format("openging system configuration file {0} failed: {1}",
 						_system_conf_file, e.Message), true);
 					return null;
 				}
@@ -181,7 +181,7 @@ namespace passwdsaver
 			try {
 				file = new GKeyFile(_user_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 			} catch (Exception e) {
-				passwdsaver.print(String.Format("openging user configuration file {0} failed: {1}",
+				savepass.print(String.Format("openging user configuration file {0} failed: {1}",
 					_user_conf_file, e.Message), true);
 				return null;
 			}
@@ -229,7 +229,7 @@ namespace passwdsaver
 					_conf.SetComment(default_settings[code].group,
 						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
-				passwdsaver.print(String.Format("{0}", e.Message), true);
+				savepass.print(String.Format("{0}", e.Message), true);
 
 			}
 			if (_sys)
@@ -239,7 +239,7 @@ namespace passwdsaver
 					_system_conf.SetComment(default_settings[code].group,
 						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
-				passwdsaver.print(String.Format("{0}", e.Message), true);
+				savepass.print(String.Format("{0}", e.Message), true);
 			}
 			else if (_user_conf != null)
 				try {
@@ -248,7 +248,7 @@ namespace passwdsaver
 					_user_conf.SetComment(default_settings[code].group,
 						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
-				passwdsaver.print(String.Format("{0}", e.Message), true);
+				savepass.print(String.Format("{0}", e.Message), true);
 			}
 		}
 
@@ -312,7 +312,7 @@ namespace passwdsaver
 							default_settings[(int) settings.format_date_time].name,
 							default_settings[(int) settings.format_date_time].comment);
 				} catch (Exception e) {
-					passwdsaver.print(e.Message, true);
+					savepass.print(e.Message, true);
 				}
 				if (_sys)
 					try {
@@ -323,7 +323,7 @@ namespace passwdsaver
 								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						passwdsaver.print(String.Format("{0}", e.Message), true);
+						savepass.print(String.Format("{0}", e.Message), true);
 					}
 				else if (_user_conf != null)
 					try {
@@ -334,7 +334,7 @@ namespace passwdsaver
 								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						passwdsaver.print(String.Format("{0}", e.Message), true);
+						savepass.print(String.Format("{0}", e.Message), true);
 					}
 			}
 		}
@@ -354,7 +354,7 @@ namespace passwdsaver
 				try {
 					v = Path.GetFullPath(value);
 				} catch (Exception e){
-					passwdsaver.print(String.Format("saving default file failed: {0}",
+					savepass.print(String.Format("saving default file failed: {0}",
 						e.Message), false);
 					return;
 				}

@@ -1,5 +1,5 @@
 //  
-//  passwdsaver.cs
+//  savepass.cs
 //  
 //  Author:
 //       keldzh <keldzh@gmail.com>
@@ -25,9 +25,9 @@ using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using Mono.Options;
 
-namespace passwdsaver
+namespace savepass
 {
-	public class passwdsaver
+	public class savepass
 	{
 		private const string version_number = "0.3";
 		public static conf c;
@@ -50,7 +50,7 @@ namespace passwdsaver
 			string filename = null;
 			System.Collections.Generic.List<string> rest;
 			OptionSet options = new OptionSet() {
-				"Usage: passwdsaver [OPTIONS] FILE - password saver",
+				"Usage: savepass [OPTIONS] FILE - password saver",
 				"",
 				"Options:",
 				{ "a|add", "Add new password to the list", v => add = v != null },

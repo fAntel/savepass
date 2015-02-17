@@ -7,10 +7,11 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{04E17A1D-636C-451B-AB94-3DDA8FEF3331}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>passwdsaver</RootNamespace>
-    <AssemblyName>passwdsaver</AssemblyName>
-    <StartupObject>passwdsaver.passwdsaver</StartupObject>
+    <RootNamespace>savepass</RootNamespace>
+    <AssemblyName>savepass</AssemblyName>
+    <StartupObject>savepass.savepass</StartupObject>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ReleaseVersion>0.5</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,9 +59,9 @@
     </Compile>
     <Compile Include="src\file.cs" />
     <Compile Include="src\passwd.cs" />
-    <Compile Include="src\passwdsaver.cs" />
     <Compile Include="src\passwds.cs" />
     <Compile Include="src\conf.cs" />
+    <Compile Include="src\savepass.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mono-source-libs\" />

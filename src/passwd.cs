@@ -20,7 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 
-namespace passwdsaver
+namespace savepass
 {
 	public class passwd: IFormattable
 	{
@@ -48,7 +48,7 @@ namespace passwdsaver
 				_added = new DateTime(Convert.ToInt64(a[2]), DateTimeKind.Local);
 				_changed = new DateTime(Convert.ToInt64(a[3]), DateTimeKind.Local);
 			} catch (ArgumentOutOfRangeException e) {
-				passwdsaver.print(e.Message, true);
+				savepass.print(e.Message, true);
 			}
 		}
 
@@ -72,7 +72,7 @@ namespace passwdsaver
 			get { return _note; }
 			set {
 				_note = value;
-				if (passwdsaver.c.always_save_time_of_change)
+				if (savepass.c.always_save_time_of_change)
 					_changed = DateTime.Now;
 			}
 		}
