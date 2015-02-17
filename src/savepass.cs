@@ -29,7 +29,7 @@ namespace savepass
 {
 	public class savepass
 	{
-		private const string version_number = "0.6";
+		private const string version_number = "0.7";
 		public static conf c;
 
 		static int Main(string [] args)
