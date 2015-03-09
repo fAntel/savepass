@@ -51,6 +51,7 @@
     <Reference Include="glib-sharp, Version=3.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Package>glib-sharp-3.0</Package>
     </Reference>
+    <Reference Include="nunit.framework" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -62,6 +63,8 @@
     <Compile Include="src\passwds.cs" />
     <Compile Include="src\conf.cs" />
     <Compile Include="src\savepass.cs" />
+    <Compile Include="tests\test_file.cs" />
+    <Compile Include="src\blowfish.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mono-source-libs\" />
