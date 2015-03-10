@@ -29,13 +29,16 @@ namespace savepass
 		private DateTime _added;
 		private DateTime _changed;
 
-		/* Constructor for adding new passwords */
-		public passwd(string passwd, string note)
+		/* Constructor for adding new passwords and testing */
+		public passwd(string passwd, string note, DateTime added = default(DateTime), DateTime changed = default(DateTime))
 		{
 			_passwd = passwd;
 			_note = note;
-			_added = DateTime.Now;
-			_changed = DateTime.MinValue;
+			if (added == DateTime.MinValue)
+				_added = DateTime.Now;
+			else
+				_added = added;
+			_changed = changed;
 		}
 
 		/* Constructor for creating password from file */
@@ -72,7 +75,8 @@ namespace savepass
 			get { return _note; }
 			set {
 				_note = value;
-				if (savepass.c.always_save_time_of_change)
+				/* Check for null used when testing only */
+				if (savepass.c == null || savepass.c.always_save_time_of_change)
 					_changed = DateTime.Now;
 			}
 		}
