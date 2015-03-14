@@ -134,5 +134,22 @@ namespace savepass
 		{
 			return this.ToString();
 		}
+
+		public byte[] to_data()
+		{
+			byte[] passwd = Encoding.UTF8.GetBytes(_passwd);
+			byte[] note = Encoding.UTF8.GetBytes(_note);
+			byte[] data = new byte[passwd.Length + 1 + note.Length + 1 + sizeof(long) * 2];
+			Array.Copy(passwd, data, passwd.Length);
+			int i = passwd.Length;
+			data[i++] = 0;
+			Array.Copy(note, 0, data, i, note.Length);
+			i += note.Length;
+			data[i++] = 0;
+			Array.Copy(BitConverter.GetBytes(_added.Ticks), 0, data, i, sizeof(long));
+			i += sizeof(long);
+			Array.Copy(BitConverter.GetBytes(_changed.Ticks), 0, data, i, sizeof(long));
+			return data;
+		}
 	}
 }

@@ -112,6 +112,26 @@ namespace savepass
 			passwd p = new passwd("pass", "note", DateTime.MaxValue, now);
 			Assert.AreEqual(p.time, now);
 		}
+
+		[Test()]
+		public void test_to_data()
+		{
+			byte[] passwd = Encoding.UTF8.GetBytes("pass");
+			byte[] note = Encoding.UTF8.GetBytes("note");
+			byte[] added = BitConverter.GetBytes(now.Ticks);
+			byte[] changed = BitConverter.GetBytes(DateTime.MinValue.Ticks);
+			byte[] data = new byte[passwd.Length + 1 + note.Length + 1 + added.Length * 2];
+			Array.Copy(passwd, data, passwd.Length);
+			int i = passwd.Length;
+			data[i++] = 0;
+			Array.Copy(note, 0, data, i, note.Length);
+			i += note.Length;
+			data[i++] = 0;
+			Array.Copy(added, 0, data, i, added.Length);
+			i += added.Length;
+			Array.Copy(changed, 0, data, i, changed.Length);
+			passwd p = new passwd("pass", "note", now);
+			Assert.AreEqual(p.to_data(), data);
+		}
 	}
 }
-
