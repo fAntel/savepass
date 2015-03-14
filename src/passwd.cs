@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Text;
 
 namespace savepass
 {
@@ -53,6 +54,28 @@ namespace savepass
 			} catch (ArgumentOutOfRangeException e) {
 				savepass.print(e.Message, true);
 			}
+		}
+
+		/* Constructor for creating password from file */
+		public passwd(byte[] data)
+		{
+			int i, len;
+			len = Array.IndexOf<byte>(data, 0);
+			byte[] str = new byte[len];
+			Array.Copy(data, 0, str, 0, len);
+			_passwd = Encoding.UTF8.GetString(str);
+			i = len + 1;
+			len = Array.IndexOf<byte>(data, 0, i) - i;
+			str = new byte[len];
+			Array.Copy(data, i, str, 0, len);
+			_note = Encoding.UTF8.GetString(str);
+			i += len + 1;
+			str = new byte[sizeof(long)];
+			Array.Copy(data, i, str, 0, sizeof(long));
+			_added = new DateTime(BitConverter.ToInt64(str, 0), DateTimeKind.Local);
+			i += sizeof(long);
+			Array.Copy(data, i, str, 0, sizeof(long));
+			_changed = new DateTime(BitConverter.ToInt64(str, 0), DateTimeKind.Local);
 		}
 
 		/* Constructor for copying password from another object */
