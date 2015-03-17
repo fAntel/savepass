@@ -25,6 +25,7 @@ namespace savepass
 	public interface IUI
 	{
 		byte add();
+		byte change(int n);
 	}
 }
 

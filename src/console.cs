@@ -62,6 +62,40 @@ namespace savepass
 			return 0;
 		}
 
+		public byte change(int n)
+		{
+			string pass, note, str0, str1;
+			if (!_p.get_pass_note(n - 1, out pass, out note))
+				return 1;
+			try {
+				do {
+					Console.Write("Enter new password (if you press ENTER password will stay the same): ");
+					str0 = read_password();
+					if (str0.Length == 0)
+						break;
+					Console.Write("Enter new password again: ");
+					str1 = read_password();
+					if (String.Compare(str0, str1) != 0)
+						Console.WriteLine("Passwords doesn't match. Try again");
+				} while (String.Compare(str0, str1) != 0);
+				pass = str0.Length > 0 ? str0 : null;
+				Console.Write("Enter new note [{0}]: ", note);
+				str0 = Console.ReadLine();
+				note = str0.Length > 0 ? str0 : null;
+			} catch (IOException e) {
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				return 2;
+			} catch (OutOfMemoryException e) {
+				savepass.print(e.Message, true);
+				return 2;
+			} catch (ArgumentOutOfRangeException e) {
+				savepass.print(e.Message, true);
+				return 2;
+			}
+			_p.change(n - 1, pass, note);
+			return 0;
+		}
+
 		/* Read characters from stdin but do not echo them */
 		private static String read_password()
 		{

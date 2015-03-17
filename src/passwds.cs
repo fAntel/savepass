@@ -74,42 +74,12 @@ namespace savepass
 		}
 
 		/* Change password with number n */
-		public int change(byte n)
+		public void change(int n, string pass, string note)
 		{
-			string str0, str1;
-
-			if (check_limits(n - 1, false))
-				return 1;
-			passwd new_passwd = new passwd(_passwds[n - 1]);
-			try {
-				do {
-					Console.Write("Enter new password (if you press ENTER password will stay the same): ");
-					str0 = read_password();
-					if (str0.Length == 0)
-						break;
-					Console.Write("Enter new password again: ");
-					str1 = read_password();
-					if (String.Compare(str0, str1) != 0)
-						Console.WriteLine("Passwords doesn't match. Try again");
-				} while (String.Compare(str0, str1) != 0);
-				if (str0.Length > 0)
-					new_passwd.password = str0;
-				Console.Write("Enter new note [{0}]: ", new_passwd.note);
-				str0 = Console.ReadLine();
-				if (str0.Length != 0)
-					new_passwd.note = str0;
-			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
-				return 2;
-			} catch (OutOfMemoryException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
-			_passwds[n - 1] = new_passwd;
-			return 0;
+			if (pass != null)
+				_passwds[n].password = pass;
+			if (note != null)
+				_passwds[n].note = note;
 		}
 
 		/* Check is n within _passwds */
@@ -224,6 +194,19 @@ namespace savepass
 			return 0;
 		}
 
+		/* Return password and note for n element of _passwds for change function */
+		public bool get_pass_note(int n, out string pass, out string note)
+		{
+			if (check_limits(n, false)) {
+				pass = null;
+				note = null;
+				return false;
+			}
+			pass = _passwds[n].password;
+			note = _passwds[n].note;
+			return true;
+		}
+
 		/* Show the list of notes */
 		public int list()
 		{
@@ -241,19 +224,6 @@ namespace savepass
 				return 2;
 			}
 			return 0;
-		}
-
-		/* Return password and note for n element of _passwds for change function */
-		public bool get_pass_note(byte n, out string pass, out string note)
-		{
-			if (check_limits(n, false)) {
-				pass = null;
-				note = null;
-				return false;
-			}
-			pass = _passwds[n].password;
-			note = _passwds[n].note;
-			return true;
 		}
 
 		/* Read characters from stdin but do not echo them */

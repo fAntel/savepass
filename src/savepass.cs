@@ -170,7 +170,7 @@ namespace savepass
 			else if (add)
 				exit_value = console.add();
 			else if (change > 0)
-				exit_value = p.change(change);
+				exit_value = console.change(change);
 			else if (del > 0)
 				exit_value = p.del(del);
 			if (exit_value == 0)
