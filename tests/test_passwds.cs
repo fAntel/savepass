@@ -80,4 +80,21 @@ namespace savepass
 			Assert.AreEqual(data, ps.to_data());
 		}
 	}
+
+	[TestFixture()]
+	public class test_passwds_functions
+	{
+		[Test()]
+		public void test_add()
+		{
+			passwd p = new passwd("pass", "note");
+			passwds ps = new passwds(new byte[0]);
+			ps.add(p.password, p.note);
+			byte[] data = ps.to_data();
+			int i = 0;
+			passwd result = new passwd(ref data, ref i);
+			Assert.AreEqual(p.password, result.password);
+			Assert.AreEqual(p.note, result.note);
+		}
+	}
 }
