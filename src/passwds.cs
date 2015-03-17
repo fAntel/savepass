@@ -41,6 +41,14 @@ namespace savepass
 				if (!String.IsNullOrWhiteSpace(str))
 					_passwds.Add(new passwd(str));
 		}
+		/* Create _passwds array from byte array from file */
+		public passwds(byte[] data)
+		{
+			_passwds = new List<passwd>();
+			int i = 0;
+			while (i < data.Length)
+				_passwds.Add(new passwd(ref data, ref i));
+		}
 
 		/* Add new password to the list */
 		public int add()
@@ -144,7 +152,7 @@ namespace savepass
 		}
 
 		/* Delete password with number n from array */
-		public  int del (byte n)
+		public  int del(byte n)
 		{
 			int return_value;
 
@@ -321,6 +329,16 @@ namespace savepass
 					str.AppendLine(p.ToString());
 			}
 			return str.ToString();
+		}
+
+		public byte[] to_data()
+		{
+			List<byte> data = new List<byte>();
+			foreach (passwd p in _passwds) {
+				if (p != null)
+					data.AddRange(p.to_data());
+			}
+			return data.ToArray();
 		}
 	}
 }

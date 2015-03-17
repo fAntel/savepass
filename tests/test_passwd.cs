@@ -74,7 +74,8 @@ namespace savepass
 			Array.Copy(added, 0, data, i, added.Length);
 			i += added.Length;
 			Array.Copy(changed, 0, data, i, changed.Length);
-			passwd p = new passwd(data);
+			i = 0;
+			passwd p = new passwd(ref data, ref i);
 			Assert.AreEqual(p.password, "pass");
 			Assert.AreEqual(p.note, "note");
 			Assert.AreEqual(p.added, now);

@@ -57,14 +57,14 @@ namespace savepass
 		}
 
 		/* Constructor for creating password from file */
-		public passwd(byte[] data)
+		public passwd(ref byte[] data, ref int i)
 		{
-			int i, len;
+			int len;
 			len = Array.IndexOf<byte>(data, 0);
 			byte[] str = new byte[len];
-			Array.Copy(data, 0, str, 0, len);
+			Array.Copy(data, i, str, 0, len);
 			_passwd = Encoding.UTF8.GetString(str);
-			i = len + 1;
+			i += len + 1;
 			len = Array.IndexOf<byte>(data, 0, i) - i;
 			str = new byte[len];
 			Array.Copy(data, i, str, 0, len);
@@ -75,6 +75,7 @@ namespace savepass
 			_added = new DateTime(BitConverter.ToInt64(str, 0), DateTimeKind.Local);
 			i += sizeof(long);
 			Array.Copy(data, i, str, 0, sizeof(long));
+			i += sizeof(long);
 			_changed = new DateTime(BitConverter.ToInt64(str, 0), DateTimeKind.Local);
 		}
 
