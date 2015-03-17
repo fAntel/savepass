@@ -78,7 +78,7 @@ namespace savepass
 		{
 			string str0, str1;
 
-			if (check_limits(n, false))
+			if (check_limits(n - 1, false))
 				return 1;
 			passwd new_passwd = new passwd(_passwds[n - 1]);
 			try {
@@ -112,14 +112,15 @@ namespace savepass
 			return 0;
 		}
 
-		private bool check_limits(byte n, bool full)
+		/* Check is n within _passwds */
+		private bool check_limits(int n, bool full)
 		{
 			if (n == 0) {
 				if (_passwds.Count == 0) {
 					savepass.print("there are no passwords in this file", full);
 					return true;
 				}
-			} else if (n > _passwds.Count) {
+			} else if (n >= _passwds.Count) {
 				savepass.print(string.Format("there is no password with number {0} in this file", n), full);
 				return true;
 			}
@@ -131,7 +132,7 @@ namespace savepass
 		{
 			int return_value;
 
-			if (check_limits(n, true))
+			if (check_limits(n - 1, true))
 				return 1;
 			return_value = are_you_sure(
 				String.Format(" you want to delete password with note \"{0}\"",
@@ -147,7 +148,7 @@ namespace savepass
 		 * copied to clipboard */
 		public int get(byte n, bool on_screen)
 		{
-			if (check_limits(n, true))
+			if (check_limits(n - 1, true))
 				return 1;
 			if (on_screen || !savepass.c.always_in_clipboard)
 				Console.WriteLine(_passwds[(int) n - 1].password);
@@ -240,6 +241,19 @@ namespace savepass
 				return 2;
 			}
 			return 0;
+		}
+
+		/* Return password and note for n element of _passwds for change function */
+		public bool get_pass_note(byte n, out string pass, out string note)
+		{
+			if (check_limits(n, false)) {
+				pass = null;
+				note = null;
+				return false;
+			}
+			pass = _passwds[n].password;
+			note = _passwds[n].note;
+			return true;
 		}
 
 		/* Read characters from stdin but do not echo them */

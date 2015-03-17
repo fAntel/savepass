@@ -47,6 +47,22 @@ namespace savepass
 		{
 			Assert.AreEqual(p.to_data(), ps.to_data());
 		}
+
+		[Test()]
+		public void test_get_pass_note()
+		{
+			string pass, note;
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(p.password, pass);
+			Assert.AreEqual(p.note, note);
+		}
+
+		[Test()]
+		public void test_get_pass_note_without_range()
+		{
+			string pass, note;
+			Assert.IsFalse(ps.get_pass_note(1, out pass, out note));
+		}
 	}
 
 	[TestFixture()]
