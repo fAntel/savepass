@@ -67,6 +67,8 @@
     <Compile Include="src\blowfish.cs" />
     <Compile Include="tests\test_passwd.cs" />
     <Compile Include="tests\test_passwds.cs" />
+    <Compile Include="src\ui.cs" />
+    <Compile Include="src\console.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mono-source-libs\" />

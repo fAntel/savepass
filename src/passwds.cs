@@ -51,34 +51,9 @@ namespace savepass
 		}
 
 		/* Add new password to the list */
-		public int add()
+		public void add(string pass, string note)
 		{
-			string password0, password1, note;
-
-			try {
-				do {
-					Console.Write("Enter password: ");
-					password0 = read_password();
-					Console.Write("Enter password again: ");
-					password1 = read_password();
-					if (String.Compare(password0, password1) != 0) {
-						Console.WriteLine("Passwords doesn't match. Try again");
-					}
-				} while (String.Compare(password0, password1) != 0);
-				Console.Write("Enter note: ");
-				note = Console.ReadLine();
-			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
-				return 2;
-			} catch (OutOfMemoryException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
-			_passwds.Add(new passwd(password0, note));
-			return 0;
+			_passwds.Add(new passwd(pass, note));
 		}
 
 		private static int are_you_sure(string str)

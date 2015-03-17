@@ -157,6 +157,7 @@ namespace savepass
 				}
 			}
 			passwds p = new passwds(file.read_from_file(filename));
+			IUI console = new console(p);
 			/* Process the other command line parameters */
 			if (list)
 				exit_value = p.list();
@@ -167,7 +168,7 @@ namespace savepass
 			else if (get_pass != null)
 				exit_value = p.get_pass(get_pass, on_screen);
 			else if (add)
-				exit_value = p.add();
+				exit_value = console.add();
 			else if (change > 0)
 				exit_value = p.change(change);
 			else if (del > 0)
