@@ -164,7 +164,7 @@ namespace savepass
 			else if (search != null)
 				exit_value = p.search(search);
 			else if (get > 0)
-				exit_value = p.get(get, on_screen);
+				exit_value = console.get(get, on_screen);
 			else if (get_pass != null)
 				exit_value = p.get_pass(get_pass, on_screen);
 			else if (add)
@@ -172,7 +172,7 @@ namespace savepass
 			else if (change > 0)
 				exit_value = console.change(change);
 			else if (del > 0)
-				exit_value = p.del(del);
+				exit_value = console.del(del);
 			if (exit_value == 0)
 				file.write_to_file(filename, p.ToString());
 			return exit_value;

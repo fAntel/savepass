@@ -56,23 +56,6 @@ namespace savepass
 			_passwds.Add(new passwd(pass, note));
 		}
 
-		private static int are_you_sure(string str)
-		{
-			string answer;
-
-			try {
-				Console.Write(String.Format("Are you sure{0}? (y/n) ", str));
-				answer = Console.ReadLine();
-				return String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0 ? 0 : 1;
-			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
-				return 2;
-			} catch (Exception e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
-		}
-
 		/* Change password with number n */
 		public void change(int n, string pass, string note)
 		{
@@ -82,8 +65,11 @@ namespace savepass
 				_passwds[n].note = note;
 		}
 
-		/* Check is n within _passwds */
-		private bool check_limits(int n, bool full)
+		/* Check is n within _passwds
+		 * return false if n within _passwds
+		 * and true if not
+		 */
+		public bool check_limits(int n, bool full)
 		{
 			if (n == 0) {
 				if (_passwds.Count == 0) {
@@ -98,40 +84,9 @@ namespace savepass
 		}
 
 		/* Delete password with number n from array */
-		public  int del(byte n)
+		public  void del(int n)
 		{
-			int return_value;
-
-			if (check_limits(n - 1, true))
-				return 1;
-			return_value = are_you_sure(
-				String.Format(" you want to delete password with note \"{0}\"",
-					_passwds[n - 1].note));
-			if (return_value == 0)
-				_passwds.RemoveAt(n - 1);
-			return return_value == 2 ? 2 : 0;
-		}
-	
-		/* Show password with number n
-		 * if on_screen == true then password will be
-		 * printed on the screen, otherwise it will be
-		 * copied to clipboard */
-		public int get(byte n, bool on_screen)
-		{
-			if (check_limits(n - 1, true))
-				return 1;
-			if (on_screen || !savepass.c.always_in_clipboard)
-				Console.WriteLine(_passwds[(int) n - 1].password);
-			else {
-				#if WINDOWS
-				Clipboard.SetText(_passwds[(int) n - 1].password, TextDataFormat.Text);
-				#elif GTK
-				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = _passwds[(int) n - 1].password;
-				clipboard.Store();
-				#endif
-			}
-			return 0;
+			_passwds.RemoveAt(n - 1);
 		}
 
 		/* Print note with given format */

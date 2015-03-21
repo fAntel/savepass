@@ -18,6 +18,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#define GTK
 using System;
 using System.IO;
 using System.Text;
@@ -32,6 +33,8 @@ namespace savepass
 		{
 			_p = p;
 		}
+
+		/* Add new password in array of passwords */
 		public byte add()
 		{
 			string password0, password1, note;
@@ -62,6 +65,27 @@ namespace savepass
 			return 0;
 		}
 
+		private static byte are_you_sure(string str)
+		{
+			string answer;
+
+			try {
+				Console.Write(String.Format("Are you sure{0}? (y/n) ", str));
+				answer = Console.ReadLine();
+				if (String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0)
+					return 0;
+				else
+					return 1;
+			} catch (IOException e) {
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				return 2;
+			} catch (Exception e) {
+				savepass.print(e.Message, true);
+				return 2;
+			}
+		}
+
+		/* Change password and/or note in n element of array of passwords */
 		public byte change(int n)
 		{
 			string pass, note, str0, str1;
@@ -93,6 +117,49 @@ namespace savepass
 				return 2;
 			}
 			_p.change(n - 1, pass, note);
+			return 0;
+		}
+
+		/* Remove password with number n from array of passwords */
+		public byte del(int n)
+		{
+			string pass, note;
+			byte return_value;
+
+			--n;
+			if (_p.check_limits(n, true))
+				return 1;
+			_p.get_pass_note(n, out pass, out note);
+			return_value = are_you_sure(
+				String.Format(" you want to delete password with note \"{0}\"", note));
+			if (return_value == 0)
+				_p.del(n);
+			return return_value == 2 ? (byte) 2 : (byte) 0;
+		}
+
+		/* Show password with number n
+		 * if on_screen == true then password will be
+		 * printed on the screen, otherwise it will be
+		 * copied to clipboard */
+		public byte get(int n, bool on_screen)
+		{
+			string pass, note;
+
+			--n;
+			if (_p.check_limits(n, true))
+				return 1;
+			_p.get_pass_note(n, out pass, out note);
+			if (on_screen || !savepass.c.always_in_clipboard)
+				Console.WriteLine(pass);
+			else {
+				#if WINDOWS
+				Clipboard.SetText(pass, TextDataFormat.Text);
+				#elif GTK
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+				clipboard.Text = pass;
+				clipboard.Store();
+				#endif
+			}
 			return 0;
 		}
 

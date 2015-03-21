@@ -29,7 +29,7 @@ namespace savepass
 		private passwd p;
 		private passwds ps;
 
-		[SetUp]
+		[SetUp()]
 		public void Init()
 		{
 			p = new passwd("pass", "note");
@@ -49,19 +49,15 @@ namespace savepass
 		}
 
 		[Test()]
-		public void test_get_pass_note()
+		public void test_check_limits_within_range()
 		{
-			string pass, note;
-			ps.get_pass_note(0, out pass, out note);
-			Assert.AreEqual(p.password, pass);
-			Assert.AreEqual(p.note, note);
+			Assert.IsFalse(ps.check_limits(0, false));
 		}
 
 		[Test()]
-		public void test_get_pass_note_without_range()
+		public void test_check_limits_without_range()
 		{
-			string pass, note;
-			Assert.IsFalse(ps.get_pass_note(1, out pass, out note));
+			Assert.IsTrue(ps.check_limits(1, false));
 		}
 	}
 
@@ -95,22 +91,58 @@ namespace savepass
 		{
 			Assert.AreEqual(data, ps.to_data());
 		}
+
+		[Test()]
+		public void test_check_limits_within_range()
+		{
+			Assert.IsFalse(ps.check_limits(2, false));
+		}
+
+		[Test()]
+		public void test_check_limits_without_range()
+		{
+			Assert.IsTrue(ps.check_limits(3, false));
+		}
 	}
 
 	[TestFixture()]
 	public class test_passwds_functions
 	{
+		private passwd p;
+		private passwds ps;
+
+		[SetUp()]
+		public void Init()
+		{
+			p = new passwd("pass", "note");
+			ps = new passwds(new byte[0]);
+			ps.add(p.password, p.note);
+		}
+
 		[Test()]
 		public void test_add()
 		{
-			passwd p = new passwd("pass", "note");
-			passwds ps = new passwds(new byte[0]);
-			ps.add(p.password, p.note);
 			byte[] data = ps.to_data();
 			int i = 0;
 			passwd result = new passwd(ref data, ref i);
 			Assert.AreEqual(p.password, result.password);
 			Assert.AreEqual(p.note, result.note);
+		}
+
+		[Test()]
+		public void test_get_pass_note()
+		{
+			string pass, note;
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(p.password, pass);
+			Assert.AreEqual(p.note, note);
+		}
+
+		[Test()]
+		public void test_get_pass_note_without_range()
+		{
+			string pass, note;
+			Assert.IsFalse(ps.get_pass_note(1, out pass, out note));
 		}
 	}
 }
