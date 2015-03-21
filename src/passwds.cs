@@ -162,7 +162,7 @@ namespace savepass
 			return 0;
 		}
 
-		/* Show the list of notes */
+		/* Return list of notes and list of times */
 		public void list(out string[] notes, out DateTime[] times)
 		{
 			List<string> n = new List<string>();
@@ -174,31 +174,6 @@ namespace savepass
 			}
 			notes = n.ToArray();
 			times = t.ToArray();
-		}
-
-		/* Read characters from stdin but do not echo them */
-		private static String read_password()
-		{
-			StringBuilder password = new StringBuilder();
-			ConsoleKeyInfo key;
-
-			do {
-				key = Console.ReadKey(true);
-				if (((key.Modifiers & ConsoleModifiers.Alt) == ConsoleModifiers.Alt) ||
-				    ((key.Modifiers & ConsoleModifiers.Control) == ConsoleModifiers.Control) ||
-				    (key.Key == ConsoleKey.Tab) ||
-				    (key.Key == ConsoleKey.Enter))
-					continue;
-				if (key.Key == ConsoleKey.Backspace) {
-					if (!String.IsNullOrEmpty(password.ToString()))
-						password.Remove(password.Length - 1, 1);
-				} else if ((key.KeyChar == '\u0000'))
-					continue;
-				else
-					password.Append(key.KeyChar);
-			} while (key.Key != ConsoleKey.Enter);
-			Console.WriteLine();
-			return password.ToString();
 		}
 
 		/* Find all notes in array with given note as a substring */
