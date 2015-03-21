@@ -133,7 +133,9 @@ namespace savepass
 		public void test_get_pass_note()
 		{
 			string pass, note;
+
 			ps.get_pass_note(0, out pass, out note);
+
 			Assert.AreEqual(p.password, pass);
 			Assert.AreEqual(p.note, note);
 		}
@@ -141,8 +143,95 @@ namespace savepass
 		[Test()]
 		public void test_get_pass_note_without_range()
 		{
+			bool result;
 			string pass, note;
-			Assert.IsFalse(ps.get_pass_note(1, out pass, out note));
+
+			result = ps.get_pass_note(1, out pass, out note);
+
+			Assert.IsFalse(result);
+		}
+
+		[Test()]
+		public void test_change_nothing()
+		{
+			string pass, note;
+
+			ps.change(0, null, null);
+
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(pass, "pass");
+			Assert.AreEqual(note, "note");
+		}
+
+		[Test()]
+		public void test_change_pass()
+		{
+			string pass, note;
+
+			ps.change(0, "pass0", null);
+
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(pass, "pass0");
+			Assert.AreEqual(note, "note");
+		}
+
+		[Test()]
+		public void test_change_note()
+		{
+			string pass, note;
+
+			ps.change(0, null, "note0");
+
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(pass, "pass");
+			Assert.AreEqual(note, "note0");
+		}
+
+		[Test()]
+		public void test_change_both()
+		{
+			string pass, note;
+
+			ps.change(0, "pass0", "note0");
+
+			ps.get_pass_note(0, out pass, out note);
+			Assert.AreEqual(pass, "pass0");
+			Assert.AreEqual(note, "note0");
+		}
+
+		[Test()]
+		public void test_del()
+		{
+			ps.del(0);
+
+			Assert.IsTrue(ps.check_limits(0, false));
+		}
+
+		[Test()]
+		public void test_list()
+		{
+			ps.add("pass1", "note1");
+			ps.add("pass2", "note2");
+			string[] notes = { "note", "note1", "note2" };
+			string[] result;
+			DateTime[] time;
+
+			ps.list(out result, out time);
+
+			Assert.AreEqual(result, notes);
+		}
+
+		[Test()]
+		public void test_list_when_it_empty()
+		{
+			ps.del(0);
+			string[] notes = {};
+			string[] result;
+			DateTime[] time;
+
+			ps.list(out result, out time);
+
+			Assert.AreEqual(result, notes);
 		}
 	}
 }

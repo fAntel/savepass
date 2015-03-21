@@ -22,6 +22,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Globalization;
 
 namespace savepass
 {
@@ -159,6 +160,50 @@ namespace savepass
 				clipboard.Text = pass;
 				clipboard.Store();
 				#endif
+			}
+			return 0;
+		}
+
+		/* Print note with given format */
+		private byte print_note(int i, string note, DateTime time)
+		{
+			if (!savepass.c.show_date_time) {
+				Console.WriteLine("{0,3}) {1}", i, note);
+				return 0;
+			}
+
+			try {
+				Console.WriteLine("{0,3}) {1} {2}", i,
+					time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
+					note);
+			} catch (FormatException e) {
+				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
+				return 1;
+			} catch (Exception e) {
+				savepass.print(e.Message, true);
+				return 2;
+			}
+			return 0;
+		}
+
+		/* Show the list of notes */
+		public byte list()
+		{
+			byte result;
+			string[] notes;
+			DateTime[] times;
+
+			if (_p.check_limits(0, true))
+				return 1;
+			_p.list(out notes, out times);
+			try {
+				Console.WriteLine("Passwords' notes:");
+				for (int i = 0; i < notes.Length; ++i)
+					if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+						return result;
+			} catch (IOException e) {
+				savepass.print(e.Message, true);
+				return 2;
 			}
 			return 0;
 		}

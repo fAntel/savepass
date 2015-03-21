@@ -28,6 +28,7 @@ namespace savepass
 		byte change(int n);
 		byte del(int n);
 		byte get(int n, bool on_screen);
+		byte list();
 	}
 }
 

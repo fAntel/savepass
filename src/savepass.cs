@@ -160,7 +160,7 @@ namespace savepass
 			IUI console = new console(p);
 			/* Process the other command line parameters */
 			if (list)
-				exit_value = p.list();
+				exit_value = console.list();
 			else if (search != null)
 				exit_value = p.search(search);
 			else if (get > 0)

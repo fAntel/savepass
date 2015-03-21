@@ -86,29 +86,7 @@ namespace savepass
 		/* Delete password with number n from array */
 		public  void del(int n)
 		{
-			_passwds.RemoveAt(n - 1);
-		}
-
-		/* Print note with given format */
-		private int print_note(int i, passwd p)
-		{
-			if (!savepass.c.show_date_time) {
-				Console.WriteLine("{0,3}) {1}", i, p.note);
-				return 0;
-			}
-
-			try {
-				Console.WriteLine("{0,3}) {1} {2}", i,
-					p.time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
-					p.note);
-			} catch (FormatException e) {
-				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
-				return 1;
-			} catch (Exception e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
-			return 0;
+			_passwds.RemoveAt(n);
 		}
 
 		/* Search password in array with given note */
@@ -162,23 +140,40 @@ namespace savepass
 			return true;
 		}
 
-		/* Show the list of notes */
-		public int list()
+		/* Print note with given format */
+		private int print_note(int i, passwd p)
 		{
-			int result;
+			if (!savepass.c.show_date_time) {
+				Console.WriteLine("{0,3}) {1}", i, p.note);
+				return 0;
+			}
 
-			if (check_limits(0, true))
-				return 1;
 			try {
-				Console.WriteLine("Passwords' notes:");
-				for (int i = 0; i < _passwds.Count; ++i)
-					if ((result = print_note(i + 1, _passwds[i])) != 0)
-						return result;
-			} catch (IOException e) {
+				Console.WriteLine("{0,3}) {1} {2}", i,
+					p.time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
+					p.note);
+			} catch (FormatException e) {
+				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
+				return 1;
+			} catch (Exception e) {
 				savepass.print(e.Message, true);
 				return 2;
 			}
 			return 0;
+		}
+
+		/* Show the list of notes */
+		public void list(out string[] notes, out DateTime[] times)
+		{
+			List<string> n = new List<string>();
+			List<DateTime> t = new List<DateTime>();
+
+			for (int i = 0; i < _passwds.Count; ++i) {
+				n.Add(_passwds[i].note);
+				t.Add(_passwds[i].time);
+			}
+			notes = n.ToArray();
+			times = t.ToArray();
 		}
 
 		/* Read characters from stdin but do not echo them */
