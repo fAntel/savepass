@@ -29,6 +29,7 @@ namespace savepass
 		byte del(int n);
 		byte get_nth_pass(int n, bool on_screen);
 		byte list();
+		byte search(string note);
 		byte search_and_get_pass(string note, bool on_screen);
 	}
 }

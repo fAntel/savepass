@@ -212,11 +212,23 @@ namespace savepass
 		{
 			ps.add("pass1", "note1");
 			ps.add("pass2", "note2");
-			string[] notes = { "note", "note1", "note2" };
-			string[] result;
+			string[] result = { "note", "note1", "note2" };
+			string[] notes;
 			DateTime[] time;
 
-			ps.list(out result, out time);
+			ps.list(out notes, out time);
+
+			Assert.AreEqual(result, notes);
+		}
+
+		[Test()]
+		public void test_list_for_one_element()
+		{
+			string[] result = { "note" };
+			string[] notes;
+			DateTime[] time;
+
+			ps.list(out notes, out time);
 
 			Assert.AreEqual(result, notes);
 		}
@@ -225,13 +237,57 @@ namespace savepass
 		public void test_list_when_it_empty()
 		{
 			ps.del(0);
-			string[] notes = {};
-			string[] result;
+			string[] result = {};
+			string[] notes;
 			DateTime[] time;
 
-			ps.list(out result, out time);
+			ps.list(out notes, out time);
 
 			Assert.AreEqual(result, notes);
+		}
+
+		[Test()]
+		public void test_search()
+		{
+			errors count;
+			ps.add("pass1", "note1");
+			ps.add("pass2", "n");
+			string[] result = { "note", "note1"};
+			string[] notes;
+			DateTime[] times;
+
+			count = ps.search("note", out notes, out times);
+
+			Assert.AreEqual(count, errors.all_ok);
+			Assert.AreEqual(result, notes);
+		}
+
+		[Test()]
+		public void test_search_for_one_element()
+		{
+			errors count;
+			string[] result = { "note" };
+			string[] notes;
+			DateTime[] times;
+
+			count = ps.search("note", out notes, out times);
+
+			Assert.AreEqual(count, errors.all_ok);
+			Assert.AreEqual(result, notes);
+		}
+
+		[Test()]
+		public void test_search_and_get_pass_with_wrong_note()
+		{
+			errors count;
+			string[] notes;
+			DateTime[] times;
+
+			count = ps.search("note0", out notes, out times);
+
+			Assert.AreEqual(count, errors.empty_array);
+			Assert.IsNull(notes);
+			Assert.IsNull(times);
 		}
 
 		[Test()]
@@ -247,7 +303,7 @@ namespace savepass
 		}
 
 		[Test()]
-		public void test_search_and_get_pass_with_wrong_note()
+		public void test_search_with_wrong_note()
 		{
 			errors count;
 			string pass;

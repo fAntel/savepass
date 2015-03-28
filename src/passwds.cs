@@ -102,28 +102,6 @@ namespace savepass
 			return true;
 		}
 
-		/* Print note with given format */
-		private int print_note(int i, passwd p)
-		{
-			if (!savepass.c.show_date_time) {
-				Console.WriteLine("{0,3}) {1}", i, p.note);
-				return 0;
-			}
-
-			try {
-				Console.WriteLine("{0,3}) {1} {2}", i,
-					p.time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
-					p.note);
-			} catch (FormatException e) {
-				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
-				return 1;
-			} catch (Exception e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
-			return 0;
-		}
-
 		/* Return list of notes and list of times */
 		public void list(out string[] notes, out DateTime[] times)
 		{
@@ -139,30 +117,27 @@ namespace savepass
 		}
 
 		/* Find all notes in array with given note as a substring */
-		public int search(string note)
+		public errors search(string note, out string[] notes, out DateTime[] times)
 		{
-			int val;
-			if (check_limits(0, true))
-				return 1;
-			if (note == "") {
-				savepass.print("string for search cannot be an empty string.\n" +
-					"If you want to see all passwords use --show", false);
-				return 1;
-			}
+			notes = null;
+			times = null;
+			List<string> n = new List<string>();
+			List<DateTime> t = new List<DateTime>();
+
 			List<passwd> result = _passwds.FindAll(
 				delegate(passwd p) {
 					return p.note.Contains(note);
 				});
-			if (result.Count == 0) {
-				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
-					note), false);
-				return 1;
+			if (result.Count == 0)
+				return errors.empty_array;
+
+			for (int i = 0; i < result.Count; ++i) {
+				n.Add(result[i].note);
+				t.Add(result[i].time);
 			}
-			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
-			foreach (passwd p in result)
-				if ((val = print_note(_passwds.IndexOf(p) + 1, p)) != 0)
-					return val;
-			return 0;
+			notes = n.ToArray();
+			times = t.ToArray();
+			return errors.all_ok;
 		}
 
 		/* Search password in array with given note */

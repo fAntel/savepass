@@ -164,7 +164,7 @@ namespace savepass
 			if (list)
 				exit_value = console.list();
 			else if (search != null)
-				exit_value = p.search(search);
+				exit_value = console.search(search);
 			else if (get > 0)
 				exit_value = console.get_nth_pass(get, on_screen);
 			else if (get_pass != null)

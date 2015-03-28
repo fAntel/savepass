@@ -202,15 +202,10 @@ namespace savepass
 			if (_p.check_limits(0, true))
 				return 1;
 			_p.list(out notes, out times);
-			try {
-				Console.WriteLine("Passwords' notes:");
-				for (int i = 0; i < notes.Length; ++i)
-					if ((result = print_note(i + 1, notes[i], times[i])) != 0)
-						return result;
-			} catch (IOException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			}
+			Console.WriteLine("Passwords' notes:");
+			for (int i = 0; i < notes.Length; ++i)
+				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+					return result;
 			return 0;
 		}
 
@@ -237,6 +232,34 @@ namespace savepass
 			} while (key.Key != ConsoleKey.Enter);
 			Console.WriteLine();
 			return password.ToString();
+		}
+
+		/* Find and print all notes in array with given note as a substring */
+		public byte search(string note)
+		{
+			byte result;
+			errors err;
+			string[] notes;
+			DateTime[] times;
+
+			if (note == "") {
+				savepass.print("string for search cannot be an empty string.\n" +
+					"If you want to see all passwords use --show", false);
+				return 1;
+			}
+			if (_p.check_limits(0, true))
+				return 1;
+			err = _p.search(note, out notes, out times);
+			if (err == errors.empty_array) {
+				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+					note), false);
+				return 1;
+			}
+			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
+			for (int i = 0; i < notes.Length; ++i)
+				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+					return result;
+			return 0;
 		}
 
 		/* Search password in array with given note */
