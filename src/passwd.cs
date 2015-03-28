@@ -79,15 +79,6 @@ namespace savepass
 			_changed = new DateTime(BitConverter.ToInt64(str, 0), DateTimeKind.Local);
 		}
 
-		/* Constructor for copying password from another object */
-		public passwd(passwd p)
-		{
-			_passwd = p.password;
-			_note = p.note;
-			_added = p.added;
-			_changed = p.changed;
-		}
-
 		public string password
 		{
 			get { return _passwd; }

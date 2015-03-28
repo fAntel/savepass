@@ -47,17 +47,6 @@ namespace savepass
 		}
 
 		[Test()]
-		public void test_constructor_for_copying()
-		{
-			passwd p0 = new passwd("pass", "note");
-			passwd p1 = new passwd(p0);
-			Assert.AreEqual(p0.password, p1.password);
-			Assert.AreEqual(p0.note, p1.note);
-			Assert.AreEqual(p0.added, p1.added);
-			Assert.AreEqual(p0.changed, p1.changed);
-		}
-
-		[Test()]
 		public void test_constructor_from_data()
 		{
 			byte[] passwd = Encoding.UTF8.GetBytes("pass");
