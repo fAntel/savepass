@@ -27,6 +27,8 @@ using Mono.Options;
 
 namespace savepass
 {
+	public enum errors { all_ok = 0, empty_array, too_much_elemets };
+
 	public class savepass
 	{
 		private const string version_number = "0.7";
@@ -164,9 +166,9 @@ namespace savepass
 			else if (search != null)
 				exit_value = p.search(search);
 			else if (get > 0)
-				exit_value = console.get(get, on_screen);
+				exit_value = console.get_nth_pass(get, on_screen);
 			else if (get_pass != null)
-				exit_value = p.get_pass(get_pass, on_screen);
+				exit_value = console.search_and_get_pass(get_pass, on_screen);
 			else if (add)
 				exit_value = console.add();
 			else if (change > 0)

@@ -142,7 +142,7 @@ namespace savepass
 		 * if on_screen == true then password will be
 		 * printed on the screen, otherwise it will be
 		 * copied to clipboard */
-		public byte get(int n, bool on_screen)
+		public byte get_nth_pass(int n, bool on_screen)
 		{
 			string pass, note;
 
@@ -150,18 +150,24 @@ namespace savepass
 			if (_p.check_limits(n, true))
 				return 1;
 			_p.get_pass_note(n, out pass, out note);
-			if (on_screen || !savepass.c.always_in_clipboard)
-				Console.WriteLine(pass);
+			put(on_screen, pass);
+			return 0;
+		}
+
+		/* Print string or put it into clipboard */
+		private void put(bool on_screen, string str)
+		{
+			if (on_screen  || !savepass.c.always_in_clipboard)
+				Console.WriteLine(str);
 			else {
 				#if WINDOWS
-				Clipboard.SetText(pass, TextDataFormat.Text);
+				Clipboard.SetText(str, TextDataFormat.Text);
 				#elif GTK
 				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = pass;
+				clipboard.Text = str;
 				clipboard.Store();
 				#endif
 			}
-			return 0;
 		}
 
 		/* Print note with given format */
@@ -231,6 +237,34 @@ namespace savepass
 			} while (key.Key != ConsoleKey.Enter);
 			Console.WriteLine();
 			return password.ToString();
+		}
+
+		/* Search password in array with given note */
+		public byte search_and_get_pass(string note, bool on_screen)
+		{
+			errors count;
+			string pass;
+
+			if (String.IsNullOrWhiteSpace(note)) {
+				savepass.print("string for search cannot be an empty string\n" +
+					"or cosists exclusively of white-space characters.\n" +
+					"If you want to see all passwords use --show", true);
+				return 1;
+			}
+			if (_p.check_limits(0, true))
+				return 1;
+			count = _p.search_and_get_pass(note, out pass);
+			if (count == errors.empty_array) {
+				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
+					note), false);
+				return 1;
+			} else if (count == errors.too_much_elemets) {
+				savepass.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
+					note), false);
+				return 1;
+			}
+			put(on_screen, pass);
+			return 0;
 		}
 	}
 }

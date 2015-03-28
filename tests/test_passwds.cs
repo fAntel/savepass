@@ -233,5 +233,42 @@ namespace savepass
 
 			Assert.AreEqual(result, notes);
 		}
+
+		[Test()]
+		public void test_search_and_get_pass()
+		{
+			errors count;
+			string pass;
+
+			count = ps.search_and_get_pass("note", out pass);
+
+			Assert.AreEqual(count, errors.all_ok);
+			Assert.AreEqual(pass, "pass");
+		}
+
+		[Test()]
+		public void test_search_and_get_pass_with_wrong_note()
+		{
+			errors count;
+			string pass;
+
+			count = ps.search_and_get_pass("note0", out pass);
+
+			Assert.AreEqual(count, errors.empty_array);
+			Assert.IsNull(pass);
+		}
+
+		[Test()]
+		public void test_search_and_get_pass_with_several_same_notes()
+		{
+			errors count;
+			string pass;
+			ps.add("pass1", "note1");
+
+			count = ps.search_and_get_pass("note", out pass);
+
+			Assert.AreEqual(count, errors.too_much_elemets);
+			Assert.IsNull(pass);
+		}
 	}
 }

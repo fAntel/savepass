@@ -89,44 +89,6 @@ namespace savepass
 			_passwds.RemoveAt(n);
 		}
 
-		/* Search password in array with given note */
-		public int get_pass(string note, bool on_screen)
-		{
-			if (check_limits(0, true))
-				return 1;
-			if (String.IsNullOrWhiteSpace(note)) {
-				savepass.print("string for search cannot be an empty string\n" +
-					"or cosists exclusively of white-space characters.\n" +
-					"If you want to see all passwords use --show", true);
-				return 1;
-			}
-			List<passwd> result = _passwds.FindAll(
-				delegate(passwd p) {
-					return p.note.Contains(note);
-				});
-			if (result.Count == 0) {
-				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
-					note), false);
-				return 1;
-			} else if (result.Count > 1) {
-				savepass.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
-					note), false);
-				return 1;
-			}
-			if (on_screen  || !savepass.c.always_in_clipboard)
-				Console.WriteLine(result[0].password);
-			else {
-				#if WINDOWS
-				Clipboard.SetText(result[0].password, TextDataFormat.Text);
-				#elif GTK
-				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = result[0].password;
-				clipboard.Store();
-				#endif
-			}
-			return 0;
-		}
-
 		/* Return password and note for n element of _passwds for change function */
 		public bool get_pass_note(int n, out string pass, out string note)
 		{
@@ -201,6 +163,22 @@ namespace savepass
 				if ((val = print_note(_passwds.IndexOf(p) + 1, p)) != 0)
 					return val;
 			return 0;
+		}
+
+		/* Search password in array with given note */
+		public errors search_and_get_pass(string note, out string pass)
+		{
+			pass = null;
+			List<passwd> result = _passwds.FindAll(
+				delegate(passwd p) {
+					return p.note.Contains(note);
+				});
+			if (result.Count == 0)
+				return errors.empty_array;
+			else if (result.Count > 1)
+				return errors.too_much_elemets;
+			pass = result[0].password;
+			return errors.all_ok;
 		}
 
 		/* Convert array to string for writing to the file */
