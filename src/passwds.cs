@@ -117,7 +117,7 @@ namespace savepass
 		}
 
 		/* Find all notes in array with given note as a substring */
-		public errors search(string note, out int[] indexes, out string[] notes, out DateTime[] times)
+		public void search(string note, out int[] indexes, out string[] notes, out DateTime[] times)
 		{
 			indexes = null;
 			notes = null;
@@ -130,8 +130,11 @@ namespace savepass
 				delegate(passwd p) {
 					return p.note.Contains(note);
 				});
-			if (result.Count == 0)
-				return errors.empty_array;
+			if (result.Count == 0) {
+				throw new EmptyArrayException(
+					String.Format("there is no notes containing \"{0}\" as a substring.",
+						note));
+			}
 
 			for (int j = 0; j < result.Count; ++j) {
 				i.Add(_passwds.IndexOf(result[j]) + 1);
@@ -141,11 +144,10 @@ namespace savepass
 			indexes = i.ToArray();
 			notes = n.ToArray();
 			times = t.ToArray();
-			return errors.all_ok;
 		}
 
 		/* Search password in array with given note */
-		public errors search_and_get_pass(string note, out string pass)
+		public void search_and_get_pass(string note, out string pass)
 		{
 			pass = null;
 			List<passwd> result = _passwds.FindAll(
@@ -153,11 +155,14 @@ namespace savepass
 					return p.note.Contains(note);
 				});
 			if (result.Count == 0)
-				return errors.empty_array;
+				throw new EmptyArrayException(
+					String.Format("there is no notes containing \"{0}\" as a substring.",
+						note));
 			else if (result.Count > 1)
-				return errors.too_much_elemets;
+				throw new ArgumentOutOfRangeException(note,
+					String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
+						note));
 			pass = result[0].password;
-			return errors.all_ok;
 		}
 
 		/* Convert array to string for writing to the file */

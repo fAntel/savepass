@@ -430,7 +430,6 @@ namespace savepass
 		public int search(string note)
 		{
 			int result;
-			errors err;
 			int[] indexes;
 			string[] notes;
 			DateTime[] times;
@@ -442,10 +441,10 @@ namespace savepass
 			}
 			if (_p.check_limits(0, true))
 				return 1;
-			err = _p.search(note, out indexes, out notes, out times);
-			if (err == errors.empty_array) {
-				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
-					note), false);
+			try {
+				p.search(note, out indexes, out notes, out times);
+			} catch (EmptyArrayException e) {
+				savepass.print(e.Message, false);
 				return 1;
 			}
 			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
@@ -458,7 +457,6 @@ namespace savepass
 		/* Search password in array with given note */
 		public int search_and_get_pass(string note, bool on_screen)
 		{
-			errors count;
 			string pass;
 
 			if (String.IsNullOrWhiteSpace(note)) {
@@ -469,14 +467,13 @@ namespace savepass
 			}
 			if (_p.check_limits(0, true))
 				return 1;
-			count = _p.search_and_get_pass(note, out pass);
-			if (count == errors.empty_array) {
-				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
-					note), false);
+			try {
+				p.search_and_get_pass(note, out pass);
+			} catch (EmptyArrayException e) {
+				savepass.print(e.Message, false);
 				return 1;
-			} else if (count == errors.too_much_elemets) {
-				savepass.print(String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
-					note), false);
+			} catch (ArgumentOutOfRangeException e) {
+				savepass.print(e.Message, false);
 				return 1;
 			}
 			put(on_screen, pass);

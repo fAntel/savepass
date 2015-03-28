@@ -27,8 +27,6 @@ using Mono.Options;
 
 namespace savepass
 {
-	public enum errors: byte { all_ok = 0, empty_array, too_much_elemets };
-
 	public class savepass
 	{
 		private const string version_number = "0.7";
@@ -62,5 +60,12 @@ namespace savepass
 			        	          Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
 			                	  msg);
 		}
+	}
+
+	public class EmptyArrayException : Exception
+	{
+		protected EmptyArrayException(): base(){}
+		public EmptyArrayException(string message): base(message) {}
+		public EmptyArrayException(int value, string message, Exception innerException): base(message, innerException) {}
 	}
 }

@@ -249,7 +249,6 @@ namespace savepass
 		[Test()]
 		public void test_search()
 		{
-			errors count;
 			ps.add("pass1", "note1");
 			ps.add("pass2", "n");
 			int[] indexes_result = { 1, 2 };
@@ -258,9 +257,8 @@ namespace savepass
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note", out indexes, out notes, out times);
+			ps.search("note", out indexes, out notes, out times);
 
-			Assert.AreEqual(count, errors.all_ok);
 			Assert.AreEqual(notes_result, notes);
 			Assert.AreEqual(indexes_result, indexes);
 		}
@@ -268,31 +266,28 @@ namespace savepass
 		[Test()]
 		public void test_search_for_one_element()
 		{
-			errors count;
 			int[] indexes_result = { 1 };
 			string[] result = { "note" };
 			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note", out indexes, out notes, out times);
+			ps.search("note", out indexes, out notes, out times);
 
-			Assert.AreEqual(count, errors.all_ok);
 			Assert.AreEqual(result, notes);
 			Assert.AreEqual(indexes_result, indexes);
 		}
 
 		[Test()]
+		[ExpectedException(typeof(EmptyArrayException))]
 		public void test_search_and_get_pass_with_wrong_note()
 		{
-			errors count;
 			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note0", out indexes, out notes, out times);
+			ps.search("note0", out indexes, out notes, out times);
 
-			Assert.AreEqual(errors.empty_array, count);
 			Assert.IsNull(indexes);
 			Assert.IsNull(notes);
 			Assert.IsNull(times);
@@ -301,37 +296,33 @@ namespace savepass
 		[Test()]
 		public void test_search_and_get_pass()
 		{
-			errors count;
 			string pass;
 
-			count = ps.search_and_get_pass("note", out pass);
+			ps.search_and_get_pass("note", out pass);
 
-			Assert.AreEqual(count, errors.all_ok);
 			Assert.AreEqual(pass, "pass");
 		}
 
 		[Test()]
+		[ExpectedException(typeof(EmptyArrayException))]
 		public void test_search_with_wrong_note()
 		{
-			errors count;
 			string pass;
 
-			count = ps.search_and_get_pass("note0", out pass);
+			ps.search_and_get_pass("note0", out pass);
 
-			Assert.AreEqual(count, errors.empty_array);
 			Assert.IsNull(pass);
 		}
 
 		[Test()]
+		[ExpectedException(typeof(ArgumentOutOfRangeException))]
 		public void test_search_and_get_pass_with_several_same_notes()
 		{
-			errors count;
 			string pass;
 			ps.add("pass1", "note1");
 
-			count = ps.search_and_get_pass("note", out pass);
+			ps.search_and_get_pass("note", out pass);
 
-			Assert.AreEqual(count, errors.too_much_elemets);
 			Assert.IsNull(pass);
 		}
 	}
