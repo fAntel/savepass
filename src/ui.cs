@@ -18,19 +18,16 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-using System;
 
 namespace savepass
 {
 	public interface IUI
 	{
-		byte add();
-		byte change(int n);
-		byte del(int n);
-		byte get_nth_pass(int n, bool on_screen);
-		byte list();
-		byte search(string note);
-		byte search_and_get_pass(string note, bool on_screen);
+		passwds p { get; }
+		string filename { get; }
+
+		int config(out conf c);
+		int run();
 	}
 }
 

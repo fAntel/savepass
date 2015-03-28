@@ -23,20 +23,125 @@ using System;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Collections.Generic;
+using Mono.Options;
 
 namespace savepass
 {
 	public class console: IUI
 	{
-		private passwds _p;
+		private enum keys: byte { help = 0, version, add, change, del, get, on_screen,
+			get_pass, list, search, file, conf_file, always_in_clipboard,
+			always_save_time_of_change, show_date_time, format, save, system,
+			config, filename };
 
-		public console(passwds p)
+		private passwds _p;
+		private string _filename;
+		private Dictionary<keys, object> dict;
+
+		public console(string[] args, string version_number)
 		{
-			_p = p;
+			dict = new Dictionary<keys, object>();
+			List<string> rest = null;
+			OptionSet options = new OptionSet() {
+				"Usage: savepass [OPTIONS] FILE - password saver",
+				"",
+				"Options:",
+				{ "a|add", "Add new password to the list",
+					v => { if (v != null) dict.Add(keys.add, null); } },
+				{ "c|change=", "Change password with number {N}",
+					v => { dict.Add(keys.change, (object) Convert.ToInt32(v)); } },
+				{ "d|delete=", "Delete password with number {N}",
+					v => { dict.Add(keys.del, (object) Convert.ToInt32(v)); } },
+				{ "g|get=", "Get password with number {N}",
+					v => { dict.Add(keys.get, (object) Convert.ToInt32(v)); } },
+#if WINDOWS || GTK
+				{ "C|on_screen", "Get password on screen and not in the clipboard",
+					v => { dict.Add(keys.on_screen, (object) Convert.ToBoolean(v != null)); } },
+#endif
+				{ "G|get_pass=", "Get password with note {NOTE}",
+					v => { dict.Add(keys.get_pass, (object) v); } },
+				{ "l|list", "Show list of passwords' notes",
+					v => { if (v != null) dict.Add(keys.list, null); } },
+				{ "s|search=", "Show list of passwords' notes like {NOTE}",
+					v => { dict.Add(keys.search, (object) v); } },
+				{ "f|file=", "Set the default {FILE}",
+					v => { dict.Add(keys.file, (object) v); } },
+				{ "version", "Show version",
+					v => { if (v != null) dict.Add(keys.version, null); } },
+				{ "h|help",  "Show this text",
+					v => { if (v != null) dict.Add(keys.help, null); } },
+				"Settings options:",
+				{ "conf_file=", "{*.conf} file with settings",
+					v => { dict.Add(keys.conf_file, (object) v); } },
+				{"A|always_in_clipboard", "Set {mod} of --get option",
+					v => { dict.Add(keys.always_in_clipboard, (object) Convert.ToBoolean(v != null)); } },
+				{"t|always_save_time_of_change=", "Set {mod} of --change option",
+					v => { dict.Add(keys.always_save_time_of_change, (object) Convert.ToBoolean(v != null)); } },
+				{"H|show_date_time", "Show date and time when used --list and --search options",
+					v => { dict.Add(keys.show_date_time, (object) Convert.ToBoolean(v != null)); } },
+				{"format=", "Set {format} for date and time output",
+					v => { dict.Add(keys.format, (object) v); } },
+				{"S|save", "Save new settings passed via the command line", 
+					v => { if (v != null) dict.Add(keys.save, null); } },
+				{"system", "Work with settings in system configuration file",
+					v => { if (v != null) dict.Add(keys.system, null); } },
+				{"config=", "Show values of all/setted/system/user settings",
+					v => { dict.Add(keys.config, (object) v); } }
+			};
+			if (args.Length == 0) {
+				options.WriteOptionDescriptions(Console.Out);
+				Environment.Exit(1);
+			}
+			try {
+				rest = options.Parse(args);
+			} catch (OptionException e) {
+				savepass.print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.",
+					e.Message, Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)),
+					true);
+				Environment.Exit(2);
+			} catch (FormatException e) {
+				savepass.print(string.Format("number was written wrong: {0}", e.Message), true);
+				Environment.Exit(2);
+			} catch (Exception e) {
+				savepass.print(e.Message, true);
+				Environment.Exit(2);
+			}
+			if (dict.ContainsKey(keys.help)) {
+				options.WriteOptionDescriptions(Console.Out);
+				Environment.Exit(0);
+			}
+			if (dict.ContainsKey(keys.version)) {
+				Console.WriteLine(
+					"{0} {1}\n" +
+					"Copyright (C) 2014 Anton Kovalyov\n" +
+					"License GPLv3: GNU GPL version 3 or later <http://www.gnu.org/licenses/gpl-3.0.html>\n" +
+					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n" +
+					"This is free software, and you are welcome to redistribute it\n" +
+					"under certain conditions.",
+					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
+				Environment.Exit(0);
+			}
+			if (rest.Count > 1) {
+				savepass.print("too much options", false);
+				Environment.Exit(1);
+			} else if (rest.Count == 1)
+				dict.Add(keys.filename, (object) rest[0]);
+
+		}
+
+		public passwds p
+		{
+			get { return _p; }
+		}
+
+		public string filename
+		{
+			get { return _filename; }
 		}
 
 		/* Add new password in array of passwords */
-		public byte add()
+		public int add()
 		{
 			string password0, password1, note;
 
@@ -66,7 +171,7 @@ namespace savepass
 			return 0;
 		}
 
-		private static byte are_you_sure(string str)
+		private static int are_you_sure(string str)
 		{
 			string answer;
 
@@ -87,7 +192,7 @@ namespace savepass
 		}
 
 		/* Change password and/or note in n element of array of passwords */
-		public byte change(int n)
+		public int change(int n)
 		{
 			string pass, note, str0, str1;
 			if (!_p.get_pass_note(n - 1, out pass, out note))
@@ -121,11 +226,66 @@ namespace savepass
 			return 0;
 		}
 
+		/* Parse options for configuration file and set _filename */
+		public int config(out conf c)
+		{
+			string conf_file = dict.ContainsKey(keys.conf_file) ? (string) dict[keys.conf_file] : null;
+			string config = dict.ContainsKey(keys.config) ? (string) dict[keys.config] : null;
+			c = new conf(conf_file,
+				dict.ContainsKey(keys.system) ||
+				String.Compare(config, "system") == 0);
+			if (dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) dict[keys.file])) {
+				c.default_file = (string) dict[keys.file];
+				c.Save();
+				_filename = (string) dict[keys.file];
+			} 
+			if (dict.ContainsKey(keys.config)) {
+				if (String.Compare(config, "all") == 0)
+					c.list_all();
+				else if (String.Compare(config, "setted") == 0)
+					c.list_setted(null);
+				else if (String.Compare(config, "system") == 0)
+					c.list(true);
+				else if (String.Compare(config, "user") == 0)
+					c.list(false);
+				else {
+					savepass.print("wrong argument for config option", false);
+					return 1;
+				}
+				Environment.Exit(0);
+			} else if (dict.ContainsKey(keys.filename))
+				_filename = (string) dict[keys.filename];
+			if (dict.ContainsKey(keys.always_in_clipboard))
+				c.always_in_clipboard = (bool) dict[keys.always_in_clipboard];
+			if (dict.ContainsKey(keys.always_save_time_of_change))
+				c.always_save_time_of_change = (bool) dict[keys.always_save_time_of_change];
+			if (dict.ContainsKey(keys.show_date_time))
+				c.show_date_time = (bool) dict[keys.show_date_time];
+			if (dict.ContainsKey(keys.format) &&
+				!String.IsNullOrWhiteSpace((string) dict[keys.format]))
+				c.format_date_time = (string) dict[keys.format];
+			if (dict.ContainsKey(keys.save))
+				c.Save();
+			if (_filename == null) {
+				if (c.default_file != null) {
+					_filename = c.default_file;
+				} else if (dict.ContainsKey(keys.save))
+					Environment.Exit(0);
+				else {
+					savepass.print(string.Format(
+						"File name must be specified\nTry run {0} --help for more information",
+						Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)), false);
+					return 1;
+				}
+			}
+			return 0;
+		}
+
 		/* Remove password with number n from array of passwords */
-		public byte del(int n)
+		public int del(int n)
 		{
 			string pass, note;
-			byte return_value;
+			int return_value;
 
 			--n;
 			if (_p.check_limits(n, true))
@@ -133,16 +293,18 @@ namespace savepass
 			_p.get_pass_note(n, out pass, out note);
 			return_value = are_you_sure(
 				String.Format(" you want to delete password with note \"{0}\"", note));
-			if (return_value == 0)
+			if (return_value == 0) {
 				_p.del(n);
-			return return_value == 2 ? (byte) 2 : (byte) 0;
+				savepass.print("password was deleted", false);
+			}
+			return return_value == 2 ? 2 : 0;
 		}
 
 		/* Show password with number n
 		 * if on_screen == true then password will be
 		 * printed on the screen, otherwise it will be
 		 * copied to clipboard */
-		public byte get_nth_pass(int n, bool on_screen)
+		public int get_nth_pass(int n, bool on_screen)
 		{
 			string pass, note;
 
@@ -154,24 +316,25 @@ namespace savepass
 			return 0;
 		}
 
-		/* Print string or put it into clipboard */
-		private void put(bool on_screen, string str)
+		/* Show the list of notes */
+		public int list()
 		{
-			if (on_screen  || !savepass.c.always_in_clipboard)
-				Console.WriteLine(str);
-			else {
-				#if WINDOWS
-				Clipboard.SetText(str, TextDataFormat.Text);
-				#elif GTK
-				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = str;
-				clipboard.Store();
-				#endif
-			}
+			int result;
+			string[] notes;
+			DateTime[] times;
+
+			if (_p.check_limits(0, true))
+				return 1;
+			_p.list(out notes, out times);
+			Console.WriteLine("Passwords' notes:");
+			for (int i = 0; i < notes.Length; ++i)
+				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+					return result;
+			return 0;
 		}
 
 		/* Print note with given format */
-		private byte print_note(int i, string note, DateTime time)
+		private int print_note(int i, string note, DateTime time)
 		{
 			if (!savepass.c.show_date_time) {
 				Console.WriteLine("{0,3}) {1}", i, note);
@@ -192,21 +355,20 @@ namespace savepass
 			return 0;
 		}
 
-		/* Show the list of notes */
-		public byte list()
+		/* Print string or put it into clipboard */
+		private void put(bool on_screen, string str)
 		{
-			byte result;
-			string[] notes;
-			DateTime[] times;
-
-			if (_p.check_limits(0, true))
-				return 1;
-			_p.list(out notes, out times);
-			Console.WriteLine("Passwords' notes:");
-			for (int i = 0; i < notes.Length; ++i)
-				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
-					return result;
-			return 0;
+			if (on_screen  || !savepass.c.always_in_clipboard)
+				Console.WriteLine(str);
+			else {
+				#if WINDOWS
+				Clipboard.SetText(str, TextDataFormat.Text);
+				#elif GTK
+				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+				clipboard.Text = str;
+				clipboard.Store();
+				#endif
+			}
 		}
 
 		/* Read characters from stdin but do not echo them */
@@ -234,10 +396,40 @@ namespace savepass
 			return password.ToString();
 		}
 
-		/* Find and print all notes in array with given note as a substring */
-		public byte search(string note)
+		/* Process the other command line parameters */
+		public int run()
 		{
-			byte result;
+			int exit_value = 0;
+			bool on_screen = dict.ContainsKey(keys.on_screen) ? (bool) dict[keys.on_screen] :
+				#if WINDOWS || GTK
+					false;
+				#else
+					true;
+				#endif
+
+			_p = new passwds(file.read_from_file(_filename));
+
+			if (dict.ContainsKey(keys.list))
+				exit_value = list();
+			else if (dict.ContainsKey(keys.search))
+				exit_value = search((string) dict[keys.search]);
+			else if (dict.ContainsKey(keys.get))
+				exit_value = get_nth_pass((int) dict[keys.get], on_screen);
+			else if (dict.ContainsKey(keys.get_pass))
+				exit_value = search_and_get_pass((string) dict[keys.get_pass], on_screen);
+			else if (dict.ContainsKey(keys.add))
+				exit_value = add();
+			else if (dict.ContainsKey(keys.change))
+				exit_value = change((int) dict[keys.change]);
+			else if (dict.ContainsKey(keys.del))
+				exit_value = del((int) dict[keys.del]);
+			return exit_value;
+		}
+
+		/* Find and print all notes in array with given note as a substring */
+		public int search(string note)
+		{
+			int result;
 			errors err;
 			string[] notes;
 			DateTime[] times;
@@ -263,7 +455,7 @@ namespace savepass
 		}
 
 		/* Search password in array with given note */
-		public byte search_and_get_pass(string note, bool on_screen)
+		public int search_and_get_pass(string note, bool on_screen)
 		{
 			errors count;
 			string pass;

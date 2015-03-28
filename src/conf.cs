@@ -88,7 +88,7 @@ namespace savepass
 			default_settings[(int) settings.format_date_time].default_value;
 
 		/* Key file */
-		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
+		private enum settings: int { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
 			default_file};
 		private GKeyFile _conf = null, _system_conf = null, _user_conf = null;
 		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
