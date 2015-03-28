@@ -431,6 +431,7 @@ namespace savepass
 		{
 			int result;
 			errors err;
+			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
@@ -441,7 +442,7 @@ namespace savepass
 			}
 			if (_p.check_limits(0, true))
 				return 1;
-			err = _p.search(note, out notes, out times);
+			err = _p.search(note, out indexes, out notes, out times);
 			if (err == errors.empty_array) {
 				savepass.print(String.Format("there is no notes containing \"{0}\" as a substring.",
 					note), false);
@@ -449,7 +450,7 @@ namespace savepass
 			}
 			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
 			for (int i = 0; i < notes.Length; ++i)
-				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+				if ((result = print_note(indexes[i], notes[i], times[i])) != 0)
 					return result;
 			return 0;
 		}

@@ -252,40 +252,48 @@ namespace savepass
 			errors count;
 			ps.add("pass1", "note1");
 			ps.add("pass2", "n");
-			string[] result = { "note", "note1"};
+			int[] indexes_result = { 1, 2 };
+			string[] notes_result = { "note", "note1"};
+			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note", out notes, out times);
+			count = ps.search("note", out indexes, out notes, out times);
 
 			Assert.AreEqual(count, errors.all_ok);
-			Assert.AreEqual(result, notes);
+			Assert.AreEqual(notes_result, notes);
+			Assert.AreEqual(indexes_result, indexes);
 		}
 
 		[Test()]
 		public void test_search_for_one_element()
 		{
 			errors count;
+			int[] indexes_result = { 1 };
 			string[] result = { "note" };
+			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note", out notes, out times);
+			count = ps.search("note", out indexes, out notes, out times);
 
 			Assert.AreEqual(count, errors.all_ok);
 			Assert.AreEqual(result, notes);
+			Assert.AreEqual(indexes_result, indexes);
 		}
 
 		[Test()]
 		public void test_search_and_get_pass_with_wrong_note()
 		{
 			errors count;
+			int[] indexes;
 			string[] notes;
 			DateTime[] times;
 
-			count = ps.search("note0", out notes, out times);
+			count = ps.search("note0", out indexes, out notes, out times);
 
-			Assert.AreEqual(count, errors.empty_array);
+			Assert.AreEqual(errors.empty_array, count);
+			Assert.IsNull(indexes);
 			Assert.IsNull(notes);
 			Assert.IsNull(times);
 		}

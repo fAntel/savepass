@@ -117,10 +117,12 @@ namespace savepass
 		}
 
 		/* Find all notes in array with given note as a substring */
-		public errors search(string note, out string[] notes, out DateTime[] times)
+		public errors search(string note, out int[] indexes, out string[] notes, out DateTime[] times)
 		{
+			indexes = null;
 			notes = null;
 			times = null;
+			List<int> i = new List<int>();
 			List<string> n = new List<string>();
 			List<DateTime> t = new List<DateTime>();
 
@@ -131,10 +133,12 @@ namespace savepass
 			if (result.Count == 0)
 				return errors.empty_array;
 
-			for (int i = 0; i < result.Count; ++i) {
-				n.Add(result[i].note);
-				t.Add(result[i].time);
+			for (int j = 0; j < result.Count; ++j) {
+				i.Add(_passwds.IndexOf(result[j]) + 1);
+				n.Add(result[j].note);
+				t.Add(result[j].time);
 			}
+			indexes = i.ToArray();
 			notes = n.ToArray();
 			times = t.ToArray();
 			return errors.all_ok;
