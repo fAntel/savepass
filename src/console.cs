@@ -37,6 +37,7 @@ namespace savepass
 
 		private passwds _p;
 		private string _filename;
+		private string _master;
 		private Dictionary<keys, object> dict;
 
 		public console(string[] args, string version_number)
@@ -145,6 +146,11 @@ namespace savepass
 		public string filename
 		{
 			get { return _filename; }
+		}
+
+		public string master
+		{
+			get { return _master; }
 		}
 
 		/* Add new password in array of passwords */
@@ -416,7 +422,19 @@ namespace savepass
 				#else
 					true;
 				#endif
-			data = file.read_from_file(_filename);
+				
+			try {
+				Console.Write("Enter master password: ");
+				_master = read_password();
+			} catch (IOException e) {
+				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				return 2;
+			} catch (InvalidOperationException e) {
+				savepass.print(e.Message, true);
+				return 2;
+			}
+
+			data = file.read_from_file(_filename, _master);
 			if (data == null)
 				return 2;
 			_p = new passwds(data);

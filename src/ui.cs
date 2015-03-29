@@ -25,6 +25,7 @@ namespace savepass
 	{
 		passwds p { get; }
 		string filename { get; }
+		string master { get; }
 
 		int config(out conf c);
 		int run();

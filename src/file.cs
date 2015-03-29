@@ -25,8 +25,9 @@ namespace savepass
 {
 	public static class file
 	{
-		public static byte[] read_from_file(string path)
+		public static byte[] read_from_file(string path, string master)
 		{
+			blowfish b;
 			byte[] data = null;
 
 			try {
@@ -40,11 +41,22 @@ namespace savepass
 			} catch (Exception e) {
 				savepass.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);
 			}
+			if (data != null) {
+				b = new blowfish(master);
+				try {
+					data = b.decrypt(data);
+				} catch (Exception) {
+					savepass.print("wrong master password", false);
+					data = null;
+				}
+			}
 			return data;
 		}
 
-		public static void write_to_file(string path, byte[] data)
+		public static void write_to_file(string path, byte[] data, string master)
 		{
+			blowfish b = new blowfish(master);
+			data = b.encrypt(data);
 			try {
 				using (FileStream f = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
 					using (BinaryWriter w = new BinaryWriter(f)) {

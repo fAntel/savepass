@@ -85,18 +85,23 @@ namespace savepass
 				Buffer.BlockCopy(prev_block, 0, iv, 0, 8);
 				Buffer.BlockCopy(block, 0, result, i, 8);
 			}
-			//return System.Text.Encoding.UTF8.GetBytes("test_blowfish");
-			return result;
+			Buffer.BlockCopy(result, 0, iv, 0, 8);
+			len = (int) BitConverter.ToUInt64(iv, 0);
+			iv = new byte[len];
+			Buffer.BlockCopy(result, 8, iv, 0, len);
+			return iv;
 		}
 
 		public byte[] encrypt(byte[] text)
 		{
 			byte[] iv = new byte[8];
 			rand.GetBytes(iv);
-			int len = 8 + (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
+			int len = 8 + 8 + (text.Length % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8));
 			byte[] result = new byte[len];
 			Buffer.BlockCopy(iv, 0, result, 0, 8);
-			Buffer.BlockCopy(text, 0, result, 8, text.Length);
+			/* Save length of array */
+			Buffer.BlockCopy(BitConverter.GetBytes((UInt64) text.Length), 0, result, 8, 8);
+			Buffer.BlockCopy(text, 0, result, 16, text.Length);
 			byte[] block = new byte[8];
 			for (int i = 8; i < len; i += 8) {
 				Buffer.BlockCopy(result, i, block, 0, 8);
@@ -107,9 +112,6 @@ namespace savepass
 				Buffer.BlockCopy(block, 0, result, i, 8);
 				Buffer.BlockCopy(block, 0, iv, 0, 8);
 			}
-			foreach (byte b in result)
-				Console.Write(b.ToString("X"));
-			Console.WriteLine("");
 			return result;
 		}
 

@@ -48,7 +48,7 @@ namespace savepass
 #endif
 			exit_value = console.run();
 			if (exit_value == 0)
-				file.write_to_file(console.filename, console.p.to_data());
+				file.write_to_file(console.filename, console.p.to_data(), console.master);
 			return exit_value;
 		}
 

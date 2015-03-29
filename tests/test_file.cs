@@ -31,7 +31,7 @@ namespace savepass
 		public void test_blowfish()
 		{
 			blowfish b = new blowfish("key");
-			Assert.AreEqual("test_blowfish\0\0\0", Encoding.UTF8.GetString(
+			Assert.AreEqual("test_blowfish", Encoding.UTF8.GetString(
 				b.decrypt(b.encrypt(
 					Encoding.UTF8.GetBytes("test_blowfish")))));
 		}
