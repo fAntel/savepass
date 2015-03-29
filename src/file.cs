@@ -25,31 +25,30 @@ namespace savepass
 {
 	public static class file
 	{
-		// переписать функцию так, чтобы проверялось существует ли файл.
-		// Если нет, то надо предупредить пользователя, что файла такого нет
-		public static string read_from_file(string path)
+		public static byte[] read_from_file(string path)
 		{
-			string data = null;
+			byte[] data = null;
 
 			try {
-				using (StreamReader f = new StreamReader(path)) {
-					data = f.ReadToEnd();
+				using (FileStream f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None)) {
+					using (BinaryReader r = new BinaryReader(f)) {
+						data = r.ReadBytes((int) f.Length);
+					}
 				}
 			} catch (FileNotFoundException) {
-				return "";
+				savepass.print(String.Format("file {0} doesn't exists", path), false);
 			} catch (Exception e) {
 				savepass.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);
-				return null;
 			}
 			return data;
 		}
 
-		public static void write_to_file(string path, string data)
+		public static void write_to_file(string path, byte[] data)
 		{
 			try {
 				using (FileStream f = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
 					using (BinaryWriter w = new BinaryWriter(f)) {
-						w.Write(data.ToCharArray());
+						w.Write(data);
 					}
 				}
 			} catch (Exception e) {

@@ -35,7 +35,7 @@ namespace savepass
 
 		public blowfish(string key_string)
 		{
-			byte [] key = Encoding.UTF8.GetBytes(key_string);
+			byte[] key = Encoding.UTF8.GetBytes(key_string);
 			rand = new RNGCryptoServiceProvider();
 			P = init_P();
 			S = init_S();
@@ -125,9 +125,7 @@ namespace savepass
 		{
 			uint xl, xr;
 			split_block(ref block, out xl, out xr);
-			Console.Write(String.Format("xl = {0:X}, xr = {1:X}\t", xl, xr));
 			encipher(ref xl, ref xr);
-			Console.WriteLine(String.Format("xl = {0:X}, xr = {1:X}\n", xl, xr));
 			concate_block(ref block, xl, xr);
 		}
 

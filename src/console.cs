@@ -409,14 +409,17 @@ namespace savepass
 		public int run()
 		{
 			int exit_value = 0;
+			byte[] data;
 			bool on_screen = dict.ContainsKey(keys.on_screen) ? (bool) dict[keys.on_screen] :
 				#if WINDOWS || GTK
 					false;
 				#else
 					true;
 				#endif
-
-			_p = new passwds(file.read_from_file(_filename));
+			data = file.read_from_file(_filename);
+			if (data == null)
+				return 2;
+			_p = new passwds(data);
 
 			if (dict.ContainsKey(keys.list))
 				exit_value = list();

@@ -32,15 +32,6 @@ namespace savepass
 	{
 		private List<passwd> _passwds;
 
-		/* Create _passwds array from string from file */
-		public passwds(string data)
-		{
-			_passwds = new List<passwd>();
-			string[] a = data.Split(new char[] {'\n'});
-			foreach (string str in a)
-				if (!String.IsNullOrWhiteSpace(str))
-					_passwds.Add(new passwd(str));
-		}
 		/* Create _passwds array from byte array from file */
 		public passwds(byte[] data)
 		{
@@ -165,18 +156,7 @@ namespace savepass
 			pass = result[0].password;
 		}
 
-		/* Convert array to string for writing to the file */
-		public override string ToString()
-		{
-			StringBuilder str = new StringBuilder();
-
-			foreach (passwd p in _passwds) {
-				if (p != null)
-					str.AppendLine(p.ToString());
-			}
-			return str.ToString();
-		}
-
+		/* Convert array to byte array for writing to the file */
 		public byte[] to_data()
 		{
 			List<byte> data = new List<byte>();

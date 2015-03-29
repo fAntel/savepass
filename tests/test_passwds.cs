@@ -37,12 +37,6 @@ namespace savepass
 		}
 
 		[Test()]
-		public void test_constructor_for_one_element()
-		{
-			Assert.AreEqual(String.Format("{0}\n", p), ps.ToString());
-		}
-
-		[Test()]
 		public void test_to_data_for_one_element()
 		{
 			Assert.AreEqual(p.to_data(), ps.to_data());
@@ -78,12 +72,6 @@ namespace savepass
 			Array.Copy(p_data, 0, data, p_data.Length, p_data.Length);
 			Array.Copy(p_data, 0, data, p_data.Length * 2, p_data.Length);
 			ps = new passwds(data);
-		}
-
-		[Test()]
-		public void test_constructor_for_several_elements()
-		{
-			Assert.AreEqual(String.Format("{0}\n{0}\n{0}\n", p), ps.ToString());
 		}
 
 		[Test()]

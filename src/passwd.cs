@@ -23,7 +23,7 @@ using System.Text;
 
 namespace savepass
 {
-	public class passwd: IFormattable
+	public class passwd
 	{
 		private string _passwd;
 		private string _note;
@@ -43,24 +43,10 @@ namespace savepass
 		}
 
 		/* Constructor for creating password from file */
-		public passwd(string data)
-		{
-			string[] a = data.Split(new Char[] {'\t'}, 4);
-			_passwd = a[0];
-			_note = a[1];
-			try {
-				_added = new DateTime(Convert.ToInt64(a[2]), DateTimeKind.Local);
-				_changed = new DateTime(Convert.ToInt64(a[3]), DateTimeKind.Local);
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, true);
-			}
-		}
-
-		/* Constructor for creating password from file */
 		public passwd(ref byte[] data, ref int i)
 		{
 			int len;
-			len = Array.IndexOf<byte>(data, 0);
+			len = Array.IndexOf<byte>(data, 0, i) - i;
 			byte[] str = new byte[len];
 			Array.Copy(data, i, str, 0, len);
 			_passwd = Encoding.UTF8.GetString(str);
@@ -111,22 +97,7 @@ namespace savepass
 			get { return (_changed == DateTime.MinValue) ? _added : _changed; }
 		}
 
-		/* Convert fields to string for writing to file */
-		public override string ToString()
-		{
-			return String.Format("{0}\t{1}\t{2}\t{3}", _passwd, _note, _added.Ticks, _changed.Ticks);
-		}
-
-		public string ToString(string format)
-		{
-			return this.ToString();
-		}
-
-		public string ToString(string format, IFormatProvider provider)
-		{
-			return this.ToString();
-		}
-
+		/* Convert fields to byte array for writing to file */
 		public byte[] to_data()
 		{
 			byte[] passwd = Encoding.UTF8.GetBytes(_passwd);
