@@ -23,7 +23,6 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
-using Mono.Options;
 
 namespace savepass
 {
@@ -35,8 +34,13 @@ namespace savepass
 		static int Main(string[] args)
 		{
 			int exit_value = 0;
-			IUI console = new console(args, version_number);
-			exit_value = console.config(out c);
+			IUI console;
+			try {
+				console = new console(args, version_number);
+				exit_value = console.config(out c);
+			} catch (Exception) {
+				return Environment.ExitCode;
+			}
 			if (exit_value != 0)
 				return exit_value;
 #if GTK
@@ -62,7 +66,14 @@ namespace savepass
 		}
 	}
 
-	public class EmptyArrayException : Exception
+	public class AllOKException: Exception
+	{
+		public AllOKException(): base(){}
+		public AllOKException(string message): base(message) {}
+		public AllOKException(int value, string message, Exception innerException): base(message, innerException) {}
+	}
+
+	public class EmptyArrayException: Exception
 	{
 		protected EmptyArrayException(): base(){}
 		public EmptyArrayException(string message): base(message) {}

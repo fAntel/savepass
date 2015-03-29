@@ -91,7 +91,8 @@ namespace savepass
 			};
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
-				Environment.Exit(1);
+				Environment.ExitCode = 1;
+				throw new ArgumentException();
 			}
 			try {
 				rest = options.Parse(args);
@@ -99,17 +100,21 @@ namespace savepass
 				savepass.print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.",
 					e.Message, Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)),
 					true);
-				Environment.Exit(2);
+				Environment.ExitCode = 2;
+				throw new OptionException();
 			} catch (FormatException e) {
 				savepass.print(string.Format("number was written wrong: {0}", e.Message), true);
-				Environment.Exit(2);
+				Environment.ExitCode = 2;
+				throw new FormatException();
 			} catch (Exception e) {
 				savepass.print(e.Message, true);
-				Environment.Exit(2);
+				Environment.ExitCode = 2;
+				throw new Exception();
 			}
 			if (dict.ContainsKey(keys.help)) {
 				options.WriteOptionDescriptions(Console.Out);
-				Environment.Exit(0);
+				Environment.ExitCode = 0;
+				throw new AllOKException();
 			}
 			if (dict.ContainsKey(keys.version)) {
 				Console.WriteLine(
@@ -120,11 +125,13 @@ namespace savepass
 					"This is free software, and you are welcome to redistribute it\n" +
 					"under certain conditions.",
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
-				Environment.Exit(0);
+				Environment.ExitCode = 0;
+				throw new AllOKException();
 			}
 			if (rest.Count > 1) {
 				savepass.print("too much options", false);
-				Environment.Exit(1);
+				Environment.ExitCode = 1;
+				throw new ArgumentException();
 			} else if (rest.Count == 1)
 				dict.Add(keys.filename, (object) rest[0]);
 
@@ -252,7 +259,8 @@ namespace savepass
 					savepass.print("wrong argument for config option", false);
 					return 1;
 				}
-				Environment.Exit(0);
+				Environment.ExitCode = 0;
+				throw new AllOKException();
 			} else if (dict.ContainsKey(keys.filename))
 				_filename = (string) dict[keys.filename];
 			if (dict.ContainsKey(keys.always_in_clipboard))
@@ -269,9 +277,10 @@ namespace savepass
 			if (_filename == null) {
 				if (c.default_file != null) {
 					_filename = c.default_file;
-				} else if (dict.ContainsKey(keys.save))
-					Environment.Exit(0);
-				else {
+				} else if (dict.ContainsKey(keys.save)) {
+					Environment.ExitCode = 0;
+					throw new AllOKException();
+				} else {
 					savepass.print(string.Format(
 						"File name must be specified\nTry run {0} --help for more information",
 						Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)), false);
