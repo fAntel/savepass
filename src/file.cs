@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using Mono.Unix;
 
 namespace savepass
 {
@@ -37,16 +38,19 @@ namespace savepass
 					}
 				}
 			} catch (FileNotFoundException) {
-				savepass.print(String.Format("file {0} doesn't exists", path), false);
+				savepass.print(String.Format(Catalog.GetString(
+					"file {0} doesn't exists"), path), false);
 			} catch (Exception e) {
-				savepass.print(String.Format("reading file {0} failed: {1}", path, e.Message), true);
+				savepass.print(String.Format(Catalog.GetString(
+					"reading file {0} failed: {1}"), path, e.Message), true);
 			}
 			if (data != null) {
 				b = new blowfish(master);
 				try {
 					data = b.decrypt(data);
 				} catch (Exception) {
-					savepass.print("wrong master password", false);
+					savepass.print(Catalog.GetString(
+						"wrong master password"), false);
 					data = null;
 				}
 			}

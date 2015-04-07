@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using KeyFile;
+using Mono.Unix;
 
 namespace savepass
 {
@@ -100,15 +101,17 @@ namespace savepass
 			if (conf_file != null) {
 				_conf_file = conf_file;
 				if (!File.Exists(conf_file)) {
-					savepass.print(String.Format("configuration file {0} doesn't exists. " +
-						"If -S option used it will be created", conf_file), false);
+					savepass.print(String.Format(
+						Catalog.GetString("configuration file {0} doesn't exists. " +
+							"If -S option used it will be created"), conf_file), false);
 					_conf = new GKeyFile();
 					return;
 				}
 				try {
 					_conf = new GKeyFile(conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("openging configuration file {0} failed: {1}",
+					savepass.print(String.Format(Catalog.GetString(
+						"openging configuration file {0} failed: {1}"),
 						conf_file, e.Message), true);
 				}
 				return;
@@ -121,7 +124,8 @@ namespace savepass
 					_conf.LoadFromData(default_settings_data,
 						Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("creating object for default settings failed: {0}", e.Message),
+					savepass.print(String.Format(Catalog.GetString(
+						"creating object for default settings failed: {0}"), e.Message),
 						true);
 				}
 				return;
@@ -158,7 +162,8 @@ namespace savepass
 				try {
 					file = new GKeyFile(_system_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("openging system configuration file {0} failed: {1}",
+					savepass.print(String.Format(Catalog.GetString(
+						"openging system configuration file {0} failed: {1}"),
 						_system_conf_file, e.Message), true);
 					return null;
 				}
@@ -181,7 +186,8 @@ namespace savepass
 			try {
 				file = new GKeyFile(_user_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 			} catch (Exception e) {
-				savepass.print(String.Format("openging user configuration file {0} failed: {1}",
+				savepass.print(String.Format(Catalog.GetString(
+					"openging user configuration file {0} failed: {1}"),
 					_user_conf_file, e.Message), true);
 				return null;
 			}
@@ -354,7 +360,8 @@ namespace savepass
 				try {
 					v = Path.GetFullPath(value);
 				} catch (Exception e){
-					savepass.print(String.Format("saving default file failed: {0}",
+					savepass.print(String.Format(Catalog.GetString(
+						"saving default file failed: {0}"),
 						e.Message), false);
 					return;
 				}
@@ -402,7 +409,8 @@ namespace savepass
 				if (_conf.HasGroup(s.group) && _conf.HasKey(s.group, s.name))
 					Console.WriteLine(_conf.GetValue(s.group, s.name));
 				else
-					Console.WriteLine(String.Format("{0} (default)", s.default_value));
+					Console.WriteLine(String.Format(
+						Catalog.GetString("{0} (default)"), s.default_value));
 			}
 		}
 

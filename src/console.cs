@@ -25,6 +25,7 @@ using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
 using Mono.Options;
+using Mono.Unix;
 
 namespace savepass
 {
@@ -45,49 +46,49 @@ namespace savepass
 			dict = new Dictionary<keys, object>();
 			List<string> rest = null;
 			OptionSet options = new OptionSet() {
-				"Usage: savepass [OPTIONS] FILE - password saver",
+				Catalog.GetString("Usage: savepass [OPTIONS] FILE - password saver"),
 				"",
-				"Options:",
-				{ "a|add", "Add new password to the list",
+				Catalog.GetString("Options:"),
+				{ "a|add", Catalog.GetString("Add new password to the list"),
 					v => { if (v != null) dict.Add(keys.add, null); } },
-				{ "c|change=", "Change password with number {N}",
+				{ "c|change=", Catalog.GetString("Change password with number {N}"),
 					v => { dict.Add(keys.change, (object) Convert.ToInt32(v)); } },
-				{ "d|delete=", "Delete password with number {N}",
+				{ "d|delete=", Catalog.GetString("Delete password with number {N}"),
 					v => { dict.Add(keys.del, (object) Convert.ToInt32(v)); } },
-				{ "g|get=", "Get password with number {N}",
+				{ "g|get=", Catalog.GetString("Get password with number {N}"),
 					v => { dict.Add(keys.get, (object) Convert.ToInt32(v)); } },
 #if WINDOWS || GTK
-				{ "C|on_screen", "Get password on screen and not in the clipboard",
+				{ "C|on_screen", Catalog.GetString("Get password on screen and not in the clipboard"),
 					v => { dict.Add(keys.on_screen, (object) Convert.ToBoolean(v != null)); } },
 #endif
-				{ "G|get_pass=", "Get password with note {NOTE}",
+				{ "G|get_pass=", Catalog.GetString("Get password with note {NOTE}"),
 					v => { dict.Add(keys.get_pass, (object) v); } },
-				{ "l|list", "Show list of passwords' notes",
+				{ "l|list", Catalog.GetString("Show list of passwords' notes"),
 					v => { if (v != null) dict.Add(keys.list, null); } },
-				{ "s|search=", "Show list of passwords' notes like {NOTE}",
+				{ "s|search=", Catalog.GetString("Show list of passwords' notes like {NOTE}"),
 					v => { dict.Add(keys.search, (object) v); } },
-				{ "f|file=", "Set the default {FILE}",
+				{ "f|file=", Catalog.GetString("Set the default {FILE}"),
 					v => { dict.Add(keys.file, (object) v); } },
-				{ "version", "Show version",
+				{ "version", Catalog.GetString("Show version"),
 					v => { if (v != null) dict.Add(keys.version, null); } },
-				{ "h|help",  "Show this text",
+				{ "h|help",  Catalog.GetString("Show this text"),
 					v => { if (v != null) dict.Add(keys.help, null); } },
-				"\nSettings options:",
-				{ "conf_file=", "{*.conf} file with settings",
+				Catalog.GetString("\nSettings options:"),
+				{ "conf_file=", Catalog.GetString("{*.conf} file with settings"),
 					v => { dict.Add(keys.conf_file, (object) v); } },
-				{"A|always_in_clipboard", "Set {mod} of --get option",
+				{"A|always_in_clipboard", Catalog.GetString("Set {mod} of --get option"),
 					v => { dict.Add(keys.always_in_clipboard, (object) Convert.ToBoolean(v != null)); } },
-				{"t|always_save_time_of_change=", "Set {mod} of --change option",
+				{"t|always_save_time_of_change=", Catalog.GetString("Set {mod} of --change option"),
 					v => { dict.Add(keys.always_save_time_of_change, (object) Convert.ToBoolean(v != null)); } },
-				{"H|show_date_time", "Show date and time when used --list and --search options",
+				{"H|show_date_time", Catalog.GetString("Show date and time when used --list and --search options"),
 					v => { dict.Add(keys.show_date_time, (object) Convert.ToBoolean(v != null)); } },
-				{"format=", "Set {format} for date and time output",
+				{"format=", Catalog.GetString("Set {format} for date and time output"),
 					v => { dict.Add(keys.format, (object) v); } },
-				{"S|save", "Save new settings passed via the command line", 
+				{"S|save", Catalog.GetString("Save new settings passed via the command line"),
 					v => { if (v != null) dict.Add(keys.save, null); } },
-				{"system", "Work with settings in system configuration file",
+				{"system", Catalog.GetString("Work with settings in system configuration file"),
 					v => { if (v != null) dict.Add(keys.system, null); } },
-				{"config=", "Show values of all/setted/system/user settings",
+				{"config=", Catalog.GetString("Show values of all/setted/system/user settings"),
 					v => { dict.Add(keys.config, (object) v); } }
 			};
 			if (args.Length == 0) {
@@ -98,13 +99,15 @@ namespace savepass
 			try {
 				rest = options.Parse(args);
 			} catch (OptionException e) {
-				savepass.print(string.Format("option parsing failed: {0}\nTry `{1} --help' for more information.",
+				savepass.print(string.Format(Catalog.GetString(
+					"option parsing failed: {0}\nTry `{1} --help' for more information."),
 					e.Message, Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)),
 					true);
 				Environment.ExitCode = 2;
 				throw new OptionException();
 			} catch (FormatException e) {
-				savepass.print(string.Format("number was written wrong: {0}", e.Message), true);
+				savepass.print(string.Format(Catalog.GetString(
+					"number was written wrong: {0}"), e.Message), true);
 				Environment.ExitCode = 2;
 				throw new FormatException();
 			} catch (Exception e) {
@@ -130,7 +133,7 @@ namespace savepass
 				throw new AllOKException();
 			}
 			if (rest.Count > 1) {
-				savepass.print("too much options", false);
+				savepass.print(Catalog.GetString("too much options"), false);
 				Environment.ExitCode = 1;
 				throw new ArgumentException();
 			} else if (rest.Count == 1)
@@ -160,18 +163,19 @@ namespace savepass
 
 			try {
 				do {
-					Console.Write("Enter password: ");
+					Console.Write(Catalog.GetString("Enter password: "));
 					password0 = read_password();
-					Console.Write("Enter password again: ");
+					Console.Write(Catalog.GetString("Enter password again: "));
 					password1 = read_password();
 					if (String.Compare(password0, password1) != 0) {
-						Console.WriteLine("Passwords doesn't match. Try again");
+						Console.WriteLine(Catalog.GetString("Passwords doesn't match. Try again"));
 					}
 				} while (String.Compare(password0, password1) != 0);
-				Console.Write("Enter note: ");
+				Console.Write(Catalog.GetString("Enter note: "));
 				note = Console.ReadLine();
 			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format(Catalog.GetString(
+					"some error with console: {0}"), e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
 				savepass.print(e.Message, true);
@@ -189,14 +193,16 @@ namespace savepass
 			string answer;
 
 			try {
-				Console.Write(String.Format("Are you sure{0}? (y/n) ", str));
+				Console.Write(String.Format(Catalog.GetString(
+					"Are you sure{0}? (y/n) "), str));
 				answer = Console.ReadLine();
 				if (String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0)
 					return 0;
 				else
 					return 1;
 			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format(Catalog.GetString(
+					"some error with console: {0}"), e.Message), true);
 				return 2;
 			} catch (Exception e) {
 				savepass.print(e.Message, true);
@@ -212,21 +218,24 @@ namespace savepass
 				return 1;
 			try {
 				do {
-					Console.Write("Enter new password (if you press ENTER password will stay the same): ");
+					Console.Write(Catalog.GetString(
+						"Enter new password (if you press ENTER password will stay the same): "));
 					str0 = read_password();
 					if (str0.Length == 0)
 						break;
-					Console.Write("Enter new password again: ");
+					Console.Write(Catalog.GetString("Enter new password again: "));
 					str1 = read_password();
 					if (String.Compare(str0, str1) != 0)
-						Console.WriteLine("Passwords doesn't match. Try again");
+						Console.WriteLine(Catalog.GetString(
+							"Passwords doesn't match. Try again"));
 				} while (String.Compare(str0, str1) != 0);
 				pass = str0.Length > 0 ? str0 : null;
-				Console.Write("Enter new note [{0}]: ", note);
+				Console.Write(Catalog.GetString("Enter new note [{0}]: "), note);
 				str0 = Console.ReadLine();
 				note = str0.Length > 0 ? str0 : null;
 			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format(
+					Catalog.GetString("some error with console: {0}"), e.Message), true);
 				return 2;
 			} catch (OutOfMemoryException e) {
 				savepass.print(e.Message, true);
@@ -262,7 +271,8 @@ namespace savepass
 				else if (String.Compare(config, "user") == 0)
 					c.list(false);
 				else {
-					savepass.print("wrong argument for config option", false);
+					savepass.print(Catalog.GetString(
+						"wrong argument for config option"), false);
 					return 1;
 				}
 				Environment.ExitCode = 0;
@@ -287,8 +297,8 @@ namespace savepass
 					Environment.ExitCode = 0;
 					throw new AllOKException();
 				} else {
-					savepass.print(string.Format(
-						"File name must be specified\nTry run {0} --help for more information",
+					savepass.print(string.Format(Catalog.GetString(
+						"File name must be specified\nTry run {0} --help for more information"),
 						Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)), false);
 					return 1;
 				}
@@ -307,10 +317,10 @@ namespace savepass
 				return 1;
 			_p.get_pass_note(n, out pass, out note);
 			return_value = are_you_sure(
-				String.Format(" you want to delete password with note \"{0}\"", note));
+				String.Format(Catalog.GetString(" you want to delete password with note \"{0}\""), note));
 			if (return_value == 0) {
 				_p.del(n);
-				savepass.print("password was deleted", false);
+				savepass.print(Catalog.GetString("password was deleted"), false);
 			}
 			return return_value == 2 ? 2 : 0;
 		}
@@ -341,7 +351,7 @@ namespace savepass
 			if (_p.check_limits(0, true))
 				return 1;
 			_p.list(out notes, out times);
-			Console.WriteLine("Passwords' notes:");
+			Console.WriteLine(Catalog.GetString("Passwords' notes:"));
 			for (int i = 0; i < notes.Length; ++i)
 				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
 					return result;
@@ -361,7 +371,8 @@ namespace savepass
 					time.ToString(savepass.c.format_date_time, CultureInfo.CurrentCulture),
 					note);
 			} catch (FormatException e) {
-				savepass.print(String.Format("date_time_format is invalid: {0}", e.Message), false);
+				savepass.print(String.Format(Catalog.GetString(
+					"date_time_format is invalid: {0}"), e.Message), false);
 				return 1;
 			} catch (Exception e) {
 				savepass.print(e.Message, true);
@@ -424,10 +435,11 @@ namespace savepass
 				#endif
 				
 			try {
-				Console.Write("Enter master password: ");
+				Console.Write(Catalog.GetString("Enter master password: "));
 				_master = read_password();
 			} catch (IOException e) {
-				savepass.print(String.Format("some error with console: {0}", e.Message), true);
+				savepass.print(String.Format(Catalog.GetString(
+					"some error with console: {0}"), e.Message), true);
 				return 2;
 			} catch (InvalidOperationException e) {
 				savepass.print(e.Message, true);
@@ -465,8 +477,9 @@ namespace savepass
 			DateTime[] times;
 
 			if (note == "") {
-				savepass.print("string for search cannot be an empty string.\n" +
-					"If you want to see all passwords use --show", false);
+				savepass.print(Catalog.GetString(
+					"string for search cannot be an empty string.\n" +
+					"If you want to see all passwords use --show"), false);
 				return 1;
 			}
 			if (_p.check_limits(0, true))
@@ -477,7 +490,8 @@ namespace savepass
 				savepass.print(e.Message, false);
 				return 1;
 			}
-			Console.WriteLine("Passwords' notes contains \"{0}\":", note);
+			Console.WriteLine(Catalog.GetString(
+				"Passwords' notes contains \"{0}\":"), note);
 			for (int i = 0; i < notes.Length; ++i)
 				if ((result = print_note(indexes[i], notes[i], times[i])) != 0)
 					return result;
@@ -490,9 +504,10 @@ namespace savepass
 			string pass;
 
 			if (String.IsNullOrWhiteSpace(note)) {
-				savepass.print("string for search cannot be an empty string\n" +
+				savepass.print(Catalog.GetString(
+					"string for search cannot be an empty string\n" +
 					"or cosists exclusively of white-space characters.\n" +
-					"If you want to see all passwords use --show", true);
+					"If you want to see all passwords use --show"), true);
 				return 1;
 			}
 			if (_p.check_limits(0, true))

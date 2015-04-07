@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ItemType>TranslationProject</ItemType>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A51640C9-AFD3-46F9-A517-55C674DBA650}</ProjectGuid>
+    <packageName>savepass</packageName>
+    <outputType>RelativeToOutput</outputType>
+    <relPath>po</relPath>
+    <translations>
+      <translations>
+        <Translation isoCode="ru" />
+      </translations>
+    </translations>
+    <ReleaseVersion>0.7</ReleaseVersion>
+    <projectInformations>
+      <projectInformations>
+        <TranslationProjectInformation projectName="savepass" isIncluded="True" />
+      </projectInformations>
+    </projectInformations>
+  </PropertyGroup>
+</Project>

@@ -52,6 +52,7 @@
       <Package>glib-sharp-3.0</Package>
     </Reference>
     <Reference Include="nunit.framework" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

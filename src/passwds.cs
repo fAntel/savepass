@@ -21,9 +21,7 @@
 #define GTK
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Globalization;
+using Mono.Unix;
 
 /* Возможно надо сделать чтение не строки а массива символов. В общем надо сейчас будет поработать над тем как хранить данные */
 namespace savepass
@@ -64,11 +62,13 @@ namespace savepass
 		{
 			if (n == 0) {
 				if (_passwds.Count == 0) {
-					savepass.print("there are no passwords in this file", full);
+					savepass.print(Catalog.GetString(
+						"there are no passwords in this file"), full);
 					return true;
 				}
 			} else if (n >= _passwds.Count) {
-				savepass.print(string.Format("there is no password with number {0} in this file", n), full);
+				savepass.print(string.Format(Catalog.GetString(
+					"there is no password with number {0} in this file"), n), full);
 				return true;
 			}
 			return false;
@@ -123,7 +123,8 @@ namespace savepass
 				});
 			if (result.Count == 0) {
 				throw new EmptyArrayException(
-					String.Format("there is no notes containing \"{0}\" as a substring.",
+					String.Format(Catalog.GetString(
+						"there is no notes containing \"{0}\" as a substring."),
 						note));
 			}
 
@@ -147,11 +148,13 @@ namespace savepass
 				});
 			if (result.Count == 0)
 				throw new EmptyArrayException(
-					String.Format("there is no notes containing \"{0}\" as a substring.",
+					String.Format(Catalog.GetString(
+						"there is no notes containing \"{0}\" as a substring."),
 						note));
 			else if (result.Count > 1)
 				throw new ArgumentOutOfRangeException(note,
-					String.Format("Too much notes compare to \"{0}\". Try to refine your query.",
+					String.Format(Catalog.GetString(
+						"Too much notes compare to \"{0}\". Try to refine your query."),
 						note));
 			pass = result[0].password;
 		}

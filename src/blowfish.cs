@@ -70,7 +70,7 @@ namespace savepass
 		public byte[] decrypt(byte[] text)
 		{
 			byte[] iv = new byte[8];
-			int len = text.Length - 8;// % 8 == 0 ? text.Length : text.Length + 8 - (text.Length % 8);
+			int len = text.Length - 8;
 			byte[] result = new byte[len];
 			Buffer.BlockCopy(text, 0, iv, 0, 8);
 			Buffer.BlockCopy(text, 8, result, 0, len);

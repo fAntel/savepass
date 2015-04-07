@@ -23,6 +23,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using Mono.Posix;
 
 namespace savepass
 {
@@ -34,6 +35,7 @@ namespace savepass
 		static int Main(string[] args)
 		{
 			int exit_value = 0;
+			Mono.Unix.Catalog.Init("savepass", "po");
 			IUI console;
 			try {
 				console = new console(args, version_number);
