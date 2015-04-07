@@ -107,7 +107,7 @@ namespace savepass
 				throw new OptionException();
 			} catch (FormatException e) {
 				savepass.print(string.Format(Catalog.GetString(
-					"number was written wrong: {0}"), e.Message), true);
+					"option parsing failed: {0}\nTry `{1} --help' for more information."), e.Message), true);
 				Environment.ExitCode = 2;
 				throw new FormatException();
 			} catch (Exception e) {
@@ -174,8 +174,7 @@ namespace savepass
 				Console.Write(Catalog.GetString("Enter note: "));
 				note = Console.ReadLine();
 			} catch (IOException e) {
-				savepass.print(String.Format(Catalog.GetString(
-					"some error with console: {0}"), e.Message), true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (OutOfMemoryException e) {
 				savepass.print(e.Message, true);
@@ -201,8 +200,7 @@ namespace savepass
 				else
 					return 1;
 			} catch (IOException e) {
-				savepass.print(String.Format(Catalog.GetString(
-					"some error with console: {0}"), e.Message), true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (Exception e) {
 				savepass.print(e.Message, true);
@@ -234,8 +232,7 @@ namespace savepass
 				str0 = Console.ReadLine();
 				note = str0.Length > 0 ? str0 : null;
 			} catch (IOException e) {
-				savepass.print(String.Format(
-					Catalog.GetString("some error with console: {0}"), e.Message), true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (OutOfMemoryException e) {
 				savepass.print(e.Message, true);
@@ -438,8 +435,7 @@ namespace savepass
 				Console.Write(Catalog.GetString("Enter master password: "));
 				_master = read_password();
 			} catch (IOException e) {
-				savepass.print(String.Format(Catalog.GetString(
-					"some error with console: {0}"), e.Message), true);
+				savepass.print(e.Message, true);
 				return 2;
 			} catch (InvalidOperationException e) {
 				savepass.print(e.Message, true);
@@ -479,7 +475,7 @@ namespace savepass
 			if (note == "") {
 				savepass.print(Catalog.GetString(
 					"string for search cannot be an empty string.\n" +
-					"If you want to see all passwords use --show"), false);
+					"If you want to see all passwords use --list"), false);
 				return 1;
 			}
 			if (_p.check_limits(0, true))
@@ -507,7 +503,7 @@ namespace savepass
 				savepass.print(Catalog.GetString(
 					"string for search cannot be an empty string\n" +
 					"or cosists exclusively of white-space characters.\n" +
-					"If you want to see all passwords use --show"), true);
+					"If you want to see all passwords use --list"), true);
 				return 1;
 			}
 			if (_p.check_limits(0, true))

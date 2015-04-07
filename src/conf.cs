@@ -361,7 +361,7 @@ namespace savepass
 					v = Path.GetFullPath(value);
 				} catch (Exception e){
 					savepass.print(String.Format(Catalog.GetString(
-						"saving default file failed: {0}"),
+						"saving default_file failed: {0}"),
 						e.Message), false);
 					return;
 				}

@@ -154,7 +154,7 @@ namespace savepass
 			else if (result.Count > 1)
 				throw new ArgumentOutOfRangeException(note,
 					String.Format(Catalog.GetString(
-						"Too much notes compare to \"{0}\". Try to refine your query."),
+						"too much notes compare to \"{0}\". Try to refine your query."),
 						note));
 			pass = result[0].password;
 		}

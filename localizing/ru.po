@@ -1,0 +1,274 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2015-04-08 01:33:23+0300\n"
+"PO-Revision-Date: 2015-04-08 02:17:46+0300\n"
+"Last-Translator: keldzh <keldzh@gmail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MonoDevelop Gettext addin\n"
+
+# Do not translate this
+#: ../../../../../../usr/lib/mono-source-libs/Options.cs:75
+msgid "OptionName"
+msgstr ""
+
+#: ../src/file.cs:2
+msgid "file {0} doesn't exists"
+msgstr "не существует файла {0}"
+
+#: ../src/file.cs:2
+msgid "reading file {0} failed: {1}"
+msgstr "ошибка при чтении файла {0}: {1}"
+
+#: ../src/file.cs:2
+msgid "wrong master password"
+msgstr "неверный мастер-пароль"
+
+#: ../src/passwds.cs:5
+msgid "there are no passwords in this file"
+msgstr "в этом файле нет паролей"
+
+#: ../src/passwds.cs:5
+msgid "there is no password with number {0} in this file"
+msgstr "в этом файле нет пароля с номером {0}"
+
+#: ../src/passwds.cs:11
+#: ../src/passwds.cs:13
+msgid "there is no notes containing \"{0}\" as a substring."
+msgstr "нет комментария содержащего \"{0}\" в качестве подстроки"
+
+#: ../src/passwds.cs:13
+msgid "too much notes compare to \"{0}\". Try to refine your query."
+msgstr ""
+"слишком много комментариев сравнимы с \"{0}\". Попробуйте уточнить запрос"
+
+#: ../src/conf.cs:8
+msgid ""
+"configuration file {0} doesn't exists. If -S option used it will be created"
+msgstr ""
+"файл настроек {0} не существует. Если параметр -S используется, то он будет "
+"создан"
+
+#: ../src/conf.cs:8
+msgid "openging configuration file {0} failed: {1}"
+msgstr "ошибка при открытии файла конфигурации {0}: {1}"
+
+#: ../src/conf.cs:8
+msgid "creating object for default settings failed: {0}"
+msgstr "ошибка во время создания объекста для настроек по умолчанию: {0}"
+
+#: ../src/conf.cs:9
+msgid "openging system configuration file {0} failed: {1}"
+msgstr "ошибка при открытии системного файла настроек {0}: {1}"
+
+#: ../src/conf.cs:10
+msgid "openging user configuration file {0} failed: {1}"
+msgstr "ошибка при открытии пользовательского файла настроек {0}: {1}"
+
+#: ../src/conf.cs:19
+msgid "saving default_file failed: {0}"
+msgstr "ошибка при сохранении настройки default_file: {0}"
+
+#: ../src/conf.cs:21
+msgid "{0} (default)"
+msgstr "{0} (значение по умолчанию)"
+
+#: ../src/console.cs:3
+msgid "Usage: savepass [OPTIONS] FILE - password saver"
+msgstr "Использование: savepass [ПАРАМЕТРЫ] FILE - хранитель паролей"
+
+#: ../src/console.cs:3
+msgid "Options:"
+msgstr "Параметры:"
+
+#: ../src/console.cs:3
+msgid "Add new password to the list"
+msgstr "Добавить новый пароель в список"
+
+#: ../src/console.cs:3
+msgid "Change password with number {N}"
+msgstr "Изменить пароль с номером {N}"
+
+#: ../src/console.cs:3
+msgid "Delete password with number {N}"
+msgstr "Удалить пароль с номером {N}"
+
+#: ../src/console.cs:3
+msgid "Get password with number {N}"
+msgstr "Получить пароль с номером {N}"
+
+#: ../src/console.cs:3
+msgid "Get password on screen and not in the clipboard"
+msgstr "Получать пароль на экран, а не в буффер обмена"
+
+#: ../src/console.cs:3
+msgid "Get password with note {NOTE}"
+msgstr "Получить пароль с комментарием {NOTE}"
+
+#: ../src/console.cs:3
+msgid "Show list of passwords' notes"
+msgstr "Показать список комментариев к паролям"
+
+#: ../src/console.cs:3
+msgid "Show list of passwords' notes like {NOTE}"
+msgstr "Показать список комментариев к паролям похожих на {NOTE}"
+
+#: ../src/console.cs:3
+msgid "Set the default {FILE}"
+msgstr "Установить {файл} по умолчанию"
+
+#: ../src/console.cs:3
+msgid "Show version"
+msgstr "Показать версию"
+
+#: ../src/console.cs:3
+msgid "Show this text"
+msgstr "Показать этот текст"
+
+#: ../src/console.cs:3
+msgid ""
+"\n"
+"Settings options:"
+msgstr ""
+"\n"
+"Параметры настроек:"
+
+#: ../src/console.cs:3
+msgid "{*.conf} file with settings"
+msgstr "{*.conf} файл настроек"
+
+#: ../src/console.cs:3
+msgid "Set {mod} of --get option"
+msgstr "Установить {режим работы} параметра --get"
+
+#: ../src/console.cs:3
+msgid "Set {mod} of --change option"
+msgstr "Установить {режим работы} параметра --change"
+
+#: ../src/console.cs:3
+msgid "Show date and time when used --list and --search options"
+msgstr "Показывать дату и время когда используются параметры --list и --search"
+
+#: ../src/console.cs:3
+msgid "Set {format} for date and time output"
+msgstr "Установить {формат} вывода даты и времени"
+
+#: ../src/console.cs:3
+msgid "Save new settings passed via the command line"
+msgstr "Сохранить новые настройки переданные через параметры командной строки"
+
+#: ../src/console.cs:3
+msgid "Work with settings in system configuration file"
+msgstr "Работать с настройками из системного файла настроек"
+
+#: ../src/console.cs:3
+msgid "Show values of all/setted/system/user settings"
+msgstr ""
+"Показать "
+"all(все)/setted(установленные)/system(системные)/user(пользовательсткие) настройки"
+
+#: ../src/console.cs:3
+msgid ""
+"option parsing failed: {0}\n"
+"Try `{1} --help' for more information."
+msgstr ""
+"ошибка обработки параметров командной строки: {0}\n"
+"Для получения информации по параметрам командной строки попробуйте '{1} "
+"--help'"
+
+#: ../src/console.cs:3
+msgid "too much options"
+msgstr "слишком много параметров командной строки"
+
+#: ../src/console.cs:9
+msgid "Enter password: "
+msgstr "Введите пароль: "
+
+#: ../src/console.cs:9
+msgid "Enter password again: "
+msgstr "Введите пароль снова: "
+
+#: ../src/console.cs:9
+#: ../src/console.cs:12
+msgid "Passwords doesn't match. Try again"
+msgstr "Пароле не совпадают. Попробуйте снова"
+
+#: ../src/console.cs:9
+msgid "Enter note: "
+msgstr "Введите комментарий: "
+
+#: ../src/console.cs:11
+msgid "Are you sure{0}? (y/n) "
+msgstr "Вы уверены{0}? (y/n)"
+
+#: ../src/console.cs:12
+msgid "Enter new password (if you press ENTER password will stay the same): "
+msgstr ""
+"Введите новый пароль (если нажмёте Enter, то пароль останется прежним): "
+
+#: ../src/console.cs:12
+msgid "Enter new password again: "
+msgstr "Введите новый пароль снова: "
+
+#: ../src/console.cs:12
+msgid "Enter new note [{0}]: "
+msgstr "Введите новый комментарий [{0}]: "
+
+#: ../src/console.cs:13
+msgid "wrong argument for config option"
+msgstr "неверный аргумент параметра командной строки"
+
+#: ../src/console.cs:13
+msgid ""
+"File name must be specified\n"
+"Try run {0} --help for more information"
+msgstr ""
+"Должно быть указано имя файла\\nДля получения информации по параметрам "
+"командной строки попробуйте '{1} --help'"
+
+#: ../src/console.cs:15
+msgid " you want to delete password with note \"{0}\""
+msgstr " вы хотите удалить пароль с комментарием \"{0}\""
+
+#: ../src/console.cs:15
+msgid "password was deleted"
+msgstr "пароль был удалён"
+
+#: ../src/console.cs:19
+msgid "Passwords' notes:"
+msgstr "Комментарии к паролям:"
+
+#: ../src/console.cs:21
+msgid "date_time_format is invalid: {0}"
+msgstr "Формат даты/времени в настройке date_time_format неверен: {0}"
+
+#: ../src/console.cs:25
+msgid "Enter master password: "
+msgstr "Введите мастер-пароль:"
+
+#: ../src/console.cs:29
+msgid ""
+"string for search cannot be an empty string.\n"
+"If you want to see all passwords use --list"
+msgstr ""
+"строка для поиска не может быть пустой.\n"
+"Если вы хотите увидеть все пароли используйте --list"
+
+#: ../src/console.cs:29
+msgid "Passwords' notes contains \"{0}\":"
+msgstr "Комментарии к паролям содержащие \"{0}\":"
+
+#: ../src/console.cs:31
+msgid ""
+"string for search cannot be an empty string\n"
+"or cosists exclusively of white-space characters.\n"
+"If you want to see all passwords use --list"
+msgstr ""
+"строка для поиска не может быть пустой или содержать испключительно "
+"пробельные символы.\n"
+"Если вы хотите увидеть все пароли, то используйте --list"
+

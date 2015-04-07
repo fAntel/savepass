@@ -1,0 +1,254 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2015-04-08 01:33:23+0300\n"
+"PO-Revision-Date: 2015-04-08 01:33:24+0300\n"
+"Last-Translator: keldzh <keldzh@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: MonoDevelop Gettext addin\n"
+
+#: ../../../../../../usr/lib/mono-source-libs/Options.cs:75
+msgid "OptionName"
+msgstr ""
+
+#: ../src/file.cs:2
+msgid "file {0} doesn't exists"
+msgstr ""
+
+#: ../src/file.cs:2
+msgid "reading file {0} failed: {1}"
+msgstr ""
+
+#: ../src/file.cs:2
+msgid "wrong master password"
+msgstr ""
+
+#: ../src/passwds.cs:5
+msgid "there are no passwords in this file"
+msgstr ""
+
+#: ../src/passwds.cs:5
+msgid "there is no password with number {0} in this file"
+msgstr ""
+
+#: ../src/passwds.cs:11
+#: ../src/passwds.cs:13
+msgid "there is no notes containing \"{0}\" as a substring."
+msgstr ""
+
+#: ../src/passwds.cs:13
+msgid "too much notes compare to \"{0}\". Try to refine your query."
+msgstr ""
+
+#: ../src/conf.cs:8
+msgid ""
+"configuration file {0} doesn't exists. If -S option used it will be created"
+msgstr ""
+
+#: ../src/conf.cs:8
+msgid "openging configuration file {0} failed: {1}"
+msgstr ""
+
+#: ../src/conf.cs:8
+msgid "creating object for default settings failed: {0}"
+msgstr ""
+
+#: ../src/conf.cs:9
+msgid "openging system configuration file {0} failed: {1}"
+msgstr ""
+
+#: ../src/conf.cs:10
+msgid "openging user configuration file {0} failed: {1}"
+msgstr ""
+
+#: ../src/conf.cs:19
+msgid "saving default_file failed: {0}"
+msgstr ""
+
+#: ../src/conf.cs:21
+msgid "{0} (default)"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Usage: savepass [OPTIONS] FILE - password saver"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Options:"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Add new password to the list"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Change password with number {N}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Delete password with number {N}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Get password with number {N}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Get password on screen and not in the clipboard"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Get password with note {NOTE}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show list of passwords' notes"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show list of passwords' notes like {NOTE}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Set the default {FILE}"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show version"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show this text"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid ""
+"\n"
+"Settings options:"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "{*.conf} file with settings"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Set {mod} of --get option"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Set {mod} of --change option"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show date and time when used --list and --search options"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Set {format} for date and time output"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Save new settings passed via the command line"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Work with settings in system configuration file"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "Show values of all/setted/system/user settings"
+msgstr ""
+
+#: ../src/console.cs:3
+msgid ""
+"option parsing failed: {0}\n"
+"Try `{1} --help' for more information."
+msgstr ""
+
+#: ../src/console.cs:3
+msgid "too much options"
+msgstr ""
+
+#: ../src/console.cs:9
+msgid "Enter password: "
+msgstr ""
+
+#: ../src/console.cs:9
+msgid "Enter password again: "
+msgstr ""
+
+#: ../src/console.cs:9
+#: ../src/console.cs:12
+msgid "Passwords doesn't match. Try again"
+msgstr ""
+
+#: ../src/console.cs:9
+msgid "Enter note: "
+msgstr ""
+
+#: ../src/console.cs:11
+msgid "Are you sure{0}? (y/n) "
+msgstr ""
+
+#: ../src/console.cs:12
+msgid "Enter new password (if you press ENTER password will stay the same): "
+msgstr ""
+
+#: ../src/console.cs:12
+msgid "Enter new password again: "
+msgstr ""
+
+#: ../src/console.cs:12
+msgid "Enter new note [{0}]: "
+msgstr ""
+
+#: ../src/console.cs:13
+msgid "wrong argument for config option"
+msgstr ""
+
+#: ../src/console.cs:13
+msgid ""
+"File name must be specified\n"
+"Try run {0} --help for more information"
+msgstr ""
+
+#: ../src/console.cs:15
+msgid " you want to delete password with note \"{0}\""
+msgstr ""
+
+#: ../src/console.cs:15
+msgid "password was deleted"
+msgstr ""
+
+#: ../src/console.cs:19
+msgid "Passwords' notes:"
+msgstr ""
+
+#: ../src/console.cs:21
+msgid "date_time_format is invalid: {0}"
+msgstr ""
+
+#: ../src/console.cs:25
+msgid "Enter master password: "
+msgstr ""
+
+#: ../src/console.cs:29
+msgid ""
+"string for search cannot be an empty string.\n"
+"If you want to see all passwords use --list"
+msgstr ""
+
+#: ../src/console.cs:29
+msgid "Passwords' notes contains \"{0}\":"
+msgstr ""
+
+#: ../src/console.cs:31
+msgid ""
+"string for search cannot be an empty string\n"
+"or cosists exclusively of white-space characters.\n"
+"If you want to see all passwords use --list"
+msgstr ""
+
