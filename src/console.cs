@@ -72,7 +72,7 @@ namespace savepass
 					v => { if (v != null) dict.Add(keys.version, null); } },
 				{ "h|help",  "Show this text",
 					v => { if (v != null) dict.Add(keys.help, null); } },
-				"Settings options:",
+				"\nSettings options:",
 				{ "conf_file=", "{*.conf} file with settings",
 					v => { dict.Add(keys.conf_file, (object) v); } },
 				{"A|always_in_clipboard", "Set {mod} of --get option",
