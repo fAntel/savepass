@@ -28,7 +28,7 @@ namespace savepass
 		string master { get; }
 
 		int config(out conf c);
-		int run();
+		bool run();
 	}
 }
 

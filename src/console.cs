@@ -157,7 +157,7 @@ namespace savepass
 		}
 
 		/* Add new password in array of passwords */
-		public int add()
+		public int add(ref bool changed)
 		{
 			string password0, password1, note;
 
@@ -184,6 +184,7 @@ namespace savepass
 				return 2;
 			}
 			_p.add(password0, note);
+			changed = true;
 			return 0;
 		}
 
@@ -209,7 +210,7 @@ namespace savepass
 		}
 
 		/* Change password and/or note in n element of array of passwords */
-		public int change(int n)
+		public int change(int n, ref bool changed)
 		{
 			string pass, note, str0, str1;
 			if (!_p.get_pass_note(n - 1, out pass, out note))
@@ -242,6 +243,8 @@ namespace savepass
 				return 2;
 			}
 			_p.change(n - 1, pass, note);
+			if (pass != null || note != null)
+				changed = true;
 			return 0;
 		}
 
@@ -304,7 +307,7 @@ namespace savepass
 		}
 
 		/* Remove password with number n from array of passwords */
-		public int del(int n)
+		public int del(int n, ref bool changed)
 		{
 			string pass, note;
 			int return_value;
@@ -317,6 +320,7 @@ namespace savepass
 				String.Format(Catalog.GetString(" you want to delete password with note \"{0}\""), note));
 			if (return_value == 0) {
 				_p.del(n);
+				changed = true;
 				savepass.print(Catalog.GetString("password was deleted"), false);
 			}
 			return return_value == 2 ? 2 : 0;
@@ -420,9 +424,10 @@ namespace savepass
 		}
 
 		/* Process the other command line parameters */
-		public int run()
+		public bool run()
 		{
 			int exit_value = 0;
+			bool changed = false;
 			byte[] data;
 			bool on_screen = dict.ContainsKey(keys.on_screen) ? (bool) dict[keys.on_screen] :
 				#if WINDOWS || GTK
@@ -436,15 +441,19 @@ namespace savepass
 				_master = read_password();
 			} catch (IOException e) {
 				savepass.print(e.Message, true);
-				return 2;
+				Environment.ExitCode = 2;
+				return false;
 			} catch (InvalidOperationException e) {
 				savepass.print(e.Message, true);
-				return 2;
+				Environment.ExitCode = 2;
+				return false;
 			}
 
 			data = file.read_from_file(_filename, _master);
-			if (data == null)
-				return 2;
+			if (data == null) {
+				Environment.ExitCode = 2;
+				return false;
+			}
 			_p = new passwds(data);
 
 			if (dict.ContainsKey(keys.list))
@@ -456,12 +465,13 @@ namespace savepass
 			else if (dict.ContainsKey(keys.get_pass))
 				exit_value = search_and_get_pass((string) dict[keys.get_pass], on_screen);
 			else if (dict.ContainsKey(keys.add))
-				exit_value = add();
+				exit_value = add(ref changed);
 			else if (dict.ContainsKey(keys.change))
-				exit_value = change((int) dict[keys.change]);
+				exit_value = change((int) dict[keys.change], ref changed);
 			else if (dict.ContainsKey(keys.del))
-				exit_value = del((int) dict[keys.del]);
-			return exit_value;
+				exit_value = del((int) dict[keys.del], ref changed);
+			Environment.ExitCode = exit_value;
+			return changed;
 		}
 
 		/* Find and print all notes in array with given note as a substring */

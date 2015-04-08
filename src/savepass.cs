@@ -35,6 +35,7 @@ namespace savepass
 		static int Main(string[] args)
 		{
 			int exit_value = 0;
+			bool changed = false;
 			Mono.Unix.Catalog.Init("savepass", "po");
 			IUI console;
 			try {
@@ -48,10 +49,10 @@ namespace savepass
 #if GTK
 			Gtk.Application.Init();
 #endif
-			exit_value = console.run();
-			if (exit_value == 0)
+			changed = console.run();
+			if (changed)
 				file.write_to_file(console.filename, console.p.to_data(), console.master);
-			return exit_value;
+			return Environment.ExitCode;
 		}
 
 		/* Print errors to the screen in certain format */
