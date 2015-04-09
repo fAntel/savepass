@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-04-08 01:33:23+0300\n"
-"PO-Revision-Date: 2015-04-08 01:33:24+0300\n"
+"POT-Creation-Date: 2015-04-08 16:02:37+0300\n"
+"PO-Revision-Date: 2015-04-08 16:02:37+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,10 @@ msgstr ""
 
 #: ../src/file.cs:2
 msgid "wrong master password"
+msgstr ""
+
+#: ../src/file.cs:3
+msgid "saving file {0} failed: {1}"
 msgstr ""
 
 #: ../src/passwds.cs:5

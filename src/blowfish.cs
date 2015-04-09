@@ -26,7 +26,7 @@ namespace savepass
 {
 	public class blowfish
 	{
-		private RNGCryptoServiceProvider rand;
+		private static RNGCryptoServiceProvider rand;
 
 		private const byte N = 16;
 
@@ -216,7 +216,7 @@ namespace savepass
 			xr = BitConverter.ToUInt32(xr_block, 0);
 		}
 
-		private uint[] init_P()
+		private static uint[] init_P()
 		{
 			return new uint[] {
 				0x243f6a88, 0x85a308d3, 0x13198a2e, 0x03707344,
@@ -226,7 +226,7 @@ namespace savepass
 				0x9216d5d9, 0x8979fb1b};
 		}
 
-		private uint[,] init_S()
+		private static uint[,] init_S()
 		{
 			return new uint[,] {
 				{0xd1310ba6, 0x98dfb5ac, 0x2ffd72db, 0xd01adfb7,

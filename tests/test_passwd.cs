@@ -30,7 +30,7 @@ namespace savepass
 		private DateTime now;
 
 		[SetUp]
-		public void Init()
+		public void set_up()
 		{
 			now = DateTime.Now;
 		}

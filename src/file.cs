@@ -32,8 +32,8 @@ namespace savepass
 			byte[] data = null;
 
 			try {
-				using (FileStream f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None)) {
-					using (BinaryReader r = new BinaryReader(f)) {
+				using (var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None)) {
+					using (var r = new BinaryReader(f)) {
 						data = r.ReadBytes((int) f.Length);
 					}
 				}
@@ -62,13 +62,14 @@ namespace savepass
 			blowfish b = new blowfish(master);
 			data = b.encrypt(data);
 			try {
-				using (FileStream f = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
-					using (BinaryWriter w = new BinaryWriter(f)) {
+				using (var f = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
+					using (var w = new BinaryWriter(f)) {
 						w.Write(data);
 					}
 				}
 			} catch (Exception e) {
-				savepass.print(e.Message, true);
+				savepass.print(String.Format(Catalog.GetString(
+					"saving file {0} failed: {1}"), path, e.Message), true);
 			}
 		}
 	}

@@ -147,17 +147,14 @@ namespace savepass
 			_system_conf_file = Path.Combine(
 				#if WINDOWS
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-				Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
+					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
 				#else
 				"/etc/",
 				#endif
 				Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
 			_system_conf_file = Path.ChangeExtension(_system_conf_file, "conf");
 			if (!File.Exists(_system_conf_file)) {
-				if (sys)
-					file = new GKeyFile();
-				else
-					file = null;
+				file = sys ? new GKeyFile() : null;
 			} else {
 				try {
 					file = new GKeyFile(_system_conf_file, Flags.KeepComments | Flags.KeepTranslations);
@@ -197,7 +194,7 @@ namespace savepass
 		/* Merge settings from system config file with settings from conf_file */
 		private GKeyFile merge_settings()
 		{
-			GKeyFile conf = new GKeyFile();
+			var conf = new GKeyFile();
 			conf.LoadFromData(_system_conf.ToData(), Flags.KeepTranslations | Flags.KeepTranslations);
 			string[] groups = _user_conf.GetGroups();
 			string[] keys;
@@ -235,26 +232,27 @@ namespace savepass
 					_conf.SetComment(default_settings[code].group,
 						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
+				savepass.print(e.Message, true);
 
 			}
-			if (_sys)
+			if (_sys) {
 				try {
-				if (String.IsNullOrWhiteSpace(_system_conf.GetComment(default_settings[code].group,
-					default_settings[code].name)))
-					_system_conf.SetComment(default_settings[code].group,
-						default_settings[code].name, default_settings[code].comment);
-			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
-			}
-			else if (_user_conf != null)
+					if (String.IsNullOrWhiteSpace(_system_conf.GetComment(default_settings[code].group,
+							default_settings[code].name)))
+						_system_conf.SetComment(default_settings[code].group,
+							default_settings[code].name, default_settings[code].comment);
+				} catch (Exception e) {
+					savepass.print(e.Message, true);
+				}
+			} else if (_user_conf != null) {
 				try {
-				if (String.IsNullOrWhiteSpace(_user_conf.GetComment(default_settings[code].group,
-					default_settings[code].name)))
-					_user_conf.SetComment(default_settings[code].group,
-						default_settings[code].name, default_settings[code].comment);
-			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
+					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(default_settings[code].group,
+							default_settings[code].name)))
+						_user_conf.SetComment(default_settings[code].group,
+							default_settings[code].name, default_settings[code].comment);
+				} catch (Exception e) {
+					savepass.print(e.Message, true);
+				}
 			}
 		}
 
@@ -313,7 +311,7 @@ namespace savepass
 						default_settings[(int) settings.format_date_time].name, value);
 				try {
 					if (String.IsNullOrWhiteSpace(_conf.GetComment(default_settings[(int) settings.format_date_time].group,
-						default_settings[(int) settings.format_date_time].name)))
+							default_settings[(int) settings.format_date_time].name)))
 						_conf.SetComment(default_settings[(int) settings.format_date_time].group,
 							default_settings[(int) settings.format_date_time].name,
 							default_settings[(int) settings.format_date_time].comment);
@@ -329,18 +327,18 @@ namespace savepass
 								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						savepass.print(String.Format("{0}", e.Message), true);
+						savepass.print(e.Message, true);
 					}
 				else if (_user_conf != null)
 					try {
-					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(
-							default_settings[(int) settings.format_date_time].group,
-							default_settings[(int) settings.format_date_time].name)))
-						_user_conf.SetComment(default_settings[(int) settings.format_date_time].group,
-								default_settings[(int) settings.format_date_time].name,
-								default_settings[(int) settings.format_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_user_conf.GetComment(
+								default_settings[(int) settings.format_date_time].group,
+								default_settings[(int) settings.format_date_time].name)))
+							_user_conf.SetComment(default_settings[(int) settings.format_date_time].group,
+									default_settings[(int) settings.format_date_time].name,
+									default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						savepass.print(String.Format("{0}", e.Message), true);
+						savepass.print(e.Message, true);
 					}
 			}
 		}
@@ -401,7 +399,7 @@ namespace savepass
 		{
 			string g = null;
 			foreach (conf_settings s in default_settings) {
-				if (String.Compare(g, s.group) != 0) {
+				if (!g.Equals(s.group, StringComparison.OrdinalIgnoreCase)) {
 					g = s.group;
 					Console.WriteLine('[' + g + ']');
 				}

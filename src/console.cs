@@ -39,57 +39,57 @@ namespace savepass
 		private passwds _p;
 		private string _filename;
 		private string _master;
-		private Dictionary<keys, object> dict;
+		private Dictionary<keys, object> _dict;
 
 		public console(string[] args, string version_number)
 		{
-			dict = new Dictionary<keys, object>();
+			_dict = new Dictionary<keys, object>();
 			List<string> rest = null;
-			OptionSet options = new OptionSet() {
+			var options = new OptionSet {
 				Catalog.GetString("Usage: savepass [OPTIONS] FILE - password saver"),
 				"",
 				Catalog.GetString("Options:"),
 				{ "a|add", Catalog.GetString("Add new password to the list"),
-					v => { if (v != null) dict.Add(keys.add, null); } },
+					v => { if (v != null) _dict.Add(keys.add, null); } },
 				{ "c|change=", Catalog.GetString("Change password with number {N}"),
-					v => { dict.Add(keys.change, (object) Convert.ToInt32(v)); } },
+					v => _dict.Add(keys.change, (object) Convert.ToInt32(v)) },
 				{ "d|delete=", Catalog.GetString("Delete password with number {N}"),
-					v => { dict.Add(keys.del, (object) Convert.ToInt32(v)); } },
+					v => _dict.Add(keys.del, (object) Convert.ToInt32(v)) },
 				{ "g|get=", Catalog.GetString("Get password with number {N}"),
-					v => { dict.Add(keys.get, (object) Convert.ToInt32(v)); } },
+					v => _dict.Add(keys.get, (object) Convert.ToInt32(v)) },
 #if WINDOWS || GTK
 				{ "C|on_screen", Catalog.GetString("Get password on screen and not in the clipboard"),
-					v => { dict.Add(keys.on_screen, (object) Convert.ToBoolean(v != null)); } },
+					v => _dict.Add(keys.on_screen, (object) Convert.ToBoolean(v != null)) },
 #endif
 				{ "G|get_pass=", Catalog.GetString("Get password with note {NOTE}"),
-					v => { dict.Add(keys.get_pass, (object) v); } },
+					v => _dict.Add(keys.get_pass, (object) v) },
 				{ "l|list", Catalog.GetString("Show list of passwords' notes"),
-					v => { if (v != null) dict.Add(keys.list, null); } },
+					v => { if (v != null) _dict.Add(keys.list, null); } },
 				{ "s|search=", Catalog.GetString("Show list of passwords' notes like {NOTE}"),
-					v => { dict.Add(keys.search, (object) v); } },
+					v => _dict.Add(keys.search, (object) v) },
 				{ "f|file=", Catalog.GetString("Set the default {FILE}"),
-					v => { dict.Add(keys.file, (object) v); } },
+					v => _dict.Add(keys.file, (object) v) },
 				{ "version", Catalog.GetString("Show version"),
-					v => { if (v != null) dict.Add(keys.version, null); } },
+					v => { if (v != null) _dict.Add(keys.version, null); } },
 				{ "h|help",  Catalog.GetString("Show this text"),
-					v => { if (v != null) dict.Add(keys.help, null); } },
+					v => { if (v != null) _dict.Add(keys.help, null); } },
 				Catalog.GetString("\nSettings options:"),
 				{ "conf_file=", Catalog.GetString("{*.conf} file with settings"),
-					v => { dict.Add(keys.conf_file, (object) v); } },
+					v => _dict.Add(keys.conf_file, (object) v) },
 				{"A|always_in_clipboard", Catalog.GetString("Set {mod} of --get option"),
-					v => { dict.Add(keys.always_in_clipboard, (object) Convert.ToBoolean(v != null)); } },
+					v => _dict.Add(keys.always_in_clipboard, (object) Convert.ToBoolean(v != null)) },
 				{"t|always_save_time_of_change=", Catalog.GetString("Set {mod} of --change option"),
-					v => { dict.Add(keys.always_save_time_of_change, (object) Convert.ToBoolean(v != null)); } },
+					v => _dict.Add(keys.always_save_time_of_change, (object) Convert.ToBoolean(v != null)) },
 				{"H|show_date_time", Catalog.GetString("Show date and time when used --list and --search options"),
-					v => { dict.Add(keys.show_date_time, (object) Convert.ToBoolean(v != null)); } },
+					v => _dict.Add(keys.show_date_time, (object) Convert.ToBoolean(v != null)) },
 				{"format=", Catalog.GetString("Set {format} for date and time output"),
-					v => { dict.Add(keys.format, (object) v); } },
+					v => _dict.Add(keys.format, (object) v) },
 				{"S|save", Catalog.GetString("Save new settings passed via the command line"),
-					v => { if (v != null) dict.Add(keys.save, null); } },
+					v => { if (v != null) _dict.Add(keys.save, null); } },
 				{"system", Catalog.GetString("Work with settings in system configuration file"),
-					v => { if (v != null) dict.Add(keys.system, null); } },
+					v => { if (v != null) _dict.Add(keys.system, null); } },
 				{"config=", Catalog.GetString("Show values of all/setted/system/user settings"),
-					v => { dict.Add(keys.config, (object) v); } }
+					v => _dict.Add(keys.config, (object) v) }
 			};
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
@@ -115,12 +115,12 @@ namespace savepass
 				Environment.ExitCode = 2;
 				throw new Exception();
 			}
-			if (dict.ContainsKey(keys.help)) {
+			if (_dict.ContainsKey(keys.help)) {
 				options.WriteOptionDescriptions(Console.Out);
 				Environment.ExitCode = 0;
 				throw new AllOKException();
 			}
-			if (dict.ContainsKey(keys.version)) {
+			if (_dict.ContainsKey(keys.version)) {
 				Console.WriteLine(
 					"{0} {1}\n" +
 					"Copyright (C) 2014 Anton Kovalyov\n" +
@@ -137,7 +137,7 @@ namespace savepass
 				Environment.ExitCode = 1;
 				throw new ArgumentException();
 			} else if (rest.Count == 1)
-				dict.Add(keys.filename, (object) rest[0]);
+				_dict.Add(keys.filename, (object) rest[0]);
 
 		}
 
@@ -167,10 +167,10 @@ namespace savepass
 					password0 = read_password();
 					Console.Write(Catalog.GetString("Enter password again: "));
 					password1 = read_password();
-					if (String.Compare(password0, password1) != 0) {
+					if (!password0.Equals(password1, StringComparison.Ordinal)) {
 						Console.WriteLine(Catalog.GetString("Passwords doesn't match. Try again"));
 					}
-				} while (String.Compare(password0, password1) != 0);
+				} while (!password0.Equals(password1, StringComparison.Ordinal));
 				Console.Write(Catalog.GetString("Enter note: "));
 				note = Console.ReadLine();
 			} catch (IOException e) {
@@ -188,6 +188,7 @@ namespace savepass
 			return 0;
 		}
 
+		/* return 0 if user sure */
 		private static int are_you_sure(string str)
 		{
 			string answer;
@@ -196,10 +197,9 @@ namespace savepass
 				Console.Write(String.Format(Catalog.GetString(
 					"Are you sure{0}? (y/n) "), str));
 				answer = Console.ReadLine();
-				if (String.Compare(answer, "y", StringComparison.OrdinalIgnoreCase) == 0)
-					return 0;
-				else
+				if (answer == null)
 					return 1;
+				return answer.Equals("y", StringComparison.CurrentCultureIgnoreCase) ? 0 : 1;
 			} catch (IOException e) {
 				savepass.print(e.Message, true);
 				return 2;
@@ -224,10 +224,10 @@ namespace savepass
 						break;
 					Console.Write(Catalog.GetString("Enter new password again: "));
 					str1 = read_password();
-					if (String.Compare(str0, str1) != 0)
+					if (!str0.Equals(str1, StringComparison.Ordinal))
 						Console.WriteLine(Catalog.GetString(
 							"Passwords doesn't match. Try again"));
-				} while (String.Compare(str0, str1) != 0);
+				} while (!str0.Equals(str1, StringComparison.Ordinal));
 				pass = str0.Length > 0 ? str0 : null;
 				Console.Write(Catalog.GetString("Enter new note [{0}]: "), note);
 				str0 = Console.ReadLine();
@@ -243,32 +243,31 @@ namespace savepass
 				return 2;
 			}
 			_p.change(n - 1, pass, note);
-			if (pass != null || note != null)
-				changed = true;
+			changed |= pass != null || note != null;
 			return 0;
 		}
 
 		/* Parse options for configuration file and set _filename */
 		public int config(out conf c)
 		{
-			string conf_file = dict.ContainsKey(keys.conf_file) ? (string) dict[keys.conf_file] : null;
-			string config = dict.ContainsKey(keys.config) ? (string) dict[keys.config] : null;
+			string conf_file = _dict.ContainsKey(keys.conf_file) ? (string) _dict[keys.conf_file] : null;
+			string config_option = _dict.ContainsKey(keys.config) ? (string) _dict[keys.config] : null;
 			c = new conf(conf_file,
-				dict.ContainsKey(keys.system) ||
-				String.Compare(config, "system") == 0);
-			if (dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) dict[keys.file])) {
-				c.default_file = (string) dict[keys.file];
+				_dict.ContainsKey(keys.system) ||
+				String.Equals(config_option, "system", StringComparison.OrdinalIgnoreCase));
+			if (_dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) _dict[keys.file])) {
+				c.default_file = (string) _dict[keys.file];
 				c.Save();
-				_filename = (string) dict[keys.file];
+				_filename = (string) _dict[keys.file];
 			} 
-			if (dict.ContainsKey(keys.config)) {
-				if (String.Compare(config, "all") == 0)
+			if (_dict.ContainsKey(keys.config)) {
+				if (String.Equals(config_option, "all", StringComparison.OrdinalIgnoreCase))
 					c.list_all();
-				else if (String.Compare(config, "setted") == 0)
+				else if (String.Equals(config_option, "setted", StringComparison.OrdinalIgnoreCase))
 					c.list_setted(null);
-				else if (String.Compare(config, "system") == 0)
+				else if (String.Equals(config_option, "system", StringComparison.OrdinalIgnoreCase))
 					c.list(true);
-				else if (String.Compare(config, "user") == 0)
+				else if (String.Equals(config_option, "user", StringComparison.OrdinalIgnoreCase))
 					c.list(false);
 				else {
 					savepass.print(Catalog.GetString(
@@ -277,23 +276,23 @@ namespace savepass
 				}
 				Environment.ExitCode = 0;
 				throw new AllOKException();
-			} else if (dict.ContainsKey(keys.filename))
-				_filename = (string) dict[keys.filename];
-			if (dict.ContainsKey(keys.always_in_clipboard))
-				c.always_in_clipboard = (bool) dict[keys.always_in_clipboard];
-			if (dict.ContainsKey(keys.always_save_time_of_change))
-				c.always_save_time_of_change = (bool) dict[keys.always_save_time_of_change];
-			if (dict.ContainsKey(keys.show_date_time))
-				c.show_date_time = (bool) dict[keys.show_date_time];
-			if (dict.ContainsKey(keys.format) &&
-				!String.IsNullOrWhiteSpace((string) dict[keys.format]))
-				c.format_date_time = (string) dict[keys.format];
-			if (dict.ContainsKey(keys.save))
+			} else if (_dict.ContainsKey(keys.filename))
+				_filename = (string) _dict[keys.filename];
+			if (_dict.ContainsKey(keys.always_in_clipboard))
+				c.always_in_clipboard = (bool) _dict[keys.always_in_clipboard];
+			if (_dict.ContainsKey(keys.always_save_time_of_change))
+				c.always_save_time_of_change = (bool) _dict[keys.always_save_time_of_change];
+			if (_dict.ContainsKey(keys.show_date_time))
+				c.show_date_time = (bool) _dict[keys.show_date_time];
+			if (_dict.ContainsKey(keys.format) &&
+				!String.IsNullOrWhiteSpace((string) _dict[keys.format]))
+				c.format_date_time = (string) _dict[keys.format];
+			if (_dict.ContainsKey(keys.save))
 				c.Save();
 			if (_filename == null) {
 				if (c.default_file != null) {
 					_filename = c.default_file;
-				} else if (dict.ContainsKey(keys.save)) {
+				} else if (_dict.ContainsKey(keys.save)) {
 					Environment.ExitCode = 0;
 					throw new AllOKException();
 				} else {
@@ -360,7 +359,7 @@ namespace savepass
 		}
 
 		/* Print note with given format */
-		private int print_note(int i, string note, DateTime time)
+		private static int print_note(int i, string note, DateTime time)
 		{
 			if (!savepass.c.show_date_time) {
 				Console.WriteLine("{0,3}) {1}", i, note);
@@ -383,17 +382,17 @@ namespace savepass
 		}
 
 		/* Print string or put it into clipboard */
-		private void put(bool on_screen, string str)
+		private static void put(bool on_screen, string str)
 		{
 			if (on_screen  || !savepass.c.always_in_clipboard)
 				Console.WriteLine(str);
 			else {
 				#if WINDOWS
-				Clipboard.SetText(str, TextDataFormat.Text);
+					Clipboard.SetText(str, TextDataFormat.Text);
 				#elif GTK
-				Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
-				clipboard.Text = str;
-				clipboard.Store();
+					Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+					clipboard.Text = str;
+					clipboard.Store();
 				#endif
 			}
 		}
@@ -401,7 +400,7 @@ namespace savepass
 		/* Read characters from stdin but do not echo them */
 		private static String read_password()
 		{
-			StringBuilder password = new StringBuilder();
+			var password = new StringBuilder();
 			ConsoleKeyInfo key;
 
 			do {
@@ -429,7 +428,7 @@ namespace savepass
 			int exit_value = 0;
 			bool changed = false;
 			byte[] data;
-			bool on_screen = dict.ContainsKey(keys.on_screen) ? (bool) dict[keys.on_screen] :
+			bool on_screen = _dict.ContainsKey(keys.on_screen) ? (bool) _dict[keys.on_screen] :
 				#if WINDOWS || GTK
 					false;
 				#else
@@ -456,20 +455,20 @@ namespace savepass
 			}
 			_p = new passwds(data);
 
-			if (dict.ContainsKey(keys.list))
+			if (_dict.ContainsKey(keys.list))
 				exit_value = list();
-			else if (dict.ContainsKey(keys.search))
-				exit_value = search((string) dict[keys.search]);
-			else if (dict.ContainsKey(keys.get))
-				exit_value = get_nth_pass((int) dict[keys.get], on_screen);
-			else if (dict.ContainsKey(keys.get_pass))
-				exit_value = search_and_get_pass((string) dict[keys.get_pass], on_screen);
-			else if (dict.ContainsKey(keys.add))
+			else if (_dict.ContainsKey(keys.search))
+				exit_value = search((string) _dict[keys.search]);
+			else if (_dict.ContainsKey(keys.get))
+				exit_value = get_nth_pass((int) _dict[keys.get], on_screen);
+			else if (_dict.ContainsKey(keys.get_pass))
+				exit_value = search_and_get_pass((string) _dict[keys.get_pass], on_screen);
+			else if (_dict.ContainsKey(keys.add))
 				exit_value = add(ref changed);
-			else if (dict.ContainsKey(keys.change))
-				exit_value = change((int) dict[keys.change], ref changed);
-			else if (dict.ContainsKey(keys.del))
-				exit_value = del((int) dict[keys.del], ref changed);
+			else if (_dict.ContainsKey(keys.change))
+				exit_value = change((int) _dict[keys.change], ref changed);
+			else if (_dict.ContainsKey(keys.del))
+				exit_value = del((int) _dict[keys.del], ref changed);
 			Environment.ExitCode = exit_value;
 			return changed;
 		}

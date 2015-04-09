@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-04-08 01:33:23+0300\n"
-"PO-Revision-Date: 2015-04-08 02:17:46+0300\n"
+"POT-Creation-Date: 2015-04-08 16:02:37+0300\n"
+"PO-Revision-Date: 2015-04-10 01:13:31+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -27,6 +27,10 @@ msgstr "ошибка при чтении файла {0}: {1}"
 #: ../src/file.cs:2
 msgid "wrong master password"
 msgstr "неверный мастер-пароль"
+
+#: ../src/file.cs:3
+msgid "saving file {0} failed: {1}"
+msgstr "ошибка при сохранении файла {0}: {1}"
 
 #: ../src/passwds.cs:5
 msgid "there are no passwords in this file"
@@ -203,7 +207,7 @@ msgstr "Введите комментарий: "
 
 #: ../src/console.cs:11
 msgid "Are you sure{0}? (y/n) "
-msgstr "Вы уверены{0}? (y/n)"
+msgstr "Вы уверены{0}? (y/n) "
 
 #: ../src/console.cs:12
 msgid "Enter new password (if you press ENTER password will stay the same): "
@@ -248,7 +252,7 @@ msgstr "Формат даты/времени в настройке date_time_for
 
 #: ../src/console.cs:25
 msgid "Enter master password: "
-msgstr "Введите мастер-пароль:"
+msgstr "Введите мастер-пароль: "
 
 #: ../src/console.cs:29
 msgid ""

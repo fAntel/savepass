@@ -30,7 +30,7 @@ namespace savepass
 		private passwds ps;
 
 		[SetUp()]
-		public void Init()
+		public void set_up()
 		{
 			p = new passwd("pass", "note");
 			ps = new passwds(p.to_data());
@@ -63,7 +63,7 @@ namespace savepass
 		private byte[] data;
 
 		[SetUp()]
-		public void Init()
+		public void set_up()
 		{
 			p = new passwd("pass", "note");
 			byte [] p_data = p.to_data();
@@ -100,7 +100,7 @@ namespace savepass
 		private passwds ps;
 
 		[SetUp()]
-		public void Init()
+		public void set_up()
 		{
 			p = new passwd("pass", "note");
 			ps = new passwds(new byte[0]);

@@ -23,12 +23,11 @@ using System;
 using System.Collections.Generic;
 using Mono.Unix;
 
-/* Возможно надо сделать чтение не строки а массива символов. В общем надо сейчас будет поработать над тем как хранить данные */
 namespace savepass
 {
 	public class passwds
 	{
-		private List<passwd> _passwds;
+		private readonly List<passwd> _passwds;
 
 		/* Create _passwds array from byte array from file */
 		public passwds(byte[] data)
@@ -96,8 +95,8 @@ namespace savepass
 		/* Return list of notes and list of times */
 		public void list(out string[] notes, out DateTime[] times)
 		{
-			List<string> n = new List<string>();
-			List<DateTime> t = new List<DateTime>();
+			var n = new List<string>();
+			var t = new List<DateTime>();
 
 			for (int i = 0; i < _passwds.Count; ++i) {
 				n.Add(_passwds[i].note);
@@ -113,14 +112,12 @@ namespace savepass
 			indexes = null;
 			notes = null;
 			times = null;
-			List<int> i = new List<int>();
-			List<string> n = new List<string>();
-			List<DateTime> t = new List<DateTime>();
+			var i = new List<int>();
+			var n = new List<string>();
+			var t = new List<DateTime>();
 
 			List<passwd> result = _passwds.FindAll(
-				delegate(passwd p) {
-					return p.note.Contains(note);
-				});
+				p => p.note.Contains(note));
 			if (result.Count == 0) {
 				throw new EmptyArrayException(
 					String.Format(Catalog.GetString(
@@ -143,9 +140,7 @@ namespace savepass
 		{
 			pass = null;
 			List<passwd> result = _passwds.FindAll(
-				delegate(passwd p) {
-					return p.note.Contains(note);
-				});
+				p => p.note.Contains(note));
 			if (result.Count == 0)
 				throw new EmptyArrayException(
 					String.Format(Catalog.GetString(
@@ -162,7 +157,7 @@ namespace savepass
 		/* Convert array to byte array for writing to the file */
 		public byte[] to_data()
 		{
-			List<byte> data = new List<byte>();
+			var data = new List<byte>();
 			foreach (passwd p in _passwds) {
 				if (p != null)
 					data.AddRange(p.to_data());
