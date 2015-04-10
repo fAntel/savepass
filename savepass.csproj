@@ -34,7 +34,6 @@
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>5</LangVersion>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
