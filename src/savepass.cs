@@ -28,18 +28,19 @@ namespace savepass
 {
 	public class savepass
 	{
-		private const string version_number = "0.7";
+		public const string program_name = "savepass";
+		public const string version_number = "0.7";
 		public static conf c;
 
 		static int Main(string[] args)
 		{
 			int exit_value = 0;
 			bool changed = false;
-			Mono.Unix.Catalog.Init("savepass", "po");
-			IUI console;
+			Mono.Unix.Catalog.Init(program_name, "po");
+			IUI ui;
 			try {
-				console = new console(args, version_number);
-				exit_value = console.config(out c);
+				ui = new console(args);
+				exit_value = ui.config(out c);
 			} catch (Exception) {
 				return Environment.ExitCode;
 			}
@@ -48,9 +49,9 @@ namespace savepass
 #if GTK
 			Gtk.Application.Init();
 #endif
-			changed = console.run();
+			changed = ui.run();
 			if (changed)
-				file.write_to_file(console.filename, console.p.to_data(), console.master);
+				file.write_to_file(ui.filename, ui.p.to_data(), ui.master);
 			return Environment.ExitCode;
 		}
 

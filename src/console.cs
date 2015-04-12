@@ -41,7 +41,7 @@ namespace savepass
 		private string _master;
 		private Dictionary<keys, object> _dict;
 
-		public console(string[] args, string version_number)
+		public console(string[] args)
 		{
 			_dict = new Dictionary<keys, object>();
 			List<string> rest = null;
@@ -123,12 +123,12 @@ namespace savepass
 			if (_dict.ContainsKey(keys.version)) {
 				Console.WriteLine(
 					"{0} {1}\n" +
-					"Copyright (C) 2014 Anton Kovalyov\n" +
+					"Copyright (C) 2015 Anton Kovalyov\n" +
 					"License GPLv3: GNU GPL version 3 or later <http://www.gnu.org/licenses/gpl-3.0.html>\n" +
 					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n" +
 					"This is free software, and you are welcome to redistribute it\n" +
 					"under certain conditions.",
-					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
+					savepass.program_name, savepass.version_number);
 				Environment.ExitCode = 0;
 				throw new AllOKException();
 			}
