@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="..\..\..\..\..\usr\lib\mono-source-libs\Options.cs">
       <Link>mono-source-libs\Options.cs</Link>
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
     </Compile>
     <Compile Include="src\file.cs" />
     <Compile Include="src\passwd.cs" />
