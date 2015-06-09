@@ -41,12 +41,14 @@ namespace savepass
 		private string _master;
 		private Dictionary<keys, object> _dict;
 
-		public console(string[] args, string version_number)
+		public console(string[] args)
 		{
 			_dict = new Dictionary<keys, object>();
 			List<string> rest = null;
 			var options = new OptionSet {
-				Catalog.GetString("Usage: savepass [OPTIONS] FILE - password saver"),
+				Catalog.GetString("savepass is password saver"),
+				"",
+				Catalog.GetString("Usage: savepass [OPTIONS] [FILE]"),
 				"",
 				Catalog.GetString("Options:"),
 				{ "a|add", Catalog.GetString("Add new password to the list"),
@@ -73,23 +75,26 @@ namespace savepass
 					v => { if (v != null) _dict.Add(keys.version, null); } },
 				{ "h|help",  Catalog.GetString("Show this text"),
 					v => { if (v != null) _dict.Add(keys.help, null); } },
-				Catalog.GetString("\nSettings options:"),
+				"",
+				Catalog.GetString("Settings' options:"),
 				{ "conf_file=", Catalog.GetString("{*.conf} file with settings"),
 					v => _dict.Add(keys.conf_file, (object) v) },
 				{"A|always_in_clipboard", Catalog.GetString("Set {mod} of --get option"),
 					v => _dict.Add(keys.always_in_clipboard, (object) Convert.ToBoolean(v != null)) },
-				{"t|always_save_time_of_change=", Catalog.GetString("Set {mod} of --change option"),
+				{"t|always_save_time_of_change", Catalog.GetString("Set {mod} of --change option"),
 					v => _dict.Add(keys.always_save_time_of_change, (object) Convert.ToBoolean(v != null)) },
 				{"H|show_date_time", Catalog.GetString("Show date and time when used --list and --search options"),
 					v => _dict.Add(keys.show_date_time, (object) Convert.ToBoolean(v != null)) },
 				{"format=", Catalog.GetString("Set {format} for date and time output"),
 					v => _dict.Add(keys.format, (object) v) },
-				{"S|save", Catalog.GetString("Save new settings passed via the command line"),
+				{"S|save", Catalog.GetString("Save new settings passed via the command line and exit"),
 					v => { if (v != null) _dict.Add(keys.save, null); } },
 				{"system", Catalog.GetString("Work with settings in system configuration file"),
 					v => { if (v != null) _dict.Add(keys.system, null); } },
 				{"config=", Catalog.GetString("Show values of all/setted/system/user settings"),
-					v => _dict.Add(keys.config, (object) v) }
+					v => _dict.Add(keys.config, (object) v) },
+				"",
+				Catalog.GetString("Report bugs to: keldzh@gmail.com")
 			};
 			if (args.Length == 0) {
 				options.WriteOptionDescriptions(Console.Out);
@@ -123,12 +128,12 @@ namespace savepass
 			if (_dict.ContainsKey(keys.version)) {
 				Console.WriteLine(
 					"{0} {1}\n" +
-					"Copyright (C) 2014 Anton Kovalyov\n" +
+					"Copyright (C) 2015 Anton Kovalyov\n" +
 					"License GPLv3: GNU GPL version 3 or later <http://www.gnu.org/licenses/gpl-3.0.html>\n" +
 					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n" +
 					"This is free software, and you are welcome to redistribute it\n" +
 					"under certain conditions.",
-					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName), version_number);
+					savepass.program_name, savepass.version_number);
 				Environment.ExitCode = 0;
 				throw new AllOKException();
 			}
@@ -290,11 +295,12 @@ namespace savepass
 			if (_dict.ContainsKey(keys.save))
 				c.Save();
 			if (_filename == null) {
-				if (c.default_file != null) {
-					_filename = c.default_file;
-				} else if (_dict.ContainsKey(keys.save)) {
+				if (_dict.ContainsKey(keys.save)) {
 					Environment.ExitCode = 0;
 					throw new AllOKException();
+				}
+				if (c.default_file != null) {
+					_filename = c.default_file;
 				} else {
 					savepass.print(string.Format(Catalog.GetString(
 						"File name must be specified\nTry run {0} --help for more information"),

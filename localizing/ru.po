@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-04-08 16:02:37+0300\n"
-"PO-Revision-Date: 2015-04-10 01:13:31+0300\n"
+"POT-Creation-Date: 2015-06-09 19:17:00+0300\n"
+"PO-Revision-Date: 2015-06-09 18:46:11+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -40,8 +40,7 @@ msgstr "в этом файле нет паролей"
 msgid "there is no password with number {0} in this file"
 msgstr "в этом файле нет пароля с номером {0}"
 
-#: ../src/passwds.cs:11
-#: ../src/passwds.cs:13
+#: ../src/passwds.cs:11 ../src/passwds.cs:13
 msgid "there is no notes containing \"{0}\" as a substring."
 msgstr "нет комментария содержащего \"{0}\" в качестве подстроки"
 
@@ -82,8 +81,12 @@ msgid "{0} (default)"
 msgstr "{0} (значение по умолчанию)"
 
 #: ../src/console.cs:3
-msgid "Usage: savepass [OPTIONS] FILE - password saver"
-msgstr "Использование: savepass [ПАРАМЕТРЫ] FILE - хранитель паролей"
+msgid "savepass is password saver"
+msgstr "savepass - хранитель паролей"
+
+#: ../src/console.cs:3
+msgid "Usage: savepass [OPTIONS] [FILE]"
+msgstr "Использование: savepass [ПАРАМЕТРЫ] [ФАЙЛ]"
 
 #: ../src/console.cs:3
 msgid "Options:"
@@ -134,12 +137,8 @@ msgid "Show this text"
 msgstr "Показать этот текст"
 
 #: ../src/console.cs:3
-msgid ""
-"\n"
-"Settings options:"
-msgstr ""
-"\n"
-"Параметры настроек:"
+msgid "Settings' options:"
+msgstr "Параметры настроек:"
 
 #: ../src/console.cs:3
 msgid "{*.conf} file with settings"
@@ -162,7 +161,8 @@ msgid "Set {format} for date and time output"
 msgstr "Установить {формат} вывода даты и времени"
 
 #: ../src/console.cs:3
-msgid "Save new settings passed via the command line"
+#, fuzzy
+msgid "Save new settings passed via the command line and exit"
 msgstr "Сохранить новые настройки переданные через параметры командной строки"
 
 #: ../src/console.cs:3
@@ -172,8 +172,12 @@ msgstr "Работать с настройками из системного ф�
 #: ../src/console.cs:3
 msgid "Show values of all/setted/system/user settings"
 msgstr ""
-"Показать "
-"all(все)/setted(установленные)/system(системные)/user(пользовательсткие) настройки"
+"Показать all(все)/setted(установленные)/system(системные)/"
+"user(пользовательсткие) настройки"
+
+#: ../src/console.cs:3
+msgid "Report bugs to: keldzh@gmail.com"
+msgstr "Об ошибках сообщайте по адресу: <keldzh@gmail.com>"
 
 #: ../src/console.cs:3
 msgid ""
@@ -181,8 +185,8 @@ msgid ""
 "Try `{1} --help' for more information."
 msgstr ""
 "ошибка обработки параметров командной строки: {0}\n"
-"Для получения информации по параметрам командной строки попробуйте '{1} "
-"--help'"
+"Для получения информации по параметрам командной строки попробуйте '{1} --"
+"help'"
 
 #: ../src/console.cs:3
 msgid "too much options"
@@ -196,8 +200,7 @@ msgstr "Введите пароль: "
 msgid "Enter password again: "
 msgstr "Введите пароль снова: "
 
-#: ../src/console.cs:9
-#: ../src/console.cs:12
+#: ../src/console.cs:9 ../src/console.cs:12
 msgid "Passwords doesn't match. Try again"
 msgstr "Пароле не совпадают. Попробуйте снова"
 
@@ -275,4 +278,3 @@ msgstr ""
 "строка для поиска не может быть пустой или содержать испключительно "
 "пробельные символы.\n"
 "Если вы хотите увидеть все пароли, то используйте --list"
-
