@@ -3,3 +3,5 @@ bin
 obj
 savepass.usertasks
 savepass.userprefs
+po
+localizing/ru.po~

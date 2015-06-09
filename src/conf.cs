@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using KeyFile;
+using Mono.Unix;
 
 namespace savepass
 {
@@ -88,7 +89,7 @@ namespace savepass
 			default_settings[(int) settings.format_date_time].default_value;
 
 		/* Key file */
-		private enum settings { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
+		private enum settings: int { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
 			default_file};
 		private GKeyFile _conf = null, _system_conf = null, _user_conf = null;
 		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
@@ -100,15 +101,17 @@ namespace savepass
 			if (conf_file != null) {
 				_conf_file = conf_file;
 				if (!File.Exists(conf_file)) {
-					savepass.print(String.Format("configuration file {0} doesn't exists. " +
-						"If -S option used it will be created", conf_file), false);
+					savepass.print(String.Format(
+						Catalog.GetString("configuration file {0} doesn't exists. " +
+							"If -S option used it will be created"), conf_file), false);
 					_conf = new GKeyFile();
 					return;
 				}
 				try {
 					_conf = new GKeyFile(conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("openging configuration file {0} failed: {1}",
+					savepass.print(String.Format(Catalog.GetString(
+						"openging configuration file {0} failed: {1}"),
 						conf_file, e.Message), true);
 				}
 				return;
@@ -121,7 +124,8 @@ namespace savepass
 					_conf.LoadFromData(default_settings_data,
 						Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("creating object for default settings failed: {0}", e.Message),
+					savepass.print(String.Format(Catalog.GetString(
+						"creating object for default settings failed: {0}"), e.Message),
 						true);
 				}
 				return;
@@ -143,22 +147,20 @@ namespace savepass
 			_system_conf_file = Path.Combine(
 				#if WINDOWS
 				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-				Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
+					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
 				#else
 				"/etc/",
 				#endif
 				Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
 			_system_conf_file = Path.ChangeExtension(_system_conf_file, "conf");
 			if (!File.Exists(_system_conf_file)) {
-				if (sys)
-					file = new GKeyFile();
-				else
-					file = null;
+				file = sys ? new GKeyFile() : null;
 			} else {
 				try {
 					file = new GKeyFile(_system_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 				} catch (Exception e) {
-					savepass.print(String.Format("openging system configuration file {0} failed: {1}",
+					savepass.print(String.Format(Catalog.GetString(
+						"openging system configuration file {0} failed: {1}"),
 						_system_conf_file, e.Message), true);
 					return null;
 				}
@@ -181,7 +183,8 @@ namespace savepass
 			try {
 				file = new GKeyFile(_user_conf_file, Flags.KeepComments | Flags.KeepTranslations);
 			} catch (Exception e) {
-				savepass.print(String.Format("openging user configuration file {0} failed: {1}",
+				savepass.print(String.Format(Catalog.GetString(
+					"openging user configuration file {0} failed: {1}"),
 					_user_conf_file, e.Message), true);
 				return null;
 			}
@@ -191,7 +194,7 @@ namespace savepass
 		/* Merge settings from system config file with settings from conf_file */
 		private GKeyFile merge_settings()
 		{
-			GKeyFile conf = new GKeyFile();
+			var conf = new GKeyFile();
 			conf.LoadFromData(_system_conf.ToData(), Flags.KeepTranslations | Flags.KeepTranslations);
 			string[] groups = _user_conf.GetGroups();
 			string[] keys;
@@ -229,26 +232,27 @@ namespace savepass
 					_conf.SetComment(default_settings[code].group,
 						default_settings[code].name, default_settings[code].comment);
 			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
+				savepass.print(e.Message, true);
 
 			}
-			if (_sys)
+			if (_sys) {
 				try {
-				if (String.IsNullOrWhiteSpace(_system_conf.GetComment(default_settings[code].group,
-					default_settings[code].name)))
-					_system_conf.SetComment(default_settings[code].group,
-						default_settings[code].name, default_settings[code].comment);
-			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
-			}
-			else if (_user_conf != null)
+					if (String.IsNullOrWhiteSpace(_system_conf.GetComment(default_settings[code].group,
+							default_settings[code].name)))
+						_system_conf.SetComment(default_settings[code].group,
+							default_settings[code].name, default_settings[code].comment);
+				} catch (Exception e) {
+					savepass.print(e.Message, true);
+				}
+			} else if (_user_conf != null) {
 				try {
-				if (String.IsNullOrWhiteSpace(_user_conf.GetComment(default_settings[code].group,
-					default_settings[code].name)))
-					_user_conf.SetComment(default_settings[code].group,
-						default_settings[code].name, default_settings[code].comment);
-			} catch (Exception e) {
-				savepass.print(String.Format("{0}", e.Message), true);
+					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(default_settings[code].group,
+							default_settings[code].name)))
+						_user_conf.SetComment(default_settings[code].group,
+							default_settings[code].name, default_settings[code].comment);
+				} catch (Exception e) {
+					savepass.print(e.Message, true);
+				}
 			}
 		}
 
@@ -307,7 +311,7 @@ namespace savepass
 						default_settings[(int) settings.format_date_time].name, value);
 				try {
 					if (String.IsNullOrWhiteSpace(_conf.GetComment(default_settings[(int) settings.format_date_time].group,
-						default_settings[(int) settings.format_date_time].name)))
+							default_settings[(int) settings.format_date_time].name)))
 						_conf.SetComment(default_settings[(int) settings.format_date_time].group,
 							default_settings[(int) settings.format_date_time].name,
 							default_settings[(int) settings.format_date_time].comment);
@@ -323,18 +327,18 @@ namespace savepass
 								default_settings[(int) settings.format_date_time].name,
 								default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						savepass.print(String.Format("{0}", e.Message), true);
+						savepass.print(e.Message, true);
 					}
 				else if (_user_conf != null)
 					try {
-					if (String.IsNullOrWhiteSpace(_user_conf.GetComment(
-							default_settings[(int) settings.format_date_time].group,
-							default_settings[(int) settings.format_date_time].name)))
-						_user_conf.SetComment(default_settings[(int) settings.format_date_time].group,
-								default_settings[(int) settings.format_date_time].name,
-								default_settings[(int) settings.format_date_time].comment);
+						if (String.IsNullOrWhiteSpace(_user_conf.GetComment(
+								default_settings[(int) settings.format_date_time].group,
+								default_settings[(int) settings.format_date_time].name)))
+							_user_conf.SetComment(default_settings[(int) settings.format_date_time].group,
+									default_settings[(int) settings.format_date_time].name,
+									default_settings[(int) settings.format_date_time].comment);
 					} catch (Exception e) {
-						savepass.print(String.Format("{0}", e.Message), true);
+						savepass.print(e.Message, true);
 					}
 			}
 		}
@@ -354,7 +358,8 @@ namespace savepass
 				try {
 					v = Path.GetFullPath(value);
 				} catch (Exception e){
-					savepass.print(String.Format("saving default file failed: {0}",
+					savepass.print(String.Format(Catalog.GetString(
+						"saving default_file failed: {0}"),
 						e.Message), false);
 					return;
 				}
@@ -394,7 +399,7 @@ namespace savepass
 		{
 			string g = null;
 			foreach (conf_settings s in default_settings) {
-				if (String.Compare(g, s.group) != 0) {
+				if (!g.Equals(s.group, StringComparison.OrdinalIgnoreCase)) {
 					g = s.group;
 					Console.WriteLine('[' + g + ']');
 				}
@@ -402,7 +407,8 @@ namespace savepass
 				if (_conf.HasGroup(s.group) && _conf.HasKey(s.group, s.name))
 					Console.WriteLine(_conf.GetValue(s.group, s.name));
 				else
-					Console.WriteLine(String.Format("{0} (default)", s.default_value));
+					Console.WriteLine(String.Format(
+						Catalog.GetString("{0} (default)"), s.default_value));
 			}
 		}
 
