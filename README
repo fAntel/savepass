@@ -1,0 +1,8 @@
+savepass 0.7
+
+savepass is program for safely save passwords
+
+savepass is released under the General Public License version 3 (GPLv3+). See file COPYING for text of licens.
+
+Copyright (C) 2015 Anton Kovalyov
+Report bugs to: <keldzh@gmail.com>
