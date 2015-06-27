@@ -47,12 +47,13 @@ namespace savepass
 		}
 
 		/* Change password with number n */
-		public void change(int n, string pass, string note)
+		public passwd change(int n, string pass, string note)
 		{
 			if (pass != null)
 				_passwds[n].password = pass;
 			if (note != null)
 				_passwds[n].note = note;
+			return _passwds[n];
 		}
 
 		/* Check is n within _passwds

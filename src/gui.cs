@@ -22,6 +22,7 @@
 using System;
 using Gtk;
 using System.Globalization;
+using System.Text;
 
 namespace savepass
 {
@@ -34,6 +35,7 @@ namespace savepass
 
 		private static Window _window;
 		private readonly ListStore _model;
+		private readonly TreeView _treeview;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -62,15 +64,18 @@ namespace savepass
 			_model = new ListStore(typeof(string), typeof(string), typeof(string));
 			var sw = new ScrolledWindow();
 			hbox.PackStart(sw, true, true, 0);
-			var treeview = new TreeView(_model);
-			sw.Add(treeview);
-			treeview.AppendColumn("Note", new CellRendererText(), "text", 0);
+			_treeview = new TreeView(_model);
+			sw.Add(_treeview);
+			_treeview.AppendColumn("Note", new CellRendererText(), "text", 0);
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			hbox.PackStart(buttons_box, false, true, 3);
 			var add_button = create_button("Add", "list-add");
 			buttons_box.PackStart(add_button, false, true, 0);
 			add_button.Clicked += add_clicked;
+			var edit_button = create_button("Edit", null);
+			buttons_box.PackStart(edit_button, false, true, 0);
+			edit_button.Clicked += edit_clicked;
 
 			_window.ShowAll();
 		}
@@ -118,7 +123,7 @@ namespace savepass
 			Application.Quit();
 		}
 
-		private class add_dialog: Dialog {
+		private class add_edit_dialog: Dialog {
 			private readonly Dialog dialog;
 			private Label pass_again_label;
 			private Entry pass_entry;
@@ -127,9 +132,9 @@ namespace savepass
 			private CheckButton visibility_checkbox;
 			private Label error_label;
 
-			public add_dialog()
+			public add_edit_dialog(string caption, string pass, string note)
 			{
-				dialog = new Dialog("Add new password", _window, DialogFlags.DestroyWithParent,
+				dialog = new Dialog(caption, _window, DialogFlags.DestroyWithParent,
 					"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
 				dialog.Resizable = false;
 				var content_area = dialog.ContentArea;
@@ -153,8 +158,14 @@ namespace savepass
 				this.pass_again_entry = new Entry();
 				grid.Attach(this.pass_again_entry, 1, 1, 1, 1);
 				this.pass_again_entry.Visibility = false;
+				if (pass != null) {
+					pass_entry.Text = pass;
+					pass_again_entry.Text = pass;
+				}
 				this.note_entry = new Entry();
 				grid.Attach(this.note_entry, 1, 2, 1, 1);
+				if (note != null)
+					note_entry.Text = note;
 
 				this.visibility_checkbox = new CheckButton("Show password");
 				grid.Attach(this.visibility_checkbox, 0, 3, 2, 1);
@@ -225,7 +236,7 @@ namespace savepass
 
 		private void add_clicked(object sender, EventArgs e)
 		{
-			var dialog = new add_dialog();
+			var dialog = new add_edit_dialog("Add new password", null, null);
 
 			while (dialog.run() == (int) ResponseType.Ok) {
 				if (String.IsNullOrEmpty(dialog.pass) ||
@@ -243,6 +254,45 @@ namespace savepass
 				           new_p.added.ToString("g", CultureInfo.CurrentCulture),
 				           new_p.changed.ToString("g", CultureInfo.CurrentCulture));
 				_changed = true;
+				break;
+			}
+
+			dialog.destroy();
+		}
+
+		private void edit_clicked(object sender, EventArgs e)
+		{
+			var selection = _treeview.Selection;
+			var iter = new TreeIter();
+			if (!selection.GetSelected(out iter))
+				return;
+
+			string note = (string) _model.GetValue(iter, 0);
+			string pass;
+			_p.search_and_get_pass(note, out pass);
+
+			var dialog = new add_edit_dialog("Edit password", pass, note);
+
+			while (dialog.run() == (int) ResponseType.Ok) {
+				if (String.IsNullOrEmpty(dialog.pass) ||
+					(String.IsNullOrEmpty(dialog.pass_again) && !dialog.show_pass) ||
+					String.IsNullOrWhiteSpace(dialog.note)) {
+					dialog.entry_is_empty();
+					continue;
+				}
+				if (!dialog.show_pass && dialog.pass != dialog.pass_again) {
+					dialog.passs_doesnt_match();
+					continue;
+				}
+				_changed |= !pass.Equals(dialog.pass, StringComparison.Ordinal) ||
+					!note.Equals(dialog.note, StringComparison.Ordinal);
+				if (_changed) {
+					var new_p = _p.change(int.Parse(_model.GetStringFromIter(iter)),
+						dialog.pass, dialog.note);
+					_model.SetValues(iter, new_p.note,
+						new_p.added.ToString("g", CultureInfo.CurrentCulture),
+						new_p.changed.ToString("g", CultureInfo.CurrentCulture));
+				}
 				break;
 			}
 
