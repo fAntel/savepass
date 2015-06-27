@@ -81,15 +81,36 @@ namespace savepass
 			var edit_button = create_button("Edit", null);
 			buttons_box.PackStart(edit_button, false, true, 0);
 			edit_button.Clicked += edit_clicked;
+			edit_button.Sensitive = false;
 			var delete_button = create_button("Delete", "edit-delete");
 			buttons_box.PackStart(delete_button, false, true, 0);
 			delete_button.Clicked += delete_clicked;
+			delete_button.Sensitive = false;
 			var copy_button = create_button("Copy", "edit-copy");
 			buttons_box.PackStart(copy_button, false, true, 0);
 			copy_button.Clicked += copy_clicked;
+			copy_button.Sensitive = false;
 			var show_button = create_button("Show", null);
 			buttons_box.PackStart(show_button, false, true, 0);
 			show_button.Clicked += show_clicked;
+			show_button.Sensitive = false;
+
+			var selection = _treeview.Selection;
+			selection.Changed += delegate(object sender, EventArgs e) {
+				TreeIter iter;
+				if (((TreeSelection) sender).GetSelected(out iter)) {
+					edit_button.Sensitive = true;
+					delete_button.Sensitive = true;
+					copy_button.Sensitive = true;
+					show_button.Sensitive = true;
+				} else {
+					edit_button.Sensitive = false;
+					delete_button.Sensitive = false;
+					copy_button.Sensitive = false;
+					show_button.Sensitive = false;
+				}
+
+			};
 
 			_window.ShowAll();
 		}
