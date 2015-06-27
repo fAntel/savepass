@@ -67,6 +67,8 @@ namespace savepass
 			_treeview = new TreeView(_model);
 			sw.Add(_treeview);
 			_treeview.AppendColumn("Note", new CellRendererText(), "text", 0);
+			_treeview.AppendColumn("Added", new CellRendererText(), "text", 1);
+			_treeview.AppendColumn("Changed", new CellRendererText(), "text", 2);
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			hbox.PackStart(buttons_box, false, true, 3);
@@ -252,7 +254,7 @@ namespace savepass
 				var new_p = _p.add(dialog.pass, dialog.note);
 				_model.AppendValues(new_p.note,
 				           new_p.added.ToString("g", CultureInfo.CurrentCulture),
-				           new_p.changed.ToString("g", CultureInfo.CurrentCulture));
+				           "");
 				_changed = true;
 				break;
 			}
