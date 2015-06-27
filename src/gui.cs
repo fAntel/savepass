@@ -84,6 +84,9 @@ namespace savepass
 			var delete_button = create_button("Delete", "edit-delete");
 			buttons_box.PackStart(delete_button, false, true, 0);
 			delete_button.Clicked += delete_clicked;
+			var copy_button = create_button("Copy", "edit-copy");
+			buttons_box.PackStart(copy_button, false, true, 0);
+			copy_button.Clicked += copy_clicked;
 
 			_window.ShowAll();
 		}
@@ -343,6 +346,24 @@ namespace savepass
 
 			_p.del(int.Parse(_model.GetStringFromIter(iter)));
 			_model.Remove(ref iter);
+		}
+
+		private void copy_clicked(object sender, EventArgs e)
+		{
+			var selection = _treeview.Selection;
+			TreeIter iter;
+			if (!selection.GetSelected(out iter))
+				return;
+
+			string note, pass;
+			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)), out pass, out note);
+		#if WINDOWS
+			Clipboard.SetText(pass, TextDataFormat.Text);
+		#elif GTK
+			Gtk.Clipboard clipboard = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false));
+			clipboard.Text = pass;
+			clipboard.Store();
+		#endif
 		}
 	}
 }
