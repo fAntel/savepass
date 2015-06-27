@@ -461,6 +461,10 @@ namespace savepass
 			}
 			_p = new passwds(data);
 
+#if GTK
+			Gtk.Application.Init();
+#endif
+
 			if (_dict.ContainsKey(keys.list))
 				exit_value = list();
 			else if (_dict.ContainsKey(keys.search))

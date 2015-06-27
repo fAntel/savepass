@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GTK
+#define GUI
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -39,16 +40,18 @@ namespace savepass
 			Mono.Unix.Catalog.Init(program_name, "po");
 			IUI ui;
 			try {
+#if GUI
+				ui = new gui(args);
+#else
 				ui = new console(args);
+#endif
 				exit_value = ui.config(out c);
-			} catch (Exception) {
+			} catch (Exception e) {
+				Console.WriteLine(e.Message);
 				return Environment.ExitCode;
 			}
 			if (exit_value != 0)
 				return exit_value;
-#if GTK
-			Gtk.Application.Init();
-#endif
 			changed = ui.run();
 			if (changed)
 				file.write_to_file(ui.filename, ui.p.to_data(), ui.master);

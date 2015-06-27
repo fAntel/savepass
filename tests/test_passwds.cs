@@ -66,7 +66,7 @@ namespace savepass
 		public void set_up()
 		{
 			p = new passwd("pass", "note");
-			byte [] p_data = p.to_data();
+			byte[] p_data = p.to_data();
 			data = new byte[p_data.Length * 3];
 			Array.Copy(p_data, 0, data, 0, p_data.Length);
 			Array.Copy(p_data, 0, data, p_data.Length, p_data.Length);

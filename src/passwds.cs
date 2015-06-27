@@ -39,9 +39,11 @@ namespace savepass
 		}
 
 		/* Add new password to the list */
-		public void add(string pass, string note)
+		public passwd add(string pass, string note)
 		{
-			_passwds.Add(new passwd(pass, note));
+			var p = new passwd(pass, note);
+			_passwds.Add(p);
+			return p;
 		}
 
 		/* Change password with number n */
