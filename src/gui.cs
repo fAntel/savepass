@@ -61,14 +61,17 @@ namespace savepass
 			var hbox = new Box(Orientation.Horizontal, 2);
 			_window.Add(hbox);
 			// Create treeview
-			_model = new ListStore(typeof(string), typeof(string), typeof(string));
+			_model = new ListStore(typeof(string), typeof(string));
 			var sw = new ScrolledWindow();
 			hbox.PackStart(sw, true, true, 0);
 			_treeview = new TreeView(_model);
 			sw.Add(_treeview);
-			_treeview.AppendColumn("Note", new CellRendererText(), "text", 0);
-			_treeview.AppendColumn("Added", new CellRendererText(), "text", 1);
-			_treeview.AppendColumn("Changed", new CellRendererText(), "text", 2);
+			var column = new TreeViewColumn("Note", new CellRendererText(), "text", 0);
+			column.Resizable = true;
+			_treeview.AppendColumn(column);
+			column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
+			column.Resizable = true;
+			_treeview.AppendColumn(column);
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			hbox.PackStart(buttons_box, false, true, 3);
@@ -320,8 +323,7 @@ namespace savepass
 					var new_p = _p.change(int.Parse(_model.GetStringFromIter(iter)),
 						dialog.pass, dialog.note);
 					_model.SetValues(iter, new_p.note,
-						new_p.added.ToString("g", CultureInfo.CurrentCulture),
-						new_p.changed.ToString("g", CultureInfo.CurrentCulture));
+								new_p.time.ToString("g", CultureInfo.CurrentCulture));
 				}
 				break;
 			}
