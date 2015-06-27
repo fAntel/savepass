@@ -200,7 +200,7 @@ namespace savepass
 
 			try {
 				Console.Write(String.Format(Catalog.GetString(
-					"Are you sure{0}? (y/n) "), str));
+					"Are you sure you want to delete password with note \"{0}\"? (y/n) "), str));
 				answer = Console.ReadLine();
 				if (answer == null)
 					return 1;
@@ -321,8 +321,7 @@ namespace savepass
 			if (_p.check_limits(n, true))
 				return 1;
 			_p.get_pass_note(n, out pass, out note);
-			return_value = are_you_sure(
-				String.Format(Catalog.GetString(" you want to delete password with note \"{0}\""), note));
+			return_value = are_you_sure(note);
 			if (return_value == 0) {
 				_p.del(n);
 				changed = true;

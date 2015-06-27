@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-09 19:17:00+0300\n"
+"POT-Creation-Date: 2015-06-27 21:38:32+0300\n"
 "PO-Revision-Date: 2015-06-09 18:46:11+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
@@ -209,8 +209,9 @@ msgid "Enter note: "
 msgstr "Введите комментарий: "
 
 #: ../src/console.cs:11
-msgid "Are you sure{0}? (y/n) "
-msgstr "Вы уверены{0}? (y/n) "
+#, fuzzy
+msgid "Are you sure you want to delete password with note \"{0}\"? (y/n) "
+msgstr " вы хотите удалить пароль с комментарием \"{0}\""
 
 #: ../src/console.cs:12
 msgid "Enter new password (if you press ENTER password will stay the same): "
@@ -238,10 +239,6 @@ msgstr ""
 "командной строки попробуйте '{1} --help'"
 
 #: ../src/console.cs:15
-msgid " you want to delete password with note \"{0}\""
-msgstr " вы хотите удалить пароль с комментарием \"{0}\""
-
-#: ../src/console.cs:15
 msgid "password was deleted"
 msgstr "пароль был удалён"
 
@@ -257,7 +254,7 @@ msgstr "Формат даты/времени в настройке date_time_for
 msgid "Enter master password: "
 msgstr "Введите мастер-пароль: "
 
-#: ../src/console.cs:29
+#: ../src/console.cs:30
 msgid ""
 "string for search cannot be an empty string.\n"
 "If you want to see all passwords use --list"
@@ -265,11 +262,11 @@ msgstr ""
 "строка для поиска не может быть пустой.\n"
 "Если вы хотите увидеть все пароли используйте --list"
 
-#: ../src/console.cs:29
+#: ../src/console.cs:30
 msgid "Passwords' notes contains \"{0}\":"
 msgstr "Комментарии к паролям содержащие \"{0}\":"
 
-#: ../src/console.cs:31
+#: ../src/console.cs:32
 msgid ""
 "string for search cannot be an empty string\n"
 "or cosists exclusively of white-space characters.\n"
@@ -278,3 +275,11 @@ msgstr ""
 "строка для поиска не может быть пустой или содержать испключительно "
 "пробельные символы.\n"
 "Если вы хотите увидеть все пароли, то используйте --list"
+
+#: ../src/gui.cs:12
+msgid "Are you sure{0}? (y/n) "
+msgstr "Вы уверены{0}? (y/n) "
+
+#, fuzzy
+#~ msgid "Are you sure you want to delete password with note \"{0}\"?"
+#~ msgstr " вы хотите удалить пароль с комментарием \"{0}\""

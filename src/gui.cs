@@ -78,6 +78,9 @@ namespace savepass
 			var edit_button = create_button("Edit", null);
 			buttons_box.PackStart(edit_button, false, true, 0);
 			edit_button.Clicked += edit_clicked;
+			var delete_button = create_button("Delete", "edit-delete");
+			buttons_box.PackStart(delete_button, false, true, 0);
+			delete_button.Clicked += delete_clicked;
 
 			_window.ShowAll();
 		}
@@ -95,6 +98,29 @@ namespace savepass
 		public string master
 		{
 			get { return _master; }
+		}
+
+		/* return 0 if user sure */
+		private static int are_you_sure(string str)
+		{
+			int answer;
+
+			var dialog = new Dialog("savepass", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
+			dialog.Resizable = false;
+			dialog.DefaultResponse = ResponseType.Ok;
+			var content_area = dialog.ContentArea;
+			var label = new Label(String.Format(
+				"Are you sure you want to delete password with note \"{0}\"?", str));
+			content_area.PackStart(label, true, true, 3);
+			dialog.ShowAll();
+
+			answer = dialog.Run() == (int) ResponseType.Ok ? 0 : 1;
+
+			dialog.Destroy();
+
+			return answer;
 		}
 			
 		public int config(out conf c)
@@ -139,9 +165,11 @@ namespace savepass
 				dialog = new Dialog(caption, _window, DialogFlags.DestroyWithParent,
 					"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
 				dialog.Resizable = false;
+				dialog.DefaultResponse = ResponseType.Ok;
 				var content_area = dialog.ContentArea;
+				content_area.BorderWidth = 4;
 				var grid = new Grid();
-				content_area.PackStart(grid, false, false, 0);
+				content_area.PackStart(grid, false, false, 2);
 				grid.RowSpacing = 3;
 				grid.ColumnSpacing = 3;
 
@@ -265,7 +293,7 @@ namespace savepass
 		private void edit_clicked(object sender, EventArgs e)
 		{
 			var selection = _treeview.Selection;
-			var iter = new TreeIter();
+			TreeIter iter;
 			if (!selection.GetSelected(out iter))
 				return;
 
@@ -299,6 +327,20 @@ namespace savepass
 			}
 
 			dialog.destroy();
+		}
+
+		private void delete_clicked(object sender, EventArgs e)
+		{
+			var selection = _treeview.Selection;
+			TreeIter iter;
+			if (!selection.GetSelected(out iter))
+				return;
+
+			if (are_you_sure((string) _model.GetValue(iter, 0)) != 0)
+				return;
+
+			_p.del(int.Parse(_model.GetStringFromIter(iter)));
+			_model.Remove(ref iter);
 		}
 	}
 }

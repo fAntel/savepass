@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-09 19:17:00+0300\n"
-"PO-Revision-Date: 2015-06-09 19:17:00+0300\n"
+"POT-Creation-Date: 2015-06-27 21:38:32+0300\n"
+"PO-Revision-Date: 2015-06-27 21:38:32+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -200,7 +200,7 @@ msgid "Enter note: "
 msgstr ""
 
 #: ../src/console.cs:11
-msgid "Are you sure{0}? (y/n) "
+msgid "Are you sure you want to delete password with note \"{0}\"? (y/n) "
 msgstr ""
 
 #: ../src/console.cs:12
@@ -226,10 +226,6 @@ msgid ""
 msgstr ""
 
 #: ../src/console.cs:15
-msgid " you want to delete password with note \"{0}\""
-msgstr ""
-
-#: ../src/console.cs:15
 msgid "password was deleted"
 msgstr ""
 
@@ -245,20 +241,24 @@ msgstr ""
 msgid "Enter master password: "
 msgstr ""
 
-#: ../src/console.cs:29
+#: ../src/console.cs:30
 msgid ""
 "string for search cannot be an empty string.\n"
 "If you want to see all passwords use --list"
 msgstr ""
 
-#: ../src/console.cs:29
+#: ../src/console.cs:30
 msgid "Passwords' notes contains \"{0}\":"
 msgstr ""
 
-#: ../src/console.cs:31
+#: ../src/console.cs:32
 msgid ""
 "string for search cannot be an empty string\n"
 "or cosists exclusively of white-space characters.\n"
 "If you want to see all passwords use --list"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Are you sure{0}? (y/n) "
 msgstr ""
 
