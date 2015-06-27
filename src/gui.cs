@@ -87,6 +87,9 @@ namespace savepass
 			var copy_button = create_button("Copy", "edit-copy");
 			buttons_box.PackStart(copy_button, false, true, 0);
 			copy_button.Clicked += copy_clicked;
+			var show_button = create_button("Show", null);
+			buttons_box.PackStart(show_button, false, true, 0);
+			show_button.Clicked += show_clicked;
 
 			_window.ShowAll();
 		}
@@ -364,6 +367,21 @@ namespace savepass
 			clipboard.Text = pass;
 			clipboard.Store();
 		#endif
+		}
+
+		private void show_clicked(object sender, EventArgs e)
+		{
+			var selection = _treeview.Selection;
+			TreeIter iter;
+			if (!selection.GetSelected(out iter))
+				return;
+
+			string note, pass;
+			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)), out pass, out note);
+			var dialog = new MessageDialog(_window, DialogFlags.DestroyWithParent,
+				MessageType.Info, ButtonsType.Close, pass);
+			dialog.Run();
+			dialog.Destroy();
 		}
 	}
 }
