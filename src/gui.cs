@@ -34,8 +34,8 @@ namespace savepass
 		private bool _changed = false;
 
 		private static Window _window;
-		private readonly ListStore _model;
-		private readonly TreeView _treeview;
+		private ListStore _model;
+		private TreeView _treeview;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -48,19 +48,15 @@ namespace savepass
 			}
 			return button;
 		}
-
-		public gui(string[] args)
+		private void create_menu(ref MenuBar menu_bar)
 		{
-			Application.Init(savepass.program_name, ref args);
-			// Create window
-			_window = new Window("savepass");
-			_window.DeleteEvent += on_delete;
-			_window.Resize(600, 400);
-			// Create menu
-			// Create box for treeview and buttons
-			var hbox = new Box(Orientation.Horizontal, 2);
-			_window.Add(hbox);
-			// Create treeview
+			
+
+
+		}
+
+		private void create_treeview(ref Box hbox)
+		{
 			_model = new ListStore(typeof(string), typeof(string));
 			var sw = new ScrolledWindow();
 			hbox.PackStart(sw, true, true, 0);
@@ -72,6 +68,97 @@ namespace savepass
 			column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
 			column.Resizable = true;
 			_treeview.AppendColumn(column);
+		}
+
+		public gui(string[] args)
+		{
+			Application.Init(savepass.program_name, ref args);
+			// Create window
+			_window = new Window("savepass");
+			_window.DeleteEvent += on_delete;
+			_window.Resize(600, 400);
+			// Create menu
+			var vbox = new Box(Orientation.Vertical, 2);
+			_window.Add(vbox);
+			var menu_bar = new MenuBar();
+			vbox.PackStart(menu_bar, false, true, 0);
+			create_menu(ref menu_bar);
+			// File
+			var item = new MenuItem("File");
+			menu_bar.Append(item);
+			var menu = new Menu();
+			item.Submenu = menu;
+
+			var new_item = new MenuItem("New");
+			menu.Append(new_item);
+			//add_item.Activated += new_activated;
+			var open_item = new MenuItem("Open");
+			menu.Append(open_item);
+			//open_item.Activated += open_activated;
+			var save_item = new MenuItem("Save");
+			menu.Append(save_item);
+			//save_item.Activated += save_activated;
+			var save_as_item = new MenuItem("Save as");
+			menu.Append(save_as_item);
+			//save_as_item.Activated += save_as_activated;
+			var separator = new SeparatorMenuItem();
+			menu.Append(separator);
+			var preferences_item = new MenuItem("Preferences");
+			menu.Append(preferences_item);
+			//preferences_item.Activated += preferences_activated;
+			separator = new SeparatorMenuItem();
+			menu.Append(separator);
+			var close_item = new MenuItem("Close");
+			menu.Append(close_item);
+			//close_item.Activated += close_activated;
+			var quit_item = new MenuItem("Quit");
+			menu.Append(quit_item);
+			quit_item.Activated += quit_activated;
+
+			// Edit
+			item = new MenuItem("Edit");
+			menu_bar.Append(item);
+			menu = new Menu();
+			item.Submenu = menu;
+
+			var add_item = new MenuItem("Add");
+			menu.Append(add_item);
+			add_item.Activated += add_clicked;
+			var edit_item = new MenuItem("Edit");
+			menu.Append(edit_item);
+			edit_item.Activated += edit_clicked;
+			edit_item.Sensitive = false;
+			var delete_item = new MenuItem("Delete");
+			menu.Append(delete_item);
+			delete_item.Activated += delete_clicked;
+			delete_item.Sensitive = false;
+			var copy_item = new MenuItem("Copy");
+			menu.Append(copy_item);
+			copy_item.Activated += copy_clicked;
+			copy_item.Sensitive = false;
+			var show_item = new MenuItem("Show");
+			menu.Append(show_item);
+			show_item.Activated += show_clicked;
+			show_item.Sensitive = false;
+
+			// Help
+			item = new MenuItem("Help");
+			menu_bar.Append(item);
+			menu = new Menu();
+			item.Submenu = menu;
+
+			var help_item = new MenuItem("Help");
+			menu.Append(help_item);
+			//help_item.Activated += help_activated;
+			var about_item = new MenuItem("About");
+			menu.Append(about_item);
+			//about_item.Activated += about_activated;
+
+			// Create box for treeview and buttons
+			var hbox = new Box(Orientation.Horizontal, 2);
+			vbox.PackStart(hbox, true, true, 0);
+			// Create treeview
+			create_treeview(ref hbox);
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			hbox.PackStart(buttons_box, false, true, 3);
@@ -103,11 +190,21 @@ namespace savepass
 					delete_button.Sensitive = true;
 					copy_button.Sensitive = true;
 					show_button.Sensitive = true;
+
+					edit_item.Sensitive = true;
+					delete_item.Sensitive = true;
+					copy_item.Sensitive = true;
+					show_item.Sensitive = true;
 				} else {
 					edit_button.Sensitive = false;
 					delete_button.Sensitive = false;
 					copy_button.Sensitive = false;
 					show_button.Sensitive = false;
+
+					edit_item.Sensitive = false;
+					delete_item.Sensitive = false;
+					copy_item.Sensitive = false;
+					show_item.Sensitive = false;
 				}
 
 			};
@@ -164,7 +261,7 @@ namespace savepass
 			Environment.ExitCode = 0;
 
 			// this fragment will be deleted when add New|Open file
-			byte[] data = new byte[0];
+			var data = new byte[0];
 			_p = new passwds(data);
 
 			Application.Run();
@@ -403,6 +500,11 @@ namespace savepass
 				MessageType.Info, ButtonsType.Close, pass);
 			dialog.Run();
 			dialog.Destroy();
+		}
+
+		private void quit_activated(object sender, EventArgs args)
+		{
+			Application.Quit();
 		}
 	}
 }
