@@ -442,8 +442,20 @@ namespace savepass
 				#endif
 				
 			try {
-				Console.Write(Catalog.GetString("Enter master password: "));
-				_master = read_password();
+				while (true) {
+					Console.Write(Catalog.GetString("Enter master password: "));
+					_master = read_password();
+					if (_master.Length < 4)
+						Console.WriteLine(Catalog.GetString(
+							"The length of the master password must be 4 or " +
+							"more characters. Try again"));
+					else if (_master.Length > 56)
+						Console.WriteLine(Catalog.GetString(
+							"The length of the master password must be no more " +
+							"than 56 characters. Try again"));
+					else
+						break;
+				}
 			} catch (IOException e) {
 				savepass.print(e.Message, true);
 				Environment.ExitCode = 2;

@@ -5,3 +5,4 @@ savepass.usertasks
 savepass.userprefs
 po
 localizing/ru.po~
+src/gui.glade
