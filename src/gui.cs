@@ -152,7 +152,7 @@ namespace savepass
 			//help_item.Activated += help_activated;
 			var about_item = new MenuItem("About");
 			menu.Append(about_item);
-			//about_item.Activated += about_activated;
+			about_item.Activated += about_activated;
 
 			// Create box for treeview and buttons
 			var hbox = new Box(Orientation.Horizontal, 2);
@@ -292,6 +292,7 @@ namespace savepass
 				dialog = new Dialog(caption, _window, DialogFlags.DestroyWithParent,
 					"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
 				dialog.Resizable = false;
+				dialog.TransientFor = _window;
 				dialog.DefaultResponse = ResponseType.Ok;
 				var content_area = dialog.ContentArea;
 				content_area.BorderWidth = 4;
@@ -498,6 +499,7 @@ namespace savepass
 			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)), out pass, out note);
 			var dialog = new MessageDialog(_window, DialogFlags.DestroyWithParent,
 				MessageType.Info, ButtonsType.Close, pass);
+			dialog.TransientFor = _window;
 			dialog.Run();
 			dialog.Destroy();
 		}
@@ -505,6 +507,23 @@ namespace savepass
 		private void quit_activated(object sender, EventArgs args)
 		{
 			Application.Quit();
+		}
+
+		private void about_activated(object sender, EventArgs args)
+		{
+			var dialog = new AboutDialog();
+			dialog.TransientFor = _window;
+			dialog.Authors = savepass.authors;
+			dialog.Comments = "savepass is a password saver";
+			dialog.Copyright = "Copyright (C) Kovalyov Anton 2015";
+			dialog.Documenters = savepass.documenters;
+			dialog.LicenseType = License.Gpl30;
+			dialog.ProgramName = savepass.program_name;
+			dialog.TranslatorCredits = savepass.translator_credits;
+			dialog.Version = savepass.version_number;
+
+			dialog.Run();
+			dialog.Destroy();
 		}
 	}
 }

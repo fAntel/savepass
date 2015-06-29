@@ -31,6 +31,9 @@ namespace savepass
 	{
 		public const string program_name = "savepass";
 		public const string version_number = "0.8";
+		public static readonly string[] authors = {"Anton Kovalov <keldzh@gmail.com>"};
+		public static readonly string[] documenters = {"Anton Kovalov <keldzh@gmail.com>"};
+		public const string translator_credits = "Anton Kovalov <keldzh@gmail.com>";
 		public static conf c;
 
 		static int Main(string[] args)
