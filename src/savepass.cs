@@ -30,7 +30,7 @@ namespace savepass
 	public class savepass
 	{
 		public const string program_name = "savepass";
-		public const string version_number = "0.7";
+		public const string version_number = "0.8";
 		public static conf c;
 
 		static int Main(string[] args)
