@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-27 21:38:32+0300\n"
+"POT-Creation-Date: 2015-06-29 18:37:11+0300\n"
 "PO-Revision-Date: 2015-06-09 18:46:11+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
@@ -254,6 +254,17 @@ msgstr "Формат даты/времени в настройке date_time_for
 msgid "Enter master password: "
 msgstr "Введите мастер-пароль: "
 
+#: ../src/console.cs:25
+msgid ""
+"The length of the master password must be 4 or more characters. Try again"
+msgstr ""
+
+#: ../src/console.cs:25
+msgid ""
+"The length of the master password must be no more than 56 characters. Try "
+"again"
+msgstr ""
+
 #: ../src/console.cs:30
 msgid ""
 "string for search cannot be an empty string.\n"
@@ -276,9 +287,8 @@ msgstr ""
 "пробельные символы.\n"
 "Если вы хотите увидеть все пароли, то используйте --list"
 
-#: ../src/gui.cs:12
-msgid "Are you sure{0}? (y/n) "
-msgstr "Вы уверены{0}? (y/n) "
+#~ msgid "Are you sure{0}? (y/n) "
+#~ msgstr "Вы уверены{0}? (y/n) "
 
 #, fuzzy
 #~ msgid "Are you sure you want to delete password with note \"{0}\"?"

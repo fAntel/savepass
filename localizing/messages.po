@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-27 21:38:32+0300\n"
-"PO-Revision-Date: 2015-06-27 21:38:32+0300\n"
+"POT-Creation-Date: 2015-06-29 18:37:11+0300\n"
+"PO-Revision-Date: 2015-06-29 18:37:11+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -241,6 +241,17 @@ msgstr ""
 msgid "Enter master password: "
 msgstr ""
 
+#: ../src/console.cs:25
+msgid ""
+"The length of the master password must be 4 or more characters. Try again"
+msgstr ""
+
+#: ../src/console.cs:25
+msgid ""
+"The length of the master password must be no more than 56 characters. Try "
+"again"
+msgstr ""
+
 #: ../src/console.cs:30
 msgid ""
 "string for search cannot be an empty string.\n"
@@ -256,9 +267,5 @@ msgid ""
 "string for search cannot be an empty string\n"
 "or cosists exclusively of white-space characters.\n"
 "If you want to see all passwords use --list"
-msgstr ""
-
-#: ../src/gui.cs:12
-msgid "Are you sure{0}? (y/n) "
 msgstr ""
 
