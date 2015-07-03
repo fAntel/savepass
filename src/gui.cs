@@ -38,6 +38,9 @@ namespace savepass
 		private TreeView _treeview;
 		private Box _hbox;
 		private MenuItem _add_item;
+		private MenuItem _save_item;
+		private MenuItem _save_as_item;
+		private MenuItem _close_item;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -49,12 +52,6 @@ namespace savepass
 				button.Image = icon;
 			}
 			return button;
-		}
-		private void create_menu(ref MenuBar menu_bar)
-		{
-			
-
-
 		}
 
 		private void create_treeview(ref Box hbox)
@@ -77,14 +74,15 @@ namespace savepass
 			Application.Init(savepass.program_name, ref args);
 			// Create window
 			_window = new Window("savepass");
-			_window.DeleteEvent += on_delete;
+			_window.DeleteEvent += delegate {
+				Application.Quit();
+			};
 			_window.Resize(600, 400);
 			// Create menu
 			var vbox = new Box(Orientation.Vertical, 2);
 			_window.Add(vbox);
 			var menu_bar = new MenuBar();
 			vbox.PackStart(menu_bar, false, true, 0);
-			create_menu(ref menu_bar);
 			// File
 			var item = new MenuItem("File");
 			menu_bar.Append(item);
@@ -96,13 +94,13 @@ namespace savepass
 			new_item.Activated += new_activated;
 			var open_item = new MenuItem("Open");
 			menu.Append(open_item);
-			//open_item.Activated += open_activated;
-			var save_item = new MenuItem("Save");
-			menu.Append(save_item);
-			//save_item.Activated += save_activated;
-			var save_as_item = new MenuItem("Save as");
-			menu.Append(save_as_item);
-			//save_as_item.Activated += save_as_activated;
+			open_item.Activated += open_activated;
+			_save_item = new MenuItem("Save");
+			menu.Append(_save_item);
+			_save_item.Activated += save_activated;
+			_save_as_item = new MenuItem("Save as");
+			menu.Append(_save_as_item);
+			_save_as_item.Activated += save_activated;
 			var separator = new SeparatorMenuItem();
 			menu.Append(separator);
 			var preferences_item = new MenuItem("Preferences");
@@ -110,12 +108,14 @@ namespace savepass
 			//preferences_item.Activated += preferences_activated;
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
-			var close_item = new MenuItem("Close");
-			menu.Append(close_item);
-			//close_item.Activated += close_activated;
+			_close_item = new MenuItem("Close");
+			menu.Append(_close_item);
+			//_close_item.Activated += close_activated;
 			var quit_item = new MenuItem("Quit");
 			menu.Append(quit_item);
-			quit_item.Activated += quit_activated;
+			quit_item.Activated += delegate {
+				Application.Quit();
+			};
 
 			// Edit
 			item = new MenuItem("Edit");
@@ -126,7 +126,6 @@ namespace savepass
 			_add_item = new MenuItem("Add");
 			menu.Append(_add_item);
 			_add_item.Activated += add_clicked;
-			_add_item.Sensitive = false;
 			var edit_item = new MenuItem("Edit");
 			menu.Append(edit_item);
 			edit_item.Activated += edit_clicked;
@@ -160,7 +159,6 @@ namespace savepass
 			// Create box for treeview and buttons
 			_hbox = new Box(Orientation.Horizontal, 2);
 			vbox.PackStart(_hbox, true, true, 0);
-			_hbox.Sensitive = false;
 			// Create treeview
 			create_treeview(ref _hbox);
 			// Create buttons
@@ -213,6 +211,7 @@ namespace savepass
 
 			};
 
+			turn_off_sensetivity();
 			_window.ShowAll();
 		}
 
@@ -232,7 +231,7 @@ namespace savepass
 		}
 
 		/* return 0 if user sure */
-		private static int are_you_sure(string str)
+		private int are_you_sure(string str)
 		{
 			int answer;
 
@@ -269,14 +268,27 @@ namespace savepass
 			return false;
 		}
 
-		/******************
-		 * Event Handlers *
-		 ******************/
-
-		private static void on_delete(object sender, DeleteEventArgs data)
+		private void turn_on_sensetivity()
 		{
-			Application.Quit();
+			_hbox.Sensitive = true;
+			_add_item.Sensitive = true;
+			_save_item.Sensitive = true;
+			_save_as_item.Sensitive = true;
+			_close_item.Sensitive = true;
 		}
+
+		private void turn_off_sensetivity()
+		{
+			_hbox.Sensitive = false;
+			_add_item.Sensitive = false;
+			_save_item.Sensitive = false;
+			_save_as_item.Sensitive = false;
+			_close_item.Sensitive = false;
+		}
+
+		/***********
+		 * Dialogs *
+		 ***********/
 
 		private class add_edit_dialog: Dialog {
 			private readonly Dialog dialog;
@@ -294,6 +306,7 @@ namespace savepass
 				dialog.Resizable = false;
 				dialog.TransientFor = _window;
 				dialog.DefaultResponse = ResponseType.Ok;
+				dialog.SkipTaskbarHint = true;
 				var content_area = dialog.ContentArea;
 				content_area.BorderWidth = 4;
 				var grid = new Grid();
@@ -392,6 +405,124 @@ namespace savepass
 			}
 		}
 
+		private string get_master_password()
+		{
+			string  str = null;
+			var dialog = new Dialog("Master password", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
+			dialog.Resizable = false;
+			dialog.TransientFor = _window;
+			dialog.DefaultResponse = ResponseType.Ok;
+			dialog.SkipTaskbarHint = true;
+			var content_area = dialog.ContentArea;
+			content_area.BorderWidth = 4;
+			var grid = new Grid();
+			content_area.PackStart(grid, false, false, 2);
+			grid.RowSpacing = 3;
+			grid.ColumnSpacing = 3;
+
+			var label = new Label("Master password:");
+			grid.Attach(label, 0, 0, 1, 1);
+			label.Halign = Align.End;
+			var entry = new Entry();
+			grid.Attach(entry, 1, 0, 1, 1);
+			entry.Visibility = false;
+			label = new Label();
+			grid.Attach(label, 0, 1, 2, 1);
+
+			entry.Buffer.DeletedText += delegate {
+				label.Visible = false;
+			};
+			entry.Buffer.InsertedText += delegate {
+				label.Visible = false;
+			};
+
+			dialog.ShowAll();
+			label.Visible = false;
+			while (dialog.Run() == (int) ResponseType.Ok) {
+				if (entry.Text.Length < 4) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be 4 or more characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				if (entry.Text.Length > 56) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be no more than 56 characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				str = entry.Text;
+				break;
+			}
+
+			dialog.Destroy();
+			return str;
+		}
+
+		private bool open_save_dialog(bool open)
+		{
+			bool result = true;
+
+			var dialog = new FileChooserDialog(open ? "Open File" : "Save",
+				_window, 
+				open ? FileChooserAction.Open : FileChooserAction.Save,
+				"Cancel", ResponseType.Cancel,
+				open ? "Open" : "Save",	ResponseType.Accept);
+			dialog.DoOverwriteConfirmation = true;
+			dialog.SkipTaskbarHint = true;
+			var filter = new FileFilter();
+			filter.Name = "*.pds files";
+			filter.AddPattern("*.pds");
+			dialog.AddFilter(filter);
+			filter = new FileFilter();
+			filter.Name = "All files";
+			filter.AddPattern("*");
+			dialog.AddFilter(filter);
+
+			dialog.ShowAll();
+			result &= dialog.Run() == (int) ResponseType.Accept;
+
+			_filename = dialog.Filename;
+			dialog.Destroy();
+			return result;
+		}
+
+		private int save_changes()
+		{
+			var dialog = new Dialog("Save changes", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"No", ResponseType.No, "Cancel", ResponseType.Cancel,
+				"Yes", ResponseType.Yes);
+			dialog.Resizable = false;
+			dialog.TransientFor = _window;
+			dialog.DefaultResponse = ResponseType.Cancel;
+			dialog.SkipTaskbarHint = true;
+			var content_area = dialog.ContentArea;
+			content_area.BorderWidth = 4;
+			var box = new Box(Orientation.Horizontal, 3);
+			content_area.PackStart(box, false, false, 2);
+
+			var image = new Image();
+			image.SetFromIconName("dialog-information", IconSize.Dialog);
+			box.PackStart(image, false, false, 0);
+			var label = new Label("Save changes in the file?");
+			box.PackStart(label, false, false, 0);
+
+			dialog.ShowAll();
+			int response = dialog.Run();
+			dialog.Destroy();
+
+			return response;
+		}
+
+		/******************
+		 * Event Handlers *
+		 ******************/
+
 		private void add_clicked(object sender, EventArgs e)
 		{
 			var dialog = new add_edit_dialog("Add new password", null, null);
@@ -409,8 +540,7 @@ namespace savepass
 				}
 				var new_p = _p.add(dialog.pass, dialog.note);
 				_model.AppendValues(new_p.note,
-				           new_p.added.ToString("g", CultureInfo.CurrentCulture),
-				           "");
+					new_p.time.ToString("g", CultureInfo.CurrentCulture));
 				_changed = true;
 				break;
 			}
@@ -468,6 +598,7 @@ namespace savepass
 
 			_p.del(int.Parse(_model.GetStringFromIter(iter)));
 			_model.Remove(ref iter);
+			_changed = true;
 		}
 
 		private void copy_clicked(object sender, EventArgs e)
@@ -504,81 +635,84 @@ namespace savepass
 			dialog.Destroy();
 		}
 
-		private string get_master_password()
-		{
-			string  str = null;
-			var dialog = new Dialog("Master password", _window,
-				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
-			dialog.Resizable = false;
-			dialog.TransientFor = _window;
-			dialog.DefaultResponse = ResponseType.Ok;
-			var content_area = dialog.ContentArea;
-			content_area.BorderWidth = 4;
-			var grid = new Grid();
-			content_area.PackStart(grid, false, false, 2);
-			grid.RowSpacing = 3;
-			grid.ColumnSpacing = 3;
-
-			var label = new Label("Master password:");
-			grid.Attach(label, 0, 0, 1, 1);
-			label.Halign = Align.End;
-			var entry = new Entry();
-			grid.Attach(entry, 1, 0, 1, 1);
-			entry.Visibility = false;
-			label = new Label();
-			grid.Attach(label, 0, 1, 2, 1);
-
-			entry.Buffer.DeletedText += delegate {
-				label.Visible = false;
-			};
-			entry.Buffer.InsertedText += delegate {
-				label.Visible = false;
-			};
-
-			dialog.ShowAll();
-			label.Visible = false;
-			while (dialog.Run() == (int) ResponseType.Ok) {
-				if (entry.Text.Length < 4) {
-					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be 4 or more characters" +
-						"</span>";
-					label.Visible = true;
-					continue;
-				}
-				if (entry.Text.Length > 56) {
-					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be no more than 56 characters" +
-						"</span>";
-					label.Visible = true;
-					continue;
-				}
-				str = entry.Text;
-				break;
-			}
-
-			dialog.Destroy();
-			return str;
-		}
-
 		private void new_activated(object sender, EventArgs args)
 		{
+			if (_changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(sender, args);
+						break;
+					case (int) ResponseType.Cancel:
+						return;
+				}
+			}
+
 			_master = get_master_password();
 			if (_master == null)
 				return;
 
+			_filename = null;
 			var data = new byte[0];
 			_p = new passwds(data);
 
-			_hbox.Sensitive = true;
-			_add_item.Sensitive = true;
+			_model.Clear();
+			turn_on_sensetivity();
+
+			_changed = false;
 		}
 
-		private void quit_activated(object sender, EventArgs args)
+		private void open_activated(object sender, EventArgs args)
 		{
-			Application.Quit();
+			string[] notes;
+			DateTime[] times;
+
+			if (_changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(sender, args);
+						break;
+					case (int) ResponseType.Cancel:
+						return;
+				}
+			}
+
+			if (!open_save_dialog(true))
+				return;
+			_master = get_master_password();
+			if (_master == null) {
+				_filename = null;
+				return;
+			}
+
+			var data = file.read_from_file(_filename, _master);
+			if (data == null) {
+				Environment.ExitCode = 2;
+				Application.Quit();
+				return;
+			}
+			_p = new passwds(data);
+
+			_model.Clear();
+			_p.list(out notes, out times);
+			for (int i = 0; i < notes.Length; ++i)
+				_model.AppendValues(notes[i],
+					times[i].ToString("g", CultureInfo.CurrentCulture));
+			turn_on_sensetivity();
+			_changed = false;
 		}
 
+		private void save_activated(object sender, EventArgs args)
+		{
+			if ((_filename == null || sender.Equals(_save_as_item))
+				&& !open_save_dialog(false))
+					return;
+		
+			file.write_to_file(_filename, _p.to_data(), _master);
+			_changed = false;
+		}
+			
 		private void about_activated(object sender, EventArgs args)
 		{
 			var dialog = new AboutDialog();
