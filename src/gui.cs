@@ -38,6 +38,9 @@ namespace savepass
 		private TreeView _treeview;
 		private Box _hbox;
 		private MenuItem _add_item;
+		private MenuItem _save_item;
+		private MenuItem _save_as_item;
+		private MenuItem _close_item;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -97,12 +100,14 @@ namespace savepass
 			var open_item = new MenuItem("Open");
 			menu.Append(open_item);
 			//open_item.Activated += open_activated;
-			var save_item = new MenuItem("Save");
-			menu.Append(save_item);
-			//save_item.Activated += save_activated;
-			var save_as_item = new MenuItem("Save as");
-			menu.Append(save_as_item);
-			//save_as_item.Activated += save_as_activated;
+			_save_item = new MenuItem("Save");
+			menu.Append(_save_item);
+			_save_item.Activated += save_activated;
+			_save_item.Sensitive = false;
+			_save_as_item = new MenuItem("Save as");
+			menu.Append(_save_as_item);
+			_save_as_item.Activated += save_activated;
+			_save_as_item.Sensitive = false;
 			var separator = new SeparatorMenuItem();
 			menu.Append(separator);
 			var preferences_item = new MenuItem("Preferences");
@@ -110,9 +115,10 @@ namespace savepass
 			//preferences_item.Activated += preferences_activated;
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
-			var close_item = new MenuItem("Close");
-			menu.Append(close_item);
-			//close_item.Activated += close_activated;
+			_close_item = new MenuItem("Close");
+			menu.Append(_close_item);
+			//_close_item.Activated += close_activated;
+			_close_item.Sensitive = false;
 			var quit_item = new MenuItem("Quit");
 			menu.Append(quit_item);
 			quit_item.Activated += quit_activated;
@@ -232,7 +238,7 @@ namespace savepass
 		}
 
 		/* return 0 if user sure */
-		private static int are_you_sure(string str)
+		private int are_you_sure(string str)
 		{
 			int answer;
 
@@ -269,14 +275,9 @@ namespace savepass
 			return false;
 		}
 
-		/******************
-		 * Event Handlers *
-		 ******************/
-
-		private static void on_delete(object sender, DeleteEventArgs data)
-		{
-			Application.Quit();
-		}
+		/***********
+		 * Dialogs *
+		 ***********/
 
 		private class add_edit_dialog: Dialog {
 			private readonly Dialog dialog;
@@ -392,6 +393,99 @@ namespace savepass
 			}
 		}
 
+		private string get_master_password()
+		{
+			string  str = null;
+			var dialog = new Dialog("Master password", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
+			dialog.Resizable = false;
+			dialog.TransientFor = _window;
+			dialog.DefaultResponse = ResponseType.Ok;
+			var content_area = dialog.ContentArea;
+			content_area.BorderWidth = 4;
+			var grid = new Grid();
+			content_area.PackStart(grid, false, false, 2);
+			grid.RowSpacing = 3;
+			grid.ColumnSpacing = 3;
+
+			var label = new Label("Master password:");
+			grid.Attach(label, 0, 0, 1, 1);
+			label.Halign = Align.End;
+			var entry = new Entry();
+			grid.Attach(entry, 1, 0, 1, 1);
+			entry.Visibility = false;
+			label = new Label();
+			grid.Attach(label, 0, 1, 2, 1);
+
+			entry.Buffer.DeletedText += delegate {
+				label.Visible = false;
+			};
+			entry.Buffer.InsertedText += delegate {
+				label.Visible = false;
+			};
+
+			dialog.ShowAll();
+			label.Visible = false;
+			while (dialog.Run() == (int) ResponseType.Ok) {
+				if (entry.Text.Length < 4) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be 4 or more characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				if (entry.Text.Length > 56) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be no more than 56 characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				str = entry.Text;
+				break;
+			}
+
+			dialog.Destroy();
+			return str;
+		}
+
+		private bool run_save_dialog()
+		{
+			bool result = true;
+
+			var dialog = new FileChooserDialog("Save", _window, FileChooserAction.Save,
+				"Cancel", ResponseType.Cancel,
+				"Save",	ResponseType.Accept);
+			dialog.DoOverwriteConfirmation = true;
+			var filter = new FileFilter();
+			filter.Name = "*.pds files";
+			filter.AddPattern("*.pds");
+			dialog.AddFilter(filter);
+			filter = new FileFilter();
+			filter.Name = "All files";
+			filter.AddPattern("*");
+			dialog.AddFilter(filter);
+
+			dialog.ShowAll();
+			if (dialog.Run() != (int) ResponseType.Accept)
+				result = false;
+
+			_filename = dialog.Filename;
+			dialog.Destroy();
+			return result;
+		}
+
+		/******************
+		 * Event Handlers *
+		 ******************/
+
+		private static void on_delete(object sender, DeleteEventArgs data)
+		{
+			Application.Quit();
+		}
+			
+
 		private void add_clicked(object sender, EventArgs e)
 		{
 			var dialog = new add_edit_dialog("Add new password", null, null);
@@ -504,63 +598,6 @@ namespace savepass
 			dialog.Destroy();
 		}
 
-		private string get_master_password()
-		{
-			string  str = null;
-			var dialog = new Dialog("Master password", _window,
-				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
-			dialog.Resizable = false;
-			dialog.TransientFor = _window;
-			dialog.DefaultResponse = ResponseType.Ok;
-			var content_area = dialog.ContentArea;
-			content_area.BorderWidth = 4;
-			var grid = new Grid();
-			content_area.PackStart(grid, false, false, 2);
-			grid.RowSpacing = 3;
-			grid.ColumnSpacing = 3;
-
-			var label = new Label("Master password:");
-			grid.Attach(label, 0, 0, 1, 1);
-			label.Halign = Align.End;
-			var entry = new Entry();
-			grid.Attach(entry, 1, 0, 1, 1);
-			entry.Visibility = false;
-			label = new Label();
-			grid.Attach(label, 0, 1, 2, 1);
-
-			entry.Buffer.DeletedText += delegate {
-				label.Visible = false;
-			};
-			entry.Buffer.InsertedText += delegate {
-				label.Visible = false;
-			};
-
-			dialog.ShowAll();
-			label.Visible = false;
-			while (dialog.Run() == (int) ResponseType.Ok) {
-				if (entry.Text.Length < 4) {
-					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be 4 or more characters" +
-						"</span>";
-					label.Visible = true;
-					continue;
-				}
-				if (entry.Text.Length > 56) {
-					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be no more than 56 characters" +
-						"</span>";
-					label.Visible = true;
-					continue;
-				}
-				str = entry.Text;
-				break;
-			}
-
-			dialog.Destroy();
-			return str;
-		}
-
 		private void new_activated(object sender, EventArgs args)
 		{
 			_master = get_master_password();
@@ -572,8 +609,23 @@ namespace savepass
 
 			_hbox.Sensitive = true;
 			_add_item.Sensitive = true;
+			_save_item.Sensitive = true;
+			_save_as_item.Sensitive = true;
+			_close_item.Sensitive = true;
+
+			_changed = true;
 		}
 
+		private void save_activated(object sender, EventArgs args)
+		{
+			if ((_filename == null || sender.Equals(_save_as_item))
+				&& !run_save_dialog())
+					return;
+		
+			file.write_to_file(_filename, _p.to_data(), _master);
+			_changed = false;
+		}
+			
 		private void quit_activated(object sender, EventArgs args)
 		{
 			Application.Quit();
