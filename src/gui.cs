@@ -36,6 +36,8 @@ namespace savepass
 		private static Window _window;
 		private ListStore _model;
 		private TreeView _treeview;
+		private Box _hbox;
+		private MenuItem _add_item;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -91,7 +93,7 @@ namespace savepass
 
 			var new_item = new MenuItem("New");
 			menu.Append(new_item);
-			//add_item.Activated += new_activated;
+			new_item.Activated += new_activated;
 			var open_item = new MenuItem("Open");
 			menu.Append(open_item);
 			//open_item.Activated += open_activated;
@@ -121,9 +123,10 @@ namespace savepass
 			menu = new Menu();
 			item.Submenu = menu;
 
-			var add_item = new MenuItem("Add");
-			menu.Append(add_item);
-			add_item.Activated += add_clicked;
+			_add_item = new MenuItem("Add");
+			menu.Append(_add_item);
+			_add_item.Activated += add_clicked;
+			_add_item.Sensitive = false;
 			var edit_item = new MenuItem("Edit");
 			menu.Append(edit_item);
 			edit_item.Activated += edit_clicked;
@@ -155,13 +158,14 @@ namespace savepass
 			about_item.Activated += about_activated;
 
 			// Create box for treeview and buttons
-			var hbox = new Box(Orientation.Horizontal, 2);
-			vbox.PackStart(hbox, true, true, 0);
+			_hbox = new Box(Orientation.Horizontal, 2);
+			vbox.PackStart(_hbox, true, true, 0);
+			_hbox.Sensitive = false;
 			// Create treeview
-			create_treeview(ref hbox);
+			create_treeview(ref _hbox);
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
-			hbox.PackStart(buttons_box, false, true, 3);
+			_hbox.PackStart(buttons_box, false, true, 3);
 			var add_button = create_button("Add", "list-add");
 			buttons_box.PackStart(add_button, false, true, 0);
 			add_button.Clicked += add_clicked;
@@ -259,10 +263,6 @@ namespace savepass
 		public bool run()
 		{
 			Environment.ExitCode = 0;
-
-			// this fragment will be deleted when add New|Open file
-			var data = new byte[0];
-			_p = new passwds(data);
 
 			Application.Run();
 			//return _changed;
@@ -502,6 +502,76 @@ namespace savepass
 			dialog.TransientFor = _window;
 			dialog.Run();
 			dialog.Destroy();
+		}
+
+		private string get_master_password()
+		{
+			string  str = null;
+			var dialog = new Dialog("Master password", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
+			dialog.Resizable = false;
+			dialog.TransientFor = _window;
+			dialog.DefaultResponse = ResponseType.Ok;
+			var content_area = dialog.ContentArea;
+			content_area.BorderWidth = 4;
+			var grid = new Grid();
+			content_area.PackStart(grid, false, false, 2);
+			grid.RowSpacing = 3;
+			grid.ColumnSpacing = 3;
+
+			var label = new Label("Master password:");
+			grid.Attach(label, 0, 0, 1, 1);
+			label.Halign = Align.End;
+			var entry = new Entry();
+			grid.Attach(entry, 1, 0, 1, 1);
+			entry.Visibility = false;
+			label = new Label();
+			grid.Attach(label, 0, 1, 2, 1);
+
+			entry.Buffer.DeletedText += delegate {
+				label.Visible = false;
+			};
+			entry.Buffer.InsertedText += delegate {
+				label.Visible = false;
+			};
+
+			dialog.ShowAll();
+			label.Visible = false;
+			while (dialog.Run() == (int) ResponseType.Ok) {
+				if (entry.Text.Length < 4) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be 4 or more characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				if (entry.Text.Length > 56) {
+					label.Markup = "<span foreground=\"red\">" +
+						"The length of the master password must be no more than 56 characters" +
+						"</span>";
+					label.Visible = true;
+					continue;
+				}
+				str = entry.Text;
+				break;
+			}
+
+			dialog.Destroy();
+			return str;
+		}
+
+		private void new_activated(object sender, EventArgs args)
+		{
+			_master = get_master_password();
+			if (_master == null)
+				return;
+
+			var data = new byte[0];
+			_p = new passwds(data);
+
+			_hbox.Sensitive = true;
+			_add_item.Sensitive = true;
 		}
 
 		private void quit_activated(object sender, EventArgs args)
