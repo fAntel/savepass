@@ -20,6 +20,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace savepass
 {
@@ -312,6 +313,118 @@ namespace savepass
 			ps.search_and_get_pass("note", out pass);
 
 			Assert.IsNull(pass);
+		}
+	}
+
+	[TestFixture()]
+	public class test_passwds_enum
+	{
+		/*private passwd p;
+		private passwds ps;
+		private byte[] data;
+
+		[SetUp()]
+		public void set_up()
+		{
+			p = new passwd("pass", "note");
+			byte[] p_data = p.to_data();
+			data = new byte[p_data.Length * 3];
+			Array.Copy(p_data, 0, data, 0, p_data.Length);
+			Array.Copy(p_data, 0, data, p_data.Length, p_data.Length);
+			Array.Copy(p_data, 0, data, p_data.Length * 2, p_data.Length);
+			ps = new passwds(data);
+		}*/
+
+		[Test()]
+		public void test_passwds_constructor()
+		{
+			var data = new byte[0];
+
+			var ps = new passwds();
+
+			Assert.AreEqual(ps.to_data(), data);
+		}
+
+		[Test()]
+		public void test_move_next_with_empty_enum()
+		{
+			var list = new List<passwd>();
+			var e = new passwds_enum(list);
+
+			bool result = e.MoveNext();
+
+			Assert.AreEqual(false, result);
+		}
+
+		[Test()]
+		public void test_move_next()
+		{
+			var list = new List<passwd>();
+			var p = new passwd("pass", "note");
+			list.Add(p);
+			var e = new passwds_enum(list);
+
+			bool result = e.MoveNext();
+
+			Assert.AreEqual(true, result);
+		}
+
+		[Test()]
+		public void test_move_next_last_element()
+		{
+			var list = new List<passwd>();
+			var p = new passwd("pass", "note");
+			list.Add(p);
+			var e = new passwds_enum(list);
+
+			bool result = e.MoveNext();
+			result = e.MoveNext();
+
+			Assert.AreEqual(false, result);
+		}
+
+		[Test()]
+		public void test_reset()
+		{
+			var list = new List<passwd>();
+			var p = new passwd("pass", "note");
+			list.Add(p);
+			var e = new passwds_enum(list);
+
+			bool result = e.MoveNext();
+			result = e.MoveNext();
+			e.Reset();
+			result = e.MoveNext();
+
+			Assert.AreEqual(true, result);
+		}
+
+		[Test()]
+		public void test_current()
+		{
+			var list = new List<passwd>();
+			var p = new passwd("pass", "note");
+			list.Add(p);
+			var e = new passwds_enum(list);
+
+			e.MoveNext();
+			var result = e.Current;
+
+			Assert.AreEqual(p, result);
+		}
+
+		[Test()]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void test_current_after_last_element()
+		{
+			var list = new List<passwd>();
+			var p = new passwd("pass", "note");
+			list.Add(p);
+			var e = new passwds_enum(list);
+
+			e.MoveNext();
+			e.MoveNext();
+			var result = e.Current;
 		}
 	}
 }

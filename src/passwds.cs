@@ -21,13 +21,19 @@
 #define GTK
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using Mono.Unix;
 
 namespace savepass
 {
-	public class passwds
+	public class passwds: IEnumerable
 	{
 		private readonly List<passwd> _passwds;
+
+		public passwds()
+		{
+			_passwds = new List<passwd>();
+		}
 
 		/* Create _passwds array from byte array from file */
 		public passwds(byte[] data)
@@ -36,6 +42,16 @@ namespace savepass
 			int i = 0;
 			while (i < data.Length)
 				_passwds.Add(new passwd(ref data, ref i));
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return (IEnumerator) GetEnumerator();
+		}
+
+		public passwds_enum GetEnumerator()
+		{
+			return new passwds_enum(_passwds);
 		}
 
 		/* Add new password to the list */
@@ -166,6 +182,46 @@ namespace savepass
 					data.AddRange(p.to_data());
 			}
 			return data.ToArray();
+		}
+	}
+
+	public class passwds_enum: IEnumerator
+	{
+		private readonly List<passwd> _list;
+		private int _pos = -1;
+
+		public passwds_enum(List<passwd> list)
+		{
+			_list = list;
+		}
+
+		public bool MoveNext()
+		{
+			++_pos;
+			return (_pos < _list.Count);
+		}
+
+		public void Reset()
+		{
+			_pos = -1;
+		}
+
+		object IEnumerator.Current
+		{
+			get { return Current; }
+		}
+
+		public passwd Current
+		{
+			get {
+				try {
+					return _list[_pos];
+				} catch (IndexOutOfRangeException) {
+					throw new InvalidOperationException();
+				} catch (ArgumentOutOfRangeException) {
+					throw new InvalidOperationException();
+				}
+			}
 		}
 	}
 }
