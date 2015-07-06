@@ -110,7 +110,7 @@ namespace savepass
 			menu.Append(separator);
 			_close_item = new MenuItem("Close");
 			menu.Append(_close_item);
-			//_close_item.Activated += close_activated;
+			_close_item.Activated += close_activated;
 			var quit_item = new MenuItem("Quit");
 			menu.Append(quit_item);
 			quit_item.Activated += delegate {
@@ -709,6 +709,25 @@ namespace savepass
 		
 			file.write_to_file(_filename, _p.to_data(), _master);
 			_changed = false;
+		}
+
+		private void close_activated(object sender, EventArgs args)
+		{
+			if (_changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(sender, args);
+						break;
+					case (int) ResponseType.Cancel:
+						return;
+				}
+			}
+
+			_model.Clear();
+			_filename = null;
+			_changed = false;
+			turn_off_sensetivity();
 		}
 			
 		private void about_activated(object sender, EventArgs args)
