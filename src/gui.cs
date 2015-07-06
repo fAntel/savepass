@@ -695,10 +695,10 @@ namespace savepass
 			_p = new passwds(data);
 
 			_model.Clear();
-			_p.list(out notes, out times);
-			for (int i = 0; i < notes.Length; ++i)
-				_model.AppendValues(notes[i],
-					times[i].ToString("g", CultureInfo.CurrentCulture));
+			//_p.list(out notes, out times);
+			foreach (passwd i in _p)
+				_model.AppendValues(i.note,
+					i.time.ToString("g", CultureInfo.CurrentCulture));
 			turn_on_sensetivity();
 			_changed = false;
 		}

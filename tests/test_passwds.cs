@@ -197,45 +197,6 @@ namespace savepass
 		}
 
 		[Test()]
-		public void test_list()
-		{
-			ps.add("pass1", "note1");
-			ps.add("pass2", "note2");
-			string[] result = { "note", "note1", "note2" };
-			string[] notes;
-			DateTime[] time;
-
-			ps.list(out notes, out time);
-
-			Assert.AreEqual(result, notes);
-		}
-
-		[Test()]
-		public void test_list_for_one_element()
-		{
-			string[] result = { "note" };
-			string[] notes;
-			DateTime[] time;
-
-			ps.list(out notes, out time);
-
-			Assert.AreEqual(result, notes);
-		}
-
-		[Test()]
-		public void test_list_when_it_empty()
-		{
-			ps.del(0);
-			string[] result = {};
-			string[] notes;
-			DateTime[] time;
-
-			ps.list(out notes, out time);
-
-			Assert.AreEqual(result, notes);
-		}
-
-		[Test()]
 		public void test_search()
 		{
 			ps.add("pass1", "note1");

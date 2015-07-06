@@ -111,20 +111,6 @@ namespace savepass
 			return true;
 		}
 
-		/* Return list of notes and list of times */
-		public void list(out string[] notes, out DateTime[] times)
-		{
-			var n = new List<string>();
-			var t = new List<DateTime>();
-
-			for (int i = 0; i < _passwds.Count; ++i) {
-				n.Add(_passwds[i].note);
-				t.Add(_passwds[i].time);
-			}
-			notes = n.ToArray();
-			times = t.ToArray();
-		}
-
 		/* Find all notes in array with given note as a substring */
 		public void search(string note, out int[] indexes, out string[] notes, out DateTime[] times)
 		{

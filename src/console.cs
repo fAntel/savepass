@@ -350,15 +350,13 @@ namespace savepass
 		public int list()
 		{
 			int result;
-			string[] notes;
-			DateTime[] times;
 
 			if (_p.check_limits(0, true))
 				return 1;
-			_p.list(out notes, out times);
 			Console.WriteLine(Catalog.GetString("Passwords' notes:"));
-			for (int i = 0; i < notes.Length; ++i)
-				if ((result = print_note(i + 1, notes[i], times[i])) != 0)
+			int i = 0;
+			foreach (passwd p in _p)
+				if ((result = print_note(++i, p.note, p.time)) != 0)
 					return result;
 			return 0;
 		}
