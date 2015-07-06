@@ -230,6 +230,11 @@ namespace savepass
 			get { return _master; }
 		}
 
+		public static Window window
+		{
+			get { return _window; }
+		}
+
 		/* return 0 if user sure */
 		private int are_you_sure(string str)
 		{
@@ -664,9 +669,6 @@ namespace savepass
 
 		private void open_activated(object sender, EventArgs args)
 		{
-			string[] notes;
-			DateTime[] times;
-
 			if (_changed) {
 				int response = save_changes();
 				switch (response) {
@@ -687,15 +689,11 @@ namespace savepass
 			}
 
 			var data = file.read_from_file(_filename, _master);
-			if (data == null) {
-				Environment.ExitCode = 2;
-				Application.Quit();
+			if (data == null)
 				return;
-			}
 			_p = new passwds(data);
 
 			_model.Clear();
-			//_p.list(out notes, out times);
 			foreach (passwd i in _p)
 				_model.AppendValues(i.note,
 					i.time.ToString("g", CultureInfo.CurrentCulture));

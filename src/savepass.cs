@@ -24,6 +24,9 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+#if GUI
+using Gtk;
+#endif
 
 namespace savepass
 {
@@ -64,6 +67,14 @@ namespace savepass
 		/* Print errors to the screen in certain format */
 		public static void print(string msg, bool full, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
 		{
+#if GUI
+			var dialog = new MessageDialog(gui.window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				MessageType.Other, ButtonsType.Ok, msg);
+			dialog.TransientFor = gui.window;
+			dialog.Run();
+			dialog.Destroy();
+#else
 			if (full)
 				Console.WriteLine("{0}:{1}:{2}: {3}",
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
@@ -72,6 +83,7 @@ namespace savepass
 				Console.WriteLine("{0}: {1}",
 			        	          Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
 			                	  msg);
+#endif
 		}
 	}
 
