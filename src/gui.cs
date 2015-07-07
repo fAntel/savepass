@@ -74,8 +74,13 @@ namespace savepass
 			Application.Init(savepass.program_name, ref args);
 			// Create window
 			_window = new Window("savepass");
-			_window.DeleteEvent += delegate {
-				Application.Quit();
+			_window.DeleteEvent += delegate(object o, DeleteEventArgs e) {
+				if (is_changed()) {
+					e.RetVal = true;
+				} else {
+					e.RetVal = false;
+					Application.Quit();
+				}
 			};
 			_window.Resize(600, 400);
 			// Create menu
@@ -114,6 +119,8 @@ namespace savepass
 			var quit_item = new MenuItem("Quit");
 			menu.Append(quit_item);
 			quit_item.Activated += delegate {
+				if (is_changed())
+					return;
 				Application.Quit();
 			};
 
@@ -215,21 +222,6 @@ namespace savepass
 			_window.ShowAll();
 		}
 
-		public passwds p
-		{
-			get { return _p; }
-		}
-
-		public string filename
-		{
-			get { return _filename; }
-		}
-
-		public string master
-		{
-			get { return _master; }
-		}
-
 		public static Window window
 		{
 			get { return _window; }
@@ -264,13 +256,11 @@ namespace savepass
 			return 0;
 		}
 
-		public bool run()
+		public void run()
 		{
 			Environment.ExitCode = 0;
 
 			Application.Run();
-			//return _changed;
-			return false;
 		}
 
 		private void turn_on_sensetivity()
@@ -528,6 +518,37 @@ namespace savepass
 		 * Event Handlers *
 		 ******************/
 
+		private void on_delete(object sender, DeleteEventArgs e)
+		{
+			if (_changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(sender, e);
+						break;
+					case (int) ResponseType.Cancel:
+						e.RetVal = true;
+						return;
+				}
+			}
+			Application.Quit();
+		}
+
+		private bool is_changed()
+		{
+			if (_changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(null, null);
+						break;
+					case (int) ResponseType.Cancel:
+						return true;
+				}
+			}
+			return false;
+		}
+
 		private void add_clicked(object sender, EventArgs e)
 		{
 			var dialog = new add_edit_dialog("Add new password", null, null);
@@ -642,16 +663,8 @@ namespace savepass
 
 		private void new_activated(object sender, EventArgs args)
 		{
-			if (_changed) {
-				int response = save_changes();
-				switch (response) {
-					case (int) ResponseType.Yes:
-						save_activated(sender, args);
-						break;
-					case (int) ResponseType.Cancel:
-						return;
-				}
-			}
+			if (is_changed())
+				return;
 
 			_master = get_master_password();
 			if (_master == null)
@@ -669,16 +682,8 @@ namespace savepass
 
 		private void open_activated(object sender, EventArgs args)
 		{
-			if (_changed) {
-				int response = save_changes();
-				switch (response) {
-					case (int) ResponseType.Yes:
-						save_activated(sender, args);
-						break;
-					case (int) ResponseType.Cancel:
-						return;
-				}
-			}
+			if (is_changed())
+				return;
 
 			if (!open_save_dialog(true))
 				return;
@@ -713,16 +718,8 @@ namespace savepass
 
 		private void close_activated(object sender, EventArgs args)
 		{
-			if (_changed) {
-				int response = save_changes();
-				switch (response) {
-					case (int) ResponseType.Yes:
-						save_activated(sender, args);
-						break;
-					case (int) ResponseType.Cancel:
-						return;
-				}
-			}
+			if (is_changed())
+				return;
 
 			_model.Clear();
 			_filename = null;

@@ -23,12 +23,12 @@ namespace savepass
 {
 	public interface IUI
 	{
-		passwds p { get; }
+/*		passwds p { get; }
 		string filename { get; }
-		string master { get; }
+		string master { get; }*/
 
 		int config(out conf c);
-		bool run();
+		void run();
 	}
 }
 

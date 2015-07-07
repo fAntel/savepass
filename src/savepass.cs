@@ -42,7 +42,6 @@ namespace savepass
 		static int Main(string[] args)
 		{
 			int exit_value = 0;
-			bool changed = false;
 			Mono.Unix.Catalog.Init(program_name, "po");
 			IUI ui;
 			try {
@@ -58,9 +57,7 @@ namespace savepass
 			}
 			if (exit_value != 0)
 				return exit_value;
-			changed = ui.run();
-			if (changed)
-				file.write_to_file(ui.filename, ui.p.to_data(), ui.master);
+			ui.run();
 			return Environment.ExitCode;
 		}
 

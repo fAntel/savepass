@@ -146,21 +146,6 @@ namespace savepass
 
 		}
 
-		public passwds p
-		{
-			get { return _p; }
-		}
-
-		public string filename
-		{
-			get { return _filename; }
-		}
-
-		public string master
-		{
-			get { return _master; }
-		}
-
 		/* Add new password in array of passwords */
 		public int add(ref bool changed)
 		{
@@ -426,7 +411,7 @@ namespace savepass
 		}
 
 		/* Process the other command line parameters */
-		public bool run()
+		public void run()
 		{
 			int exit_value = 0;
 			bool changed = false;
@@ -456,17 +441,17 @@ namespace savepass
 			} catch (IOException e) {
 				savepass.print(e.Message, true);
 				Environment.ExitCode = 2;
-				return false;
+				return;
 			} catch (InvalidOperationException e) {
 				savepass.print(e.Message, true);
 				Environment.ExitCode = 2;
-				return false;
+				return;
 			}
 
 			data = file.read_from_file(_filename, _master);
 			if (data == null) {
 				Environment.ExitCode = 2;
-				return false;
+				return;
 			}
 			_p = new passwds(data);
 
@@ -489,7 +474,8 @@ namespace savepass
 			else if (_dict.ContainsKey(keys.del))
 				exit_value = del((int) _dict[keys.del], ref changed);
 			Environment.ExitCode = exit_value;
-			return changed;
+			if (changed)
+				file.write_to_file(_filename, _p.to_data(), _master);
 		}
 
 		/* Find and print all notes in array with given note as a substring */
@@ -509,7 +495,7 @@ namespace savepass
 			if (_p.check_limits(0, true))
 				return 1;
 			try {
-				p.search(note, out indexes, out notes, out times);
+				_p.search(note, out indexes, out notes, out times);
 			} catch (EmptyArrayException e) {
 				savepass.print(e.Message, false);
 				return 1;
@@ -537,7 +523,7 @@ namespace savepass
 			if (_p.check_limits(0, true))
 				return 1;
 			try {
-				p.search_and_get_pass(note, out pass);
+				_p.search_and_get_pass(note, out pass);
 			} catch (EmptyArrayException e) {
 				savepass.print(e.Message, false);
 				return 1;
