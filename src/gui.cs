@@ -61,11 +61,14 @@ namespace savepass
 			hbox.PackStart(sw, true, true, 0);
 			_treeview = new TreeView(_model);
 			sw.Add(_treeview);
-			var column = new TreeViewColumn("Note", new CellRendererText(), "text", 0);
+			var renderer = new CellRendererText();
+			renderer.WrapWidth = 1;
+			renderer.WrapMode = Pango.WrapMode.Word;
+			var column = new TreeViewColumn("Note", renderer, "text", 0);
 			column.Resizable = true;
+			column.Expand = true;
 			_treeview.AppendColumn(column);
 			column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
-			column.Resizable = true;
 			_treeview.AppendColumn(column);
 		}
 
@@ -253,6 +256,11 @@ namespace savepass
 		public int config(out conf c)
 		{
 			c = null;
+			try {
+				c = new conf();
+			} catch (Exception) {
+				return 2;
+			}
 			return 0;
 		}
 
@@ -518,22 +526,6 @@ namespace savepass
 		 * Event Handlers *
 		 ******************/
 
-		private void on_delete(object sender, DeleteEventArgs e)
-		{
-			if (_changed) {
-				int response = save_changes();
-				switch (response) {
-					case (int) ResponseType.Yes:
-						save_activated(sender, e);
-						break;
-					case (int) ResponseType.Cancel:
-						e.RetVal = true;
-						return;
-				}
-			}
-			Application.Quit();
-		}
-
 		private bool is_changed()
 		{
 			if (_changed) {
@@ -566,7 +558,8 @@ namespace savepass
 				}
 				var new_p = _p.add(dialog.pass, dialog.note);
 				_model.AppendValues(new_p.note,
-					new_p.time.ToString("g", CultureInfo.CurrentCulture));
+					new_p.time.ToString(savepass.c.format_date_time,
+						CultureInfo.CurrentCulture));
 				_changed = true;
 				break;
 			}
@@ -604,7 +597,9 @@ namespace savepass
 					var new_p = _p.change(int.Parse(_model.GetStringFromIter(iter)),
 						dialog.pass, dialog.note);
 					_model.SetValues(iter, new_p.note,
-								new_p.time.ToString("g", CultureInfo.CurrentCulture));
+								new_p.time.ToString(
+									savepass.c.format_date_time,
+									CultureInfo.CurrentCulture));
 				}
 				break;
 			}
@@ -701,7 +696,8 @@ namespace savepass
 			_model.Clear();
 			foreach (passwd i in _p)
 				_model.AppendValues(i.note,
-					i.time.ToString("g", CultureInfo.CurrentCulture));
+					i.time.ToString(savepass.c.format_date_time,
+						CultureInfo.CurrentCulture));
 			turn_on_sensetivity();
 			_changed = false;
 		}
