@@ -240,11 +240,16 @@ namespace savepass
 		/* Parse options for configuration file and set _filename */
 		public int config(out conf c)
 		{
+			c = null;
 			string conf_file = _dict.ContainsKey(keys.conf_file) ? (string) _dict[keys.conf_file] : null;
 			string config_option = _dict.ContainsKey(keys.config) ? (string) _dict[keys.config] : null;
-			c = new conf(conf_file,
-				_dict.ContainsKey(keys.system) ||
-				String.Equals(config_option, "system", StringComparison.OrdinalIgnoreCase));
+			try {
+				c = new conf(conf_file,
+					_dict.ContainsKey(keys.system) ||
+					String.Equals(config_option, "system", StringComparison.OrdinalIgnoreCase));
+			} catch (Exception) {
+				return 2;
+			}
 			if (_dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) _dict[keys.file])) {
 				c.default_file = (string) _dict[keys.file];
 				c.Save();

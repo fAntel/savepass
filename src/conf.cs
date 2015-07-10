@@ -95,7 +95,7 @@ namespace savepass
 		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
 		private bool _sys;
 
-		public conf(string conf_file, bool sys)
+		public conf(string conf_file = null, bool sys = false)
 		{
 			_sys = sys;
 			if (conf_file != null) {
@@ -113,6 +113,7 @@ namespace savepass
 					savepass.print(String.Format(Catalog.GetString(
 						"openging configuration file {0} failed: {1}"),
 						conf_file, e.Message), true);
+					throw new Exception();
 				}
 				return;
 			}
@@ -127,6 +128,7 @@ namespace savepass
 					savepass.print(String.Format(Catalog.GetString(
 						"creating object for default settings failed: {0}"), e.Message),
 						true);
+					throw new Exception();
 				}
 				return;
 			}
