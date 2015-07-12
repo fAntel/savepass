@@ -357,13 +357,17 @@ namespace savepass
 			}
 			set {
 				string v;
-				try {
-					v = Path.GetFullPath(value);
-				} catch (Exception e){
-					savepass.print(String.Format(Catalog.GetString(
-						"saving default_file failed: {0}"),
-						e.Message), false);
-					return;
+				if (value == null)
+					v = "";
+				else {
+					try {
+						v = Path.GetFullPath(value);
+					} catch (Exception e) {
+						savepass.print(String.Format(Catalog.GetString(
+							"saving default_file failed: {0}"),
+							e.Message), false);
+						return;
+					}
 				}
 				_conf.SetString(default_settings[(int) settings.default_file].group,
 					default_settings[(int) settings.default_file].name, v);

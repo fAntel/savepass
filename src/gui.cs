@@ -41,6 +41,8 @@ namespace savepass
 		private MenuItem _save_item;
 		private MenuItem _save_as_item;
 		private MenuItem _close_item;
+		private MenuItem _default_file_item;
+		private MenuItem _unset_default_file_item;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -114,6 +116,27 @@ namespace savepass
 			var preferences_item = new MenuItem("Preferences");
 			menu.Append(preferences_item);
 			//preferences_item.Activated += preferences_activated;
+			separator = new SeparatorMenuItem();
+			menu.Append(separator);
+			item = new MenuItem("Default file");
+			menu.Append(item);
+			var default_file_menu = new Menu();
+			item.Submenu = default_file_menu;
+			_default_file_item = new MenuItem("<default file>");
+			default_file_menu.Append(_default_file_item);
+			_default_file_item.Activated += default_file_activated;
+			separator = new SeparatorMenuItem();
+			default_file_menu.Append(separator);
+			_unset_default_file_item = new MenuItem("Unset default file");
+			default_file_menu.Append(_unset_default_file_item);
+			_unset_default_file_item.Sensitive = false;
+			_unset_default_file_item.Activated += delegate {
+				savepass.c.default_file = null;
+				_unset_default_file_item.Sensitive = false;
+				_default_file_item.Label = "<default file>";
+				savepass.c.Save();
+			};
+
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
 			_close_item = new MenuItem("Close");
@@ -222,35 +245,16 @@ namespace savepass
 			};
 
 			turn_off_sensetivity();
+			_window.MapEvent += delegate {
+				if (_filename != null)
+					open_file();
+			};
 			_window.ShowAll();
 		}
 
 		public static Window window
 		{
 			get { return _window; }
-		}
-
-		/* return 0 if user sure */
-		private int are_you_sure(string str)
-		{
-			int answer;
-
-			var dialog = new Dialog("savepass", _window,
-				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
-			dialog.Resizable = false;
-			dialog.DefaultResponse = ResponseType.Ok;
-			var content_area = dialog.ContentArea;
-			var label = new Label(String.Format(
-				"Are you sure you want to delete password with note \"{0}\"?", str));
-			content_area.PackStart(label, true, true, 3);
-			dialog.ShowAll();
-
-			answer = dialog.Run() == (int) ResponseType.Ok ? 0 : 1;
-
-			dialog.Destroy();
-
-			return answer;
 		}
 			
 		public int config(out conf c)
@@ -261,6 +265,12 @@ namespace savepass
 			} catch (Exception) {
 				return 2;
 			}
+			string file = c.default_file;
+			if (!String.IsNullOrWhiteSpace(file)) {
+				_default_file_item.Label = file;
+				_unset_default_file_item.Sensitive = true;
+				_filename = file;
+			}
 			return 0;
 		}
 
@@ -269,24 +279,6 @@ namespace savepass
 			Environment.ExitCode = 0;
 
 			Application.Run();
-		}
-
-		private void turn_on_sensetivity()
-		{
-			_hbox.Sensitive = true;
-			_add_item.Sensitive = true;
-			_save_item.Sensitive = true;
-			_save_as_item.Sensitive = true;
-			_close_item.Sensitive = true;
-		}
-
-		private void turn_off_sensetivity()
-		{
-			_hbox.Sensitive = false;
-			_add_item.Sensitive = false;
-			_save_item.Sensitive = false;
-			_save_as_item.Sensitive = false;
-			_close_item.Sensitive = false;
 		}
 
 		/***********
@@ -425,14 +417,20 @@ namespace savepass
 			grid.RowSpacing = 3;
 			grid.ColumnSpacing = 3;
 
-			var label = new Label("Master password:");
-			grid.Attach(label, 0, 0, 1, 1);
+			Label label;
+			if (_filename != null) {
+				label = new Label(String.Format("Opening file {0}", _filename));
+				grid.Attach(label, 0, 0, 2, 1);
+
+			}
+			label = new Label("Master password:");
+			grid.Attach(label, 0, 1, 1, 1);
 			label.Halign = Align.End;
 			var entry = new Entry();
-			grid.Attach(entry, 1, 0, 1, 1);
+			grid.Attach(entry, 1, 1, 1, 1);
 			entry.Visibility = false;
 			label = new Label();
-			grid.Attach(label, 0, 1, 2, 1);
+			grid.Attach(label, 0, 2, 2, 1);
 
 			entry.Buffer.DeletedText += delegate {
 				label.Visible = false;
@@ -466,9 +464,9 @@ namespace savepass
 			return str;
 		}
 
-		private bool open_save_dialog(bool open)
+		private string open_save_dialog(bool open)
 		{
-			bool result = true;
+			string result = null;
 
 			var dialog = new FileChooserDialog(open ? "Open File" : "Save",
 				_window, 
@@ -487,9 +485,9 @@ namespace savepass
 			dialog.AddFilter(filter);
 
 			dialog.ShowAll();
-			result &= dialog.Run() == (int) ResponseType.Accept;
+			if (dialog.Run() == (int) ResponseType.Accept)
+				result = dialog.Filename;
 
-			_filename = dialog.Filename;
 			dialog.Destroy();
 			return result;
 		}
@@ -522,9 +520,32 @@ namespace savepass
 			return response;
 		}
 
-		/******************
-		 * Event Handlers *
-		 ******************/
+		/************************
+		 * Additional functions *
+		 ************************/
+
+		/* return 0 if user sure */
+		private int are_you_sure(string str)
+		{
+			int answer;
+
+			var dialog = new Dialog("savepass", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
+			dialog.Resizable = false;
+			dialog.DefaultResponse = ResponseType.Ok;
+			var content_area = dialog.ContentArea;
+			var label = new Label(String.Format(
+				"Are you sure you want to delete password with note \"{0}\"?", str));
+			content_area.PackStart(label, true, true, 3);
+			dialog.ShowAll();
+
+			answer = dialog.Run() == (int) ResponseType.Ok ? 0 : 1;
+
+			dialog.Destroy();
+
+			return answer;
+		}
 
 		private bool is_changed()
 		{
@@ -540,6 +561,53 @@ namespace savepass
 			}
 			return false;
 		}
+
+		/* Ask master password and open file. Return true if everything ok */
+		private bool open_file()
+		{
+			_master = get_master_password();
+			if (_master == null) {
+				_filename = null;
+				return false;
+			}
+
+			var data = file.read_from_file(_filename, _master);
+			if (data == null) {
+				_filename = null;
+				return false;
+			}
+			_p = new passwds(data);
+
+			_model.Clear();
+			foreach (passwd i in _p)
+				_model.AppendValues(i.note,
+					i.time.ToString(savepass.c.format_date_time,
+						CultureInfo.CurrentCulture));
+			turn_on_sensetivity();
+			return true;
+		}
+
+		private void turn_off_sensetivity()
+		{
+			_hbox.Sensitive = false;
+			_add_item.Sensitive = false;
+			_save_item.Sensitive = false;
+			_save_as_item.Sensitive = false;
+			_close_item.Sensitive = false;
+		}
+
+		private void turn_on_sensetivity()
+		{
+			_hbox.Sensitive = true;
+			_add_item.Sensitive = true;
+			_save_item.Sensitive = true;
+			_save_as_item.Sensitive = true;
+			_close_item.Sensitive = true;
+		}
+
+		/******************
+		 * Event Handlers *
+		 ******************/
 
 		private void add_clicked(object sender, EventArgs e)
 		{
@@ -679,37 +747,35 @@ namespace savepass
 		{
 			if (is_changed())
 				return;
-
-			if (!open_save_dialog(true))
+			string file = open_save_dialog(true);
+			if (file == null)
 				return;
-			_master = get_master_password();
-			if (_master == null) {
-				_filename = null;
-				return;
-			}
-
-			var data = file.read_from_file(_filename, _master);
-			if (data == null)
-				return;
-			_p = new passwds(data);
-
-			_model.Clear();
-			foreach (passwd i in _p)
-				_model.AppendValues(i.note,
-					i.time.ToString(savepass.c.format_date_time,
-						CultureInfo.CurrentCulture));
-			turn_on_sensetivity();
-			_changed = false;
+			_filename = file;
+			_changed &= !open_file();
 		}
 
 		private void save_activated(object sender, EventArgs args)
 		{
-			if ((_filename == null || sender.Equals(_save_as_item))
-				&& !open_save_dialog(false))
+			if (_filename == null || sender.Equals(_save_as_item)){
+				string f = open_save_dialog(false);
+				if (f == null)
 					return;
+				_filename = f;
+			}
 		
 			file.write_to_file(_filename, _p.to_data(), _master);
 			_changed = false;
+		}
+
+		private void default_file_activated(object sender, EventArgs args)
+		{
+			string f = open_save_dialog(true);
+			if (f != null) {
+				savepass.c.default_file = f;
+				savepass.c.Save();
+				_default_file_item.Label = f;
+				_unset_default_file_item.Sensitive = true;
+			}
 		}
 
 		private void close_activated(object sender, EventArgs args)
