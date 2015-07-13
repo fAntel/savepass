@@ -147,7 +147,7 @@ namespace savepass
 		}
 
 		/* Add new password in array of passwords */
-		public int add(ref bool changed)
+		public int add()
 		{
 			string password0, password1, note;
 
@@ -174,7 +174,6 @@ namespace savepass
 				return 2;
 			}
 			_p.add(password0, note);
-			changed = true;
 			return 0;
 		}
 
@@ -200,7 +199,7 @@ namespace savepass
 		}
 
 		/* Change password and/or note in n element of array of passwords */
-		public int change(int n, ref bool changed)
+		public int change(int n)
 		{
 			string pass, note, str0, str1;
 			if (!_p.get_pass_note(n - 1, out pass, out note))
@@ -233,7 +232,6 @@ namespace savepass
 				return 2;
 			}
 			_p.change(n - 1, pass, note);
-			changed |= pass != null || note != null;
 			return 0;
 		}
 
@@ -302,7 +300,7 @@ namespace savepass
 		}
 
 		/* Remove password with number n from array of passwords */
-		public int del(int n, ref bool changed)
+		public int del(int n)
 		{
 			string pass, note;
 			int return_value;
@@ -314,7 +312,6 @@ namespace savepass
 			return_value = are_you_sure(note);
 			if (return_value == 0) {
 				_p.del(n);
-				changed = true;
 				savepass.print(Catalog.GetString("password was deleted"), false);
 			}
 			return return_value == 2 ? 2 : 0;
@@ -419,7 +416,6 @@ namespace savepass
 		public void run()
 		{
 			int exit_value = 0;
-			bool changed = false;
 			byte[] data;
 			bool on_screen = _dict.ContainsKey(keys.on_screen) ? (bool) _dict[keys.on_screen] :
 				#if WINDOWS || GTK
@@ -473,13 +469,13 @@ namespace savepass
 			else if (_dict.ContainsKey(keys.get_pass))
 				exit_value = search_and_get_pass((string) _dict[keys.get_pass], on_screen);
 			else if (_dict.ContainsKey(keys.add))
-				exit_value = add(ref changed);
+				exit_value = add();
 			else if (_dict.ContainsKey(keys.change))
-				exit_value = change((int) _dict[keys.change], ref changed);
+				exit_value = change((int) _dict[keys.change]);
 			else if (_dict.ContainsKey(keys.del))
-				exit_value = del((int) _dict[keys.del], ref changed);
+				exit_value = del((int) _dict[keys.del]);
 			Environment.ExitCode = exit_value;
-			if (changed)
+			if (_p.changed)
 				file.write_to_file(_filename, _p.to_data(), _master);
 		}
 

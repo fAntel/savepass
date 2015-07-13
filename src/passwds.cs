@@ -33,6 +33,7 @@ namespace savepass
 		public passwds()
 		{
 			_passwds = new List<passwd>();
+			changed = false;
 		}
 
 		/* Create _passwds array from byte array from file */
@@ -42,6 +43,7 @@ namespace savepass
 			int i = 0;
 			while (i < data.Length)
 				_passwds.Add(new passwd(ref data, ref i));
+			changed = false;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
@@ -54,11 +56,14 @@ namespace savepass
 			return new passwds_enum(_passwds);
 		}
 
+		public bool changed { get; set;	}
+
 		/* Add new password to the list */
 		public passwd add(string pass, string note)
 		{
 			var p = new passwd(pass, note);
 			_passwds.Add(p);
+			changed = true;
 			return p;
 		}
 
@@ -69,24 +74,30 @@ namespace savepass
 				_passwds[n].password = pass;
 			if (note != null)
 				_passwds[n].note = note;
+			if (pass != null || note != null)
+				changed = true;
 			return _passwds[n];
 		}
 
 		/* Check is n within _passwds
 		 * return false if n within _passwds
 		 * and true if not
+		 * Variable testing added because tests crushed if
+		 * savepass.print compiled with GTK
 		 */
-		public bool check_limits(int n, bool full)
+		public bool check_limits(int n, bool full, bool testing = false)
 		{
 			if (n == 0) {
 				if (_passwds.Count == 0) {
-					savepass.print(Catalog.GetString(
-						"there are no passwords in this file"), full);
+					if (!testing)
+						savepass.print(Catalog.GetString(
+							"there are no passwords in this file"), full);
 					return true;
 				}
 			} else if (n >= _passwds.Count) {
-				savepass.print(string.Format(Catalog.GetString(
-					"there is no password with number {0} in this file"), n), full);
+				if (!testing)
+					savepass.print(string.Format(Catalog.GetString(
+						"there is no password with number {0} in this file"), n), full);
 				return true;
 			}
 			return false;
@@ -96,12 +107,13 @@ namespace savepass
 		public  void del(int n)
 		{
 			_passwds.RemoveAt(n);
+			changed = true;
 		}
 
 		/* Return password and note for n element of _passwds for change function */
-		public bool get_pass_note(int n, out string pass, out string note)
+		public bool get_pass_note(int n, out string pass, out string note, bool testing = false)
 		{
-			if (check_limits(n, false)) {
+			if (check_limits(n, false, testing)) {
 				pass = null;
 				note = null;
 				return false;

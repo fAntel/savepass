@@ -46,13 +46,19 @@ namespace savepass
 		[Test()]
 		public void test_check_limits_within_range()
 		{
-			Assert.IsFalse(ps.check_limits(0, false));
+			Assert.IsFalse(ps.check_limits(0, false, true));
 		}
 
 		[Test()]
 		public void test_check_limits_without_range()
 		{
-			Assert.IsTrue(ps.check_limits(1, false));
+			Assert.IsTrue(ps.check_limits(1, false, true));
+		}
+
+		[Test()]
+		public void test_check_false()
+		{
+			Assert.IsFalse(ps.changed);
 		}
 	}
 
@@ -84,13 +90,13 @@ namespace savepass
 		[Test()]
 		public void test_check_limits_within_range()
 		{
-			Assert.IsFalse(ps.check_limits(2, false));
+			Assert.IsFalse(ps.check_limits(2, false, true));
 		}
 
 		[Test()]
 		public void test_check_limits_without_range()
 		{
-			Assert.IsTrue(ps.check_limits(3, false));
+			Assert.IsTrue(ps.check_limits(3, false, true));
 		}
 	}
 
@@ -104,8 +110,7 @@ namespace savepass
 		public void set_up()
 		{
 			p = new passwd("pass", "note");
-			ps = new passwds(new byte[0]);
-			ps.add(p.password, p.note);
+			ps = new passwds(p.to_data());
 		}
 
 		[Test()]
@@ -113,9 +118,13 @@ namespace savepass
 		{
 			byte[] data = ps.to_data();
 			int i = 0;
-			passwd result = new passwd(ref data, ref i);
+
+			ps.add(p.password, p.note);
+
+			var result = new passwd(ref data, ref i);
 			Assert.AreEqual(p.password, result.password);
 			Assert.AreEqual(p.note, result.note);
+			Assert.IsTrue(ps.changed);
 		}
 
 		[Test()]
@@ -135,7 +144,7 @@ namespace savepass
 			bool result;
 			string pass, note;
 
-			result = ps.get_pass_note(1, out pass, out note);
+			result = ps.get_pass_note(1, out pass, out note, true);
 
 			Assert.IsFalse(result);
 		}
@@ -150,6 +159,7 @@ namespace savepass
 			ps.get_pass_note(0, out pass, out note);
 			Assert.AreEqual(pass, "pass");
 			Assert.AreEqual(note, "note");
+			Assert.IsFalse(ps.changed);
 		}
 
 		[Test()]
@@ -162,6 +172,7 @@ namespace savepass
 			ps.get_pass_note(0, out pass, out note);
 			Assert.AreEqual(pass, "pass0");
 			Assert.AreEqual(note, "note");
+			Assert.IsTrue(ps.changed);
 		}
 
 		[Test()]
@@ -174,6 +185,7 @@ namespace savepass
 			ps.get_pass_note(0, out pass, out note);
 			Assert.AreEqual(pass, "pass");
 			Assert.AreEqual(note, "note0");
+			Assert.IsTrue(ps.changed);
 		}
 
 		[Test()]
@@ -186,6 +198,7 @@ namespace savepass
 			ps.get_pass_note(0, out pass, out note);
 			Assert.AreEqual(pass, "pass0");
 			Assert.AreEqual(note, "note0");
+			Assert.IsTrue(ps.changed);
 		}
 
 		[Test()]
@@ -193,7 +206,12 @@ namespace savepass
 		{
 			ps.del(0);
 
-			Assert.IsTrue(ps.check_limits(0, false));
+			int i = 0;
+			foreach (passwd p in ps)
+				++i;
+
+			Assert.AreEqual(0, i);
+			Assert.IsTrue(ps.changed);
 		}
 
 		[Test()]
@@ -280,22 +298,6 @@ namespace savepass
 	[TestFixture()]
 	public class test_passwds_enum
 	{
-		/*private passwd p;
-		private passwds ps;
-		private byte[] data;
-
-		[SetUp()]
-		public void set_up()
-		{
-			p = new passwd("pass", "note");
-			byte[] p_data = p.to_data();
-			data = new byte[p_data.Length * 3];
-			Array.Copy(p_data, 0, data, 0, p_data.Length);
-			Array.Copy(p_data, 0, data, p_data.Length, p_data.Length);
-			Array.Copy(p_data, 0, data, p_data.Length * 2, p_data.Length);
-			ps = new passwds(data);
-		}*/
-
 		[Test()]
 		public void test_passwds_constructor()
 		{
@@ -314,7 +316,7 @@ namespace savepass
 
 			bool result = e.MoveNext();
 
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[Test()]
@@ -327,7 +329,7 @@ namespace savepass
 
 			bool result = e.MoveNext();
 
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[Test()]
@@ -341,7 +343,7 @@ namespace savepass
 			bool result = e.MoveNext();
 			result = e.MoveNext();
 
-			Assert.AreEqual(false, result);
+			Assert.IsFalse(result);
 		}
 
 		[Test()]
@@ -357,7 +359,7 @@ namespace savepass
 			e.Reset();
 			result = e.MoveNext();
 
-			Assert.AreEqual(true, result);
+			Assert.IsTrue(result);
 		}
 
 		[Test()]

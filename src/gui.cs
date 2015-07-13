@@ -31,7 +31,6 @@ namespace savepass
 		private passwds _p;
 		private string _filename;
 		private string _master;
-		private bool _changed = false;
 
 		private static Window _window;
 		private ListStore _model;
@@ -549,7 +548,7 @@ namespace savepass
 
 		private bool is_changed()
 		{
-			if (_changed) {
+			if (_p.changed) {
 				int response = save_changes();
 				switch (response) {
 					case (int) ResponseType.Yes:
@@ -628,7 +627,6 @@ namespace savepass
 				_model.AppendValues(new_p.note,
 					new_p.time.ToString(savepass.c.format_date_time,
 						CultureInfo.CurrentCulture));
-				_changed = true;
 				break;
 			}
 
@@ -659,9 +657,8 @@ namespace savepass
 					dialog.passs_doesnt_match();
 					continue;
 				}
-				_changed |= !pass.Equals(dialog.pass, StringComparison.Ordinal) ||
-					!note.Equals(dialog.note, StringComparison.Ordinal);
-				if (_changed) {
+				if (!pass.Equals(dialog.pass, StringComparison.Ordinal) ||
+					!note.Equals(dialog.note, StringComparison.Ordinal)) {
 					var new_p = _p.change(int.Parse(_model.GetStringFromIter(iter)),
 						dialog.pass, dialog.note);
 					_model.SetValues(iter, new_p.note,
@@ -687,7 +684,6 @@ namespace savepass
 
 			_p.del(int.Parse(_model.GetStringFromIter(iter)));
 			_model.Remove(ref iter);
-			_changed = true;
 		}
 
 		private void copy_clicked(object sender, EventArgs e)
@@ -739,8 +735,6 @@ namespace savepass
 
 			_model.Clear();
 			turn_on_sensetivity();
-
-			_changed = false;
 		}
 
 		private void open_activated(object sender, EventArgs args)
@@ -751,7 +745,7 @@ namespace savepass
 			if (file == null)
 				return;
 			_filename = file;
-			_changed &= !open_file();
+			open_file();
 		}
 
 		private void save_activated(object sender, EventArgs args)
@@ -764,7 +758,6 @@ namespace savepass
 			}
 		
 			file.write_to_file(_filename, _p.to_data(), _master);
-			_changed = false;
 		}
 
 		private void default_file_activated(object sender, EventArgs args)
@@ -785,7 +778,6 @@ namespace savepass
 
 			_model.Clear();
 			_filename = null;
-			_changed = false;
 			turn_off_sensetivity();
 		}
 			
