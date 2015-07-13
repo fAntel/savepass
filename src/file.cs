@@ -24,11 +24,30 @@ using Mono.Unix;
 
 namespace savepass
 {
-	public static class file
+	public class file
 	{
-		public static byte[] read_from_file(string path, string master)
+		private blowfish _b;
+
+		public file(string filename = null, string master = null)
 		{
-			blowfish b;
+			if (filename != null)
+				path = filename;
+			if (master != null)
+				_b = new blowfish(master);
+		}
+
+		public string path {
+			get;
+			set;
+		}
+
+		public string master
+		{
+			set { _b = new blowfish(value); }
+		}
+
+		public byte[] read()
+		{
 			byte[] data = null;
 
 			try {
@@ -45,9 +64,8 @@ namespace savepass
 					"reading file {0} failed: {1}"), path, e.Message), true);
 			}
 			if (data != null) {
-				b = new blowfish(master);
 				try {
-					data = b.decrypt(data);
+					data = _b.decrypt(data);
 				} catch (Exception) {
 					savepass.print(Catalog.GetString(
 						"wrong master password"), false);
@@ -57,10 +75,9 @@ namespace savepass
 			return data;
 		}
 
-		public static void write_to_file(string path, byte[] data, string master)
+		public bool write(passwds p)
 		{
-			blowfish b = new blowfish(master);
-			data = b.encrypt(data);
+			byte[] data = _b.encrypt(p.to_data());
 			try {
 				using (var f = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None)) {
 					using (var w = new BinaryWriter(f)) {
@@ -70,7 +87,10 @@ namespace savepass
 			} catch (Exception e) {
 				savepass.print(String.Format(Catalog.GetString(
 					"saving file {0} failed: {1}"), path, e.Message), true);
+				return false;
 			}
+			p.changed = false;
+			return true;
 		}
 	}
 }

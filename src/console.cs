@@ -37,8 +37,7 @@ namespace savepass
 			config, filename };
 
 		private passwds _p;
-		private string _filename;
-		private string _master;
+		private file _file;
 		private Dictionary<keys, object> _dict;
 
 		public console(string[] args)
@@ -143,7 +142,6 @@ namespace savepass
 				throw new ArgumentException();
 			} else if (rest.Count == 1)
 				_dict.Add(keys.filename, (object) rest[0]);
-
 		}
 
 		/* Add new password in array of passwords */
@@ -238,6 +236,7 @@ namespace savepass
 		/* Parse options for configuration file and set _filename */
 		public int config(out conf c)
 		{
+			string filename = null;
 			c = null;
 			string conf_file = _dict.ContainsKey(keys.conf_file) ? (string) _dict[keys.conf_file] : null;
 			string config_option = _dict.ContainsKey(keys.config) ? (string) _dict[keys.config] : null;
@@ -251,7 +250,7 @@ namespace savepass
 			if (_dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) _dict[keys.file])) {
 				c.default_file = (string) _dict[keys.file];
 				c.Save();
-				_filename = (string) _dict[keys.file];
+				filename = (string) _dict[keys.file];
 			} 
 			if (_dict.ContainsKey(keys.config)) {
 				if (String.Equals(config_option, "all", StringComparison.OrdinalIgnoreCase))
@@ -270,7 +269,7 @@ namespace savepass
 				Environment.ExitCode = 0;
 				throw new AllOKException();
 			} else if (_dict.ContainsKey(keys.filename))
-				_filename = (string) _dict[keys.filename];
+				filename = (string) _dict[keys.filename];
 			if (_dict.ContainsKey(keys.always_in_clipboard))
 				c.always_in_clipboard = (bool) _dict[keys.always_in_clipboard];
 			if (_dict.ContainsKey(keys.always_save_time_of_change))
@@ -282,13 +281,13 @@ namespace savepass
 				c.format_date_time = (string) _dict[keys.format];
 			if (_dict.ContainsKey(keys.save))
 				c.Save();
-			if (_filename == null) {
+			if (filename == null) {
 				if (_dict.ContainsKey(keys.save)) {
 					Environment.ExitCode = 0;
 					throw new AllOKException();
 				}
 				if (c.default_file != null) {
-					_filename = c.default_file;
+					filename = c.default_file;
 				} else {
 					savepass.print(string.Format(Catalog.GetString(
 						"File name must be specified\nTry run {0} --help for more information"),
@@ -296,6 +295,7 @@ namespace savepass
 					return 1;
 				}
 			}
+			_file = new file(filename);
 			return 0;
 		}
 
@@ -416,6 +416,7 @@ namespace savepass
 		public void run()
 		{
 			int exit_value = 0;
+			string master = null;
 			byte[] data;
 			bool on_screen = _dict.ContainsKey(keys.on_screen) ? (bool) _dict[keys.on_screen] :
 				#if WINDOWS || GTK
@@ -427,12 +428,12 @@ namespace savepass
 			try {
 				while (true) {
 					Console.Write(Catalog.GetString("Enter master password: "));
-					_master = read_password();
-					if (_master.Length < 4)
+					master = read_password();
+					if (master.Length < 4)
 						Console.WriteLine(Catalog.GetString(
 							"The length of the master password must be 4 or " +
 							"more characters. Try again"));
-					else if (_master.Length > 56)
+					else if (master.Length > 56)
 						Console.WriteLine(Catalog.GetString(
 							"The length of the master password must be no more " +
 							"than 56 characters. Try again"));
@@ -448,8 +449,8 @@ namespace savepass
 				Environment.ExitCode = 2;
 				return;
 			}
-
-			data = file.read_from_file(_filename, _master);
+			_file.master = master;
+			data = _file.read();
 			if (data == null) {
 				Environment.ExitCode = 2;
 				return;
@@ -476,7 +477,7 @@ namespace savepass
 				exit_value = del((int) _dict[keys.del]);
 			Environment.ExitCode = exit_value;
 			if (_p.changed)
-				file.write_to_file(_filename, _p.to_data(), _master);
+				_file.write(_p);
 		}
 
 		/* Find and print all notes in array with given note as a substring */

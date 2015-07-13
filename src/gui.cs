@@ -29,8 +29,7 @@ namespace savepass
 	public class gui: IUI
 	{
 		private passwds _p;
-		private string _filename;
-		private string _master;
+		private file _file;
 
 		private static Window _window;
 		private ListStore _model;
@@ -245,7 +244,7 @@ namespace savepass
 
 			turn_off_sensetivity();
 			_window.MapEvent += delegate {
-				if (_filename != null)
+				if (_file != null)
 					open_file();
 			};
 			_window.ShowAll();
@@ -268,7 +267,7 @@ namespace savepass
 			if (!String.IsNullOrWhiteSpace(file)) {
 				_default_file_item.Label = file;
 				_unset_default_file_item.Sensitive = true;
-				_filename = file;
+				_file = new file(file);
 			}
 			return 0;
 		}
@@ -399,7 +398,7 @@ namespace savepass
 			}
 		}
 
-		private string get_master_password()
+		private string get_master_password(bool open = false)
 		{
 			string  str = null;
 			var dialog = new Dialog("Master password", _window,
@@ -417,8 +416,8 @@ namespace savepass
 			grid.ColumnSpacing = 3;
 
 			Label label;
-			if (_filename != null) {
-				label = new Label(String.Format("Opening file {0}", _filename));
+			if (open) {
+				label = new Label(String.Format("Opening file {0}", _file.path));
 				grid.Attach(label, 0, 0, 2, 1);
 
 			}
@@ -564,15 +563,17 @@ namespace savepass
 		/* Ask master password and open file. Return true if everything ok */
 		private bool open_file()
 		{
-			_master = get_master_password();
-			if (_master == null) {
-				_filename = null;
+			string master;
+			master = get_master_password(true);
+			if (master == null) {
+				_file = null;
 				return false;
 			}
+			_file.master = master;
 
-			var data = file.read_from_file(_filename, _master);
+			byte[] data = _file.read();
 			if (data == null) {
-				_filename = null;
+				_file = null;
 				return false;
 			}
 			_p = new passwds(data);
@@ -725,11 +726,11 @@ namespace savepass
 			if (is_changed())
 				return;
 
-			_master = get_master_password();
-			if (_master == null)
+			string master = get_master_password();
+			if (master == null)
 				return;
 
-			_filename = null;
+			_file = new file(null, master);
 			var data = new byte[0];
 			_p = new passwds(data);
 
@@ -744,20 +745,20 @@ namespace savepass
 			string file = open_save_dialog(true);
 			if (file == null)
 				return;
-			_filename = file;
+			_file = new file(file);
 			open_file();
 		}
 
 		private void save_activated(object sender, EventArgs args)
 		{
-			if (_filename == null || sender.Equals(_save_as_item)){
+			if (_file.path == null || sender.Equals(_save_as_item)){
 				string f = open_save_dialog(false);
 				if (f == null)
 					return;
-				_filename = f;
+				_file.path = f;
 			}
 		
-			file.write_to_file(_filename, _p.to_data(), _master);
+			_file.write(_p);
 		}
 
 		private void default_file_activated(object sender, EventArgs args)
@@ -777,7 +778,7 @@ namespace savepass
 				return;
 
 			_model.Clear();
-			_filename = null;
+			_file = null;
 			turn_off_sensetivity();
 		}
 			
