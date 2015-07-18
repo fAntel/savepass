@@ -41,6 +41,7 @@ namespace savepass
 		private MenuItem _close_item;
 		private MenuItem _default_file_item;
 		private MenuItem _unset_default_file_item;
+		private TreeViewColumn _date_time_column;
 
 		private static Button create_button(string lable, string name)
 		{
@@ -68,8 +69,8 @@ namespace savepass
 			column.Resizable = true;
 			column.Expand = true;
 			_treeview.AppendColumn(column);
-			column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
-			_treeview.AppendColumn(column);
+			_date_time_column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
+			_treeview.AppendColumn(_date_time_column);
 		}
 
 		public gui(string[] args)
@@ -113,7 +114,7 @@ namespace savepass
 			menu.Append(separator);
 			var preferences_item = new MenuItem("Preferences");
 			menu.Append(preferences_item);
-			//preferences_item.Activated += preferences_activated;
+			preferences_item.Activated += preferences_activated;
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
 			item = new MenuItem("Default file");
@@ -269,6 +270,7 @@ namespace savepass
 				_unset_default_file_item.Sensitive = true;
 				_file = new file(file);
 			}
+			_date_time_column.Visible = savepass.c.show_date_time;
 			return 0;
 		}
 
@@ -518,6 +520,67 @@ namespace savepass
 			return response;
 		}
 
+		private void run_preferences_dialog()
+		{
+			int response;
+			var dialog = new Dialog("Preferences", _window,
+				DialogFlags.DestroyWithParent,
+				"Apply", ResponseType.Apply,
+				"Ok", ResponseType.Ok,
+				"Cancel", ResponseType.Cancel);
+			dialog.TransientFor = _window;
+			dialog.Resizable = false;
+			dialog.DefaultResponse = ResponseType.Cancel;
+			dialog.SkipTaskbarHint = true;
+			var content_area = dialog.ContentArea;
+			content_area.BorderWidth = 4;
+			var hbox = new Box(Orientation.Vertical, 3);
+			content_area.PackStart(hbox, true, true, 2);
+
+			var always_save_time_of_change = new CheckButton("Always save time of change");
+			hbox.PackStart(always_save_time_of_change, false, false, 0);
+			always_save_time_of_change.Active = savepass.c.always_save_time_of_change;
+			always_save_time_of_change.TooltipText =
+				"Check it if you want the program to save date/time of changes always, " +
+				"not just only when changing password";
+			var show_date_time = new CheckButton("Show date/time");
+			hbox.PackStart(show_date_time, false, false, 0);
+			show_date_time.Active = savepass.c.show_date_time;
+			show_date_time.TooltipText =
+				"Show another column with date/time of creation/changing password and/or note";
+
+			var format_date_time_box = new Box(Orientation.Horizontal, 3);
+			hbox.PackStart(format_date_time_box, false, false, 2);
+			format_date_time_box.MarginLeft = 20;
+			format_date_time_box.Sensitive = show_date_time.Active;
+			var format_date_time_label = new Label("Format of date/time column: ");
+			format_date_time_box.PackStart(format_date_time_label, false, false, 0);
+			var format_date_time_combo = new ComboBoxText();
+			format_date_time_box.PackStart(format_date_time_combo, false, false, 0);
+			set_format_date_time_combo(format_date_time_combo);
+			format_date_time_combo.ActiveId = savepass.c.format_date_time;
+
+			show_date_time.Toggled += delegate {
+				format_date_time_box.Sensitive = show_date_time.Active;
+			};
+			dialog.ShowAll();
+			for (;;) {
+				response = dialog.Run();
+				if (response == (int) ResponseType.Cancel)
+					break;
+
+				savepass.c.always_save_time_of_change = always_save_time_of_change.Active;
+				savepass.c.show_date_time = show_date_time.Active;
+				_date_time_column.Visible = show_date_time.Active;
+				change_date_time_column_values(format_date_time_combo.ActiveId);
+				savepass.c.Save();
+
+				if (response == (int) ResponseType.Ok)
+					break;
+			}
+			dialog.Destroy();
+		}
+
 		/************************
 		 * Additional functions *
 		 ************************/
@@ -603,6 +666,25 @@ namespace savepass
 			_save_item.Sensitive = true;
 			_save_as_item.Sensitive = true;
 			_close_item.Sensitive = true;
+		}
+
+		private void set_format_date_time_combo(ComboBoxText list)
+		{
+			var example = DateTime.Now;
+			string[] date_time_formats = { "d", "D", "f", "F", "g", "G", "m", "y"};
+			foreach (string str in date_time_formats)
+				list.Append(str, example.ToString(str, CultureInfo.CurrentCulture));
+		}
+
+		private void change_date_time_column_values(string format)
+		{
+			TreeIter iter;
+			_model.GetIterFirst(out iter);
+			foreach (passwd p in _p) {
+				_model.SetValue(iter, 1,
+					p.time.ToString(format, CultureInfo.CurrentCulture));
+				_model.IterNext(ref iter);
+			}
 		}
 
 		/******************
@@ -759,6 +841,11 @@ namespace savepass
 			}
 		
 			_file.write(_p);
+		}
+
+		private void preferences_activated(object sender, EventArgs args)
+		{
+			run_preferences_dialog();
 		}
 
 		private void default_file_activated(object sender, EventArgs args)

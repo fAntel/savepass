@@ -68,7 +68,7 @@ namespace savepass
 				"# C# format for date/time. You can read more about\n" +
 				"# it in Microsoft Developer Network article\n" +
 				"# \"Custom Date and Time Format Strings\"\n" +
-				"# (http://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx)"),
+				"# (https://msdn.microsoft.com/en-us/library/az4se3k1(v=vs.110).aspx)"),
 			new conf_settings("File", "default_file", "", "Absolute path to default file with passwords")
 		});
 
