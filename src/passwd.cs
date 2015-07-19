@@ -35,10 +35,7 @@ namespace savepass
 		{
 			_passwd = passwd;
 			_note = note;
-			if (added == DateTime.MinValue)
-				_added = DateTime.Now;
-			else
-				_added = added;
+			_added = added == DateTime.MinValue ? DateTime.Now : added;
 			_changed = changed;
 		}
 

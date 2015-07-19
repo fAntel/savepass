@@ -88,13 +88,16 @@ namespace savepass
 			default_settings[(int) settings.format_date_time].name + "=" + 
 			default_settings[(int) settings.format_date_time].default_value;
 
-		/* Key file */
-		private enum settings: int { always_in_clipboard = 0, always_save_time_of_change, show_date_time, format_date_time,
-			default_file};
-		private GKeyFile _conf = null, _system_conf = null, _user_conf = null;
-		private string _conf_file = null, _system_conf_file = null, _user_conf_file = null;
+		private enum settings: int { always_in_clipboard = 0, always_save_time_of_change, show_date_time,
+			format_date_time, default_file};
+		private GKeyFile _conf, _system_conf, _user_conf;
+		private string _conf_file, _system_conf_file, _user_conf_file;
 		private bool _sys;
 
+		/* Variables:
+		 * conf_file - path to the configuration file is not the default
+		 * sys - work with system file
+		 */
 		public conf(string conf_file = null, bool sys = false)
 		{
 			_sys = sys;
@@ -113,7 +116,7 @@ namespace savepass
 					savepass.print(String.Format(Catalog.GetString(
 						"openging configuration file {0} failed: {1}"),
 						conf_file, e.Message), true);
-					throw new Exception();
+					throw;
 				}
 				return;
 			}
@@ -128,7 +131,7 @@ namespace savepass
 					savepass.print(String.Format(Catalog.GetString(
 						"creating object for default settings failed: {0}"), e.Message),
 						true);
-					throw new Exception();
+					throw;
 				}
 				return;
 			}
@@ -380,6 +383,7 @@ namespace savepass
 			}
 		}
 
+		/* Save settings to configuration file */
 		public void Save()
 		{
 			if (_conf_file != null)
@@ -395,12 +399,14 @@ namespace savepass
 			}
 		}
 
+		/* Print settings on the screen */
 		public void list(bool sys)
 		{
 			GKeyFile conf = sys ? _system_conf : _user_conf;
 			list_setted(conf);
 		}
 				
+		/* Print all settings on the screen */
 		public void list_all()
 		{
 			string g = null;
@@ -418,6 +424,7 @@ namespace savepass
 			}
 		}
 
+		/* Print setted settings on the screen */
 		public void list_setted(GKeyFile conf)
 		{
 			if (conf == null)

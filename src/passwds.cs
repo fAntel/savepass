@@ -30,6 +30,7 @@ namespace savepass
 	{
 		private readonly List<passwd> _passwds;
 
+		/* Constructor for testing realization of IEnumerable */
 		public passwds()
 		{
 			_passwds = new List<passwd>();
@@ -48,7 +49,7 @@ namespace savepass
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return (IEnumerator) GetEnumerator();
+			return GetEnumerator();
 		}
 
 		public passwds_enum GetEnumerator()
@@ -110,7 +111,8 @@ namespace savepass
 			changed = true;
 		}
 
-		/* Return password and note for n element of _passwds for change function */
+		/* Return password and note for n element of _passwds for change function
+		   Variable testing added because tests crushed if savepass.print compiled with GTK */
 		public bool get_pass_note(int n, out string pass, out string note, bool testing = false)
 		{
 			if (check_limits(n, false, testing)) {

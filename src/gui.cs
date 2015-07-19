@@ -43,7 +43,8 @@ namespace savepass
 		private MenuItem _unset_default_file_item;
 		private TreeViewColumn _date_time_column;
 
-		private static Button create_button(string lable, string name)
+		/* Function to create buttons */
+		private Button create_button(string lable, string name, EventHandler handler, bool sensitive = true)
 		{
 			var button = new Button();
 			button.Label = lable;
@@ -52,16 +53,23 @@ namespace savepass
 				icon.Pixbuf = IconTheme.Default.LoadIcon(name, (int) IconSize.Button, 0);
 				button.Image = icon;
 			}
+			button.Clicked += handler;
+			button.Sensitive = sensitive;
 			return button;
 		}
 
+		/* Create TreeView for notes */
 		private void create_treeview(ref Box hbox)
 		{
+			/* Create model. First column for note, second for time of changes */
 			_model = new ListStore(typeof(string), typeof(string));
 			var sw = new ScrolledWindow();
 			hbox.PackStart(sw, true, true, 0);
+
 			_treeview = new TreeView(_model);
 			sw.Add(_treeview);
+
+			/* Making notes to wrap */
 			var renderer = new CellRendererText();
 			renderer.WrapWidth = 1;
 			renderer.WrapMode = Pango.WrapMode.Word;
@@ -69,10 +77,12 @@ namespace savepass
 			column.Resizable = true;
 			column.Expand = true;
 			_treeview.AppendColumn(column);
-			_date_time_column = new TreeViewColumn("Time", new CellRendererText(), "text", 1);
+
+			_date_time_column = new TreeViewColumn("Date/time", new CellRendererText(), "text", 1);
 			_treeview.AppendColumn(_date_time_column);
 		}
 
+		/* Create main window */
 		public gui(string[] args)
 		{
 			Application.Init(savepass.program_name, ref args);
@@ -87,6 +97,7 @@ namespace savepass
 				}
 			};
 			_window.Resize(600, 400);
+
 			// Create menu
 			var vbox = new Box(Orientation.Vertical, 2);
 			_window.Add(vbox);
@@ -135,7 +146,6 @@ namespace savepass
 				_default_file_item.Label = "<default file>";
 				savepass.c.Save();
 			};
-
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
 			_close_item = new MenuItem("Close");
@@ -196,25 +206,16 @@ namespace savepass
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			_hbox.PackStart(buttons_box, false, true, 3);
-			var add_button = create_button("Add", "list-add");
+			var add_button = create_button("Add", "list-add", add_clicked);
 			buttons_box.PackStart(add_button, false, true, 0);
-			add_button.Clicked += add_clicked;
-			var edit_button = create_button("Edit", null);
+			var edit_button = create_button("Edit", null, edit_clicked, false);
 			buttons_box.PackStart(edit_button, false, true, 0);
-			edit_button.Clicked += edit_clicked;
-			edit_button.Sensitive = false;
-			var delete_button = create_button("Delete", "edit-delete");
+			var delete_button = create_button("Delete", "edit-delete", delete_clicked, false);
 			buttons_box.PackStart(delete_button, false, true, 0);
-			delete_button.Clicked += delete_clicked;
-			delete_button.Sensitive = false;
-			var copy_button = create_button("Copy", "edit-copy");
+			var copy_button = create_button("Copy", "edit-copy", copy_clicked, false);
 			buttons_box.PackStart(copy_button, false, true, 0);
-			copy_button.Clicked += copy_clicked;
-			copy_button.Sensitive = false;
-			var show_button = create_button("Show", null);
+			var show_button = create_button("Show", null, show_clicked, false);
 			buttons_box.PackStart(show_button, false, true, 0);
-			show_button.Clicked += show_clicked;
-			show_button.Sensitive = false;
 
 			var selection = _treeview.Selection;
 			selection.Changed += delegate(object sender, EventArgs e) {
@@ -243,7 +244,7 @@ namespace savepass
 
 			};
 
-			turn_off_sensetivity();
+			turn_on_off_sensitivity(false);
 			_window.MapEvent += delegate {
 				if (_file != null)
 					open_file();
@@ -256,13 +257,14 @@ namespace savepass
 			get { return _window; }
 		}
 			
-		public int config(out conf c)
+		public bool config(out conf c)
 		{
 			c = null;
 			try {
 				c = new conf();
 			} catch (Exception) {
-				return 2;
+				Environment.ExitCode = 2;
+				return false;
 			}
 			string file = c.default_file;
 			if (!String.IsNullOrWhiteSpace(file)) {
@@ -271,30 +273,131 @@ namespace savepass
 				_file = new file(file);
 			}
 			_date_time_column.Visible = savepass.c.show_date_time;
-			return 0;
+			return true;
 		}
 
-		public void run()
-		{
-			Environment.ExitCode = 0;
+		public void run() { Application.Run(); }
 
-			Application.Run();
+		/************************
+		 * Additional functions *
+		 ************************/
+
+		/* return true if user sure */
+		private bool are_you_sure(string str)
+		{
+			bool answer;
+
+			var dialog = new Dialog("savepass", _window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
+				"Yes", ResponseType.Yes, "No", ResponseType.Yes, null);
+			dialog.Resizable = false;
+			dialog.DefaultResponse = ResponseType.Ok;
+			var content_area = dialog.ContentArea;
+			var label = new Label(String.Format(
+				"Are you sure you want to delete password with note \"{0}\"?", str));
+			content_area.PackStart(label, true, true, 3);
+			dialog.ShowAll();
+
+			answer = dialog.Run() == (int) ResponseType.Yes;
+			dialog.Destroy();
+			return answer;
+		}
+
+		/* return true if user doesn't want continue current action */
+		private bool is_changed()
+		{
+			if (_p.changed) {
+				int response = save_changes();
+				switch (response) {
+					case (int) ResponseType.Yes:
+						save_activated(null, null);
+						break;
+					case (int) ResponseType.Cancel:
+						return true;
+				}
+			}
+			return false;
+		}
+
+		/* Ask master password and open file*/
+		private void open_file()
+		{
+			string master;
+			master = get_master_password(true);
+			if (master == null) {
+				_file = null;
+				return;
+			}
+			_file.master = master;
+
+			byte[] data = _file.read();
+			if (data == null) {
+				_file = null;
+				return;
+			}
+			_p = new passwds(data);
+
+			_model.Clear();
+			foreach (passwd i in _p)
+				_model.AppendValues(i.note,
+					i.time.ToString(savepass.c.format_date_time,
+						CultureInfo.CurrentCulture));
+			turn_on_off_sensitivity(true);
+		}
+			
+		/* Turn on/off sensitivity of actions with passwords.
+		 * Sensitivity is on when file is creating or opening.
+		 * Sensitivity is off when there is no open or create file */
+		private void turn_on_off_sensitivity(bool on)
+		{
+			_hbox.Sensitive = on;
+			_add_item.Sensitive = on;
+			_save_item.Sensitive = on;
+			_save_as_item.Sensitive = on;
+			_close_item.Sensitive = on;
+		}
+
+		/* Set ComboBoxText with acceptable formats of date/time */
+		private void set_format_date_time_combo(ComboBoxText list)
+		{
+			var example = DateTime.Now;
+			string[] date_time_formats = { "d", "D", "f", "F", "g", "G", "m", "y"};
+			foreach (string str in date_time_formats)
+				list.Append(str, example.ToString(str, CultureInfo.CurrentCulture));
+		}
+
+		/* Convert values in second column (date/time) to new format of date/time */
+		private void change_date_time_column_values(string format)
+		{
+			TreeIter iter;
+			_model.GetIterFirst(out iter);
+			foreach (passwd p in _p) {
+				_model.SetValue(iter, 1,
+					p.time.ToString(format, CultureInfo.CurrentCulture));
+				_model.IterNext(ref iter);
+			}
 		}
 
 		/***********
 		 * Dialogs *
 		 ***********/
 
-		private class add_edit_dialog: Dialog {
+		/* Dialog for adding or editing password */
+		private class add_edit_dialog: Dialog
+		{
 			private readonly Dialog dialog;
-			private Label pass_again_label;
+			//private Label pass_again_label;
 			private Entry pass_entry;
 			private Entry pass_again_entry;
 			private Entry note_entry;
 			private CheckButton visibility_checkbox;
 			private Label error_label;
 
-			public add_edit_dialog(string caption, string pass, string note)
+			/* Create dialog
+			 * caption - title of dialog
+			 * if it is dialog for edit password then
+			 * pass and note are password and note */
+			public add_edit_dialog(string caption, string pass = null, string note = null)
 			{
 				dialog = new Dialog(caption, _window, DialogFlags.DestroyWithParent,
 					"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
@@ -312,41 +415,56 @@ namespace savepass
 				var label = new Label("Password:");
 				grid.Attach(label, 0, 0, 1, 1);
 				label.Halign = Align.Start;
-				this.pass_again_label = new Label("Password again:");
-				grid.Attach(this.pass_again_label, 0, 1, 1, 1);
+				var pass_again_label = new Label("Password again:");
+				grid.Attach(pass_again_label, 0, 1, 1, 1);
 				label = new Label("Note:");
 				grid.Attach(label, 0, 2, 1, 1);
 				label.Halign = Align.Start;
 
-				this.pass_entry = new Entry();
-				grid.Attach(this.pass_entry, 1, 0, 1, 1);
-				this.pass_entry.Visibility = false;
-				this.pass_again_entry = new Entry();
-				grid.Attach(this.pass_again_entry, 1, 1, 1, 1);
-				this.pass_again_entry.Visibility = false;
+				pass_entry = new Entry();
+				grid.Attach(pass_entry, 1, 0, 1, 1);
+				pass_entry.Visibility = false;
+				pass_again_entry = new Entry();
+				grid.Attach(pass_again_entry, 1, 1, 1, 1);
+				pass_again_entry.Visibility = false;
 				if (pass != null) {
 					pass_entry.Text = pass;
 					pass_again_entry.Text = pass;
 				}
-				this.note_entry = new Entry();
-				grid.Attach(this.note_entry, 1, 2, 1, 1);
+				note_entry = new Entry();
+				grid.Attach(note_entry, 1, 2, 1, 1);
 				if (note != null)
 					note_entry.Text = note;
 
-				this.visibility_checkbox = new CheckButton("Show password");
-				grid.Attach(this.visibility_checkbox, 0, 3, 2, 1);
-				this.visibility_checkbox.Toggled += delegate {
-					this.pass_entry.Visibility = !this.pass_entry.Visibility;
-					this.pass_again_label.Visible = !this.pass_again_label.Visible;
-					this.pass_again_entry.Visible = !this.pass_again_entry.Visible;
-					this.error_label.Visible = false;
+				visibility_checkbox = new CheckButton("Show password");
+				grid.Attach(visibility_checkbox, 0, 3, 2, 1);
+				visibility_checkbox.Toggled += delegate {
+					pass_entry.Visibility = !pass_entry.Visibility;
+					pass_again_label.Visible = !pass_again_label.Visible;
+					pass_again_entry.Visible = !pass_again_entry.Visible;
+					error_label.Visible = false;
 				};
 
-				this.error_label = new Label();
-				grid.Attach(this.error_label, 0, 4, 2, 1);
+				/* Label for error messages */
+				error_label = new Label();
+				grid.Attach(error_label, 0, 4, 2, 1);
+
+				/* Hide error label when user change text in entries */
+				InsertedTextHandler hide_label_insert = delegate {
+					error_label.Visible = false;
+				};
+				pass_entry.Buffer.InsertedText += hide_label_insert;
+				pass_again_entry.Buffer.InsertedText += hide_label_insert;
+				note_entry.Buffer.InsertedText += hide_label_insert;
+				DeletedTextHandler hide_label_delete = delegate {
+					error_label.Visible = false;
+				};
+				pass_entry.Buffer.DeletedText += hide_label_delete;
+				pass_again_entry.Buffer.DeletedText += hide_label_delete;
+				note_entry.Buffer.DeletedText += hide_label_delete;
 
 				dialog.ShowAll();
-				this.error_label.Visible = false;
+				error_label.Visible = false;
 			}
 
 			public string pass
@@ -369,10 +487,7 @@ namespace savepass
 				get { return visibility_checkbox.Active; }
 			}
 
-			public int run()
-			{
-				return dialog.Run();
-			}
+			public int run() { return dialog.Run();	}
 
 			public void passs_doesnt_match()
 			{
@@ -394,12 +509,12 @@ namespace savepass
 				error_label.Visible = true;
 			}
 
-			public void destroy()
-			{
-				dialog.Destroy();
-			}
+			public void destroy() {	dialog.Destroy(); }
 		}
 
+		/* Dialog for requesting master password
+		 * Open mean that we are opening file rather than creating a new one.
+		 * In that case we show path to the file */
 		private string get_master_password(bool open = false)
 		{
 			string  str = null;
@@ -464,10 +579,10 @@ namespace savepass
 			return str;
 		}
 
+		/* Dialog for choosing file to save or open */
 		private string open_save_dialog(bool open)
 		{
 			string result = null;
-
 			var dialog = new FileChooserDialog(open ? "Open File" : "Save",
 				_window, 
 				open ? FileChooserAction.Open : FileChooserAction.Save,
@@ -492,6 +607,7 @@ namespace savepass
 			return result;
 		}
 
+		/* Dialog to ask the user what to do with changed file */
 		private int save_changes()
 		{
 			var dialog = new Dialog("Save changes", _window,
@@ -520,6 +636,7 @@ namespace savepass
 			return response;
 		}
 
+		/* Dialog to work with settings */
 		private void run_preferences_dialog()
 		{
 			int response;
@@ -581,119 +698,14 @@ namespace savepass
 			dialog.Destroy();
 		}
 
-		/************************
-		 * Additional functions *
-		 ************************/
-
-		/* return 0 if user sure */
-		private int are_you_sure(string str)
-		{
-			int answer;
-
-			var dialog = new Dialog("savepass", _window,
-				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
-			dialog.Resizable = false;
-			dialog.DefaultResponse = ResponseType.Ok;
-			var content_area = dialog.ContentArea;
-			var label = new Label(String.Format(
-				"Are you sure you want to delete password with note \"{0}\"?", str));
-			content_area.PackStart(label, true, true, 3);
-			dialog.ShowAll();
-
-			answer = dialog.Run() == (int) ResponseType.Ok ? 0 : 1;
-
-			dialog.Destroy();
-
-			return answer;
-		}
-
-		private bool is_changed()
-		{
-			if (_p.changed) {
-				int response = save_changes();
-				switch (response) {
-					case (int) ResponseType.Yes:
-						save_activated(null, null);
-						break;
-					case (int) ResponseType.Cancel:
-						return true;
-				}
-			}
-			return false;
-		}
-
-		/* Ask master password and open file. Return true if everything ok */
-		private bool open_file()
-		{
-			string master;
-			master = get_master_password(true);
-			if (master == null) {
-				_file = null;
-				return false;
-			}
-			_file.master = master;
-
-			byte[] data = _file.read();
-			if (data == null) {
-				_file = null;
-				return false;
-			}
-			_p = new passwds(data);
-
-			_model.Clear();
-			foreach (passwd i in _p)
-				_model.AppendValues(i.note,
-					i.time.ToString(savepass.c.format_date_time,
-						CultureInfo.CurrentCulture));
-			turn_on_sensetivity();
-			return true;
-		}
-
-		private void turn_off_sensetivity()
-		{
-			_hbox.Sensitive = false;
-			_add_item.Sensitive = false;
-			_save_item.Sensitive = false;
-			_save_as_item.Sensitive = false;
-			_close_item.Sensitive = false;
-		}
-
-		private void turn_on_sensetivity()
-		{
-			_hbox.Sensitive = true;
-			_add_item.Sensitive = true;
-			_save_item.Sensitive = true;
-			_save_as_item.Sensitive = true;
-			_close_item.Sensitive = true;
-		}
-
-		private void set_format_date_time_combo(ComboBoxText list)
-		{
-			var example = DateTime.Now;
-			string[] date_time_formats = { "d", "D", "f", "F", "g", "G", "m", "y"};
-			foreach (string str in date_time_formats)
-				list.Append(str, example.ToString(str, CultureInfo.CurrentCulture));
-		}
-
-		private void change_date_time_column_values(string format)
-		{
-			TreeIter iter;
-			_model.GetIterFirst(out iter);
-			foreach (passwd p in _p) {
-				_model.SetValue(iter, 1,
-					p.time.ToString(format, CultureInfo.CurrentCulture));
-				_model.IterNext(ref iter);
-			}
-		}
-
 		/******************
 		 * Event Handlers *
 		 ******************/
 
+		/* Add new password */
 		private void add_clicked(object sender, EventArgs e)
 		{
-			var dialog = new add_edit_dialog("Add new password", null, null);
+			var dialog = new add_edit_dialog("Add new password");
 
 			while (dialog.run() == (int) ResponseType.Ok) {
 				if (String.IsNullOrEmpty(dialog.pass) ||
@@ -716,16 +728,14 @@ namespace savepass
 			dialog.destroy();
 		}
 
+		/* Edit selected in tree view password */
 		private void edit_clicked(object sender, EventArgs e)
 		{
-			var selection = _treeview.Selection;
 			TreeIter iter;
-			if (!selection.GetSelected(out iter))
-				return;
-
-			string note = (string) _model.GetValue(iter, 0);
-			string pass;
-			_p.search_and_get_pass(note, out pass);
+			_treeview.Selection.GetSelected(out iter);
+			string note, pass;
+			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)),
+				out pass, out note);
 
 			var dialog = new add_edit_dialog("Edit password", pass, note);
 
@@ -743,7 +753,8 @@ namespace savepass
 				if (!pass.Equals(dialog.pass, StringComparison.Ordinal) ||
 					!note.Equals(dialog.note, StringComparison.Ordinal)) {
 					var new_p = _p.change(int.Parse(_model.GetStringFromIter(iter)),
-						dialog.pass, dialog.note);
+						dialog.pass == pass ? pass : null,
+						dialog.note == note ? note : null);
 					_model.SetValues(iter, new_p.note,
 								new_p.time.ToString(
 									savepass.c.format_date_time,
@@ -751,31 +762,28 @@ namespace savepass
 				}
 				break;
 			}
-
 			dialog.destroy();
 		}
 
+		/* Delete selected in tree view password */
 		private void delete_clicked(object sender, EventArgs e)
 		{
 			var selection = _treeview.Selection;
 			TreeIter iter;
 			if (!selection.GetSelected(out iter))
 				return;
-
-			if (are_you_sure((string) _model.GetValue(iter, 0)) != 0)
+			if (!are_you_sure((string) _model.GetValue(iter, 0)))
 				return;
-
 			_p.del(int.Parse(_model.GetStringFromIter(iter)));
 			_model.Remove(ref iter);
 		}
 
+		/* Copy selected in tree view password to clipboard */
 		private void copy_clicked(object sender, EventArgs e)
 		{
 			var selection = _treeview.Selection;
 			TreeIter iter;
-			if (!selection.GetSelected(out iter))
-				return;
-
+			selection.GetSelected(out iter);
 			string note, pass;
 			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)), out pass, out note);
 		#if WINDOWS
@@ -787,6 +795,7 @@ namespace savepass
 		#endif
 		}
 
+		/* Show selected in tree view password on the screen */
 		private void show_clicked(object sender, EventArgs e)
 		{
 			var selection = _treeview.Selection;
@@ -796,13 +805,15 @@ namespace savepass
 
 			string note, pass;
 			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)), out pass, out note);
-			var dialog = new MessageDialog(_window, DialogFlags.DestroyWithParent,
+			var dialog = new MessageDialog(_window,
+				DialogFlags.DestroyWithParent | DialogFlags.Modal,
 				MessageType.Info, ButtonsType.Close, pass);
 			dialog.TransientFor = _window;
 			dialog.Run();
 			dialog.Destroy();
 		}
 
+		/* Create a new file */
 		private void new_activated(object sender, EventArgs args)
 		{
 			if (is_changed())
@@ -817,9 +828,10 @@ namespace savepass
 			_p = new passwds(data);
 
 			_model.Clear();
-			turn_on_sensetivity();
+			turn_on_off_sensitivity(true);
 		}
 
+		/* Open file */
 		private void open_activated(object sender, EventArgs args)
 		{
 			if (is_changed())
@@ -831,6 +843,7 @@ namespace savepass
 			open_file();
 		}
 
+		/* Save or save as file */
 		private void save_activated(object sender, EventArgs args)
 		{
 			if (_file.path == null || sender.Equals(_save_as_item)){
@@ -839,15 +852,16 @@ namespace savepass
 					return;
 				_file.path = f;
 			}
-		
 			_file.write(_p);
 		}
 
+		/* Work with settings */
 		private void preferences_activated(object sender, EventArgs args)
 		{
 			run_preferences_dialog();
 		}
 
+		/* Change value of default file */
 		private void default_file_activated(object sender, EventArgs args)
 		{
 			string f = open_save_dialog(true);
@@ -859,6 +873,7 @@ namespace savepass
 			}
 		}
 
+		/* Close file */
 		private void close_activated(object sender, EventArgs args)
 		{
 			if (is_changed())
@@ -866,9 +881,11 @@ namespace savepass
 
 			_model.Clear();
 			_file = null;
-			turn_off_sensetivity();
+			_p.changed = false;
+			turn_on_off_sensitivity(false);
 		}
 			
+		/* Show about dialog */
 		private void about_activated(object sender, EventArgs args)
 		{
 			var dialog = new AboutDialog();

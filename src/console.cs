@@ -145,7 +145,7 @@ namespace savepass
 		}
 
 		/* Add new password in array of passwords */
-		public int add()
+		public void add()
 		{
 			string password0, password1, note;
 
@@ -161,22 +161,20 @@ namespace savepass
 				} while (!password0.Equals(password1, StringComparison.Ordinal));
 				Console.Write(Catalog.GetString("Enter note: "));
 				note = Console.ReadLine();
-			} catch (IOException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (OutOfMemoryException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, true);
-				return 2;
+			} catch (Exception e) {
+				if (e is IOException || e is OutOfMemoryException
+					|| e is ArgumentOutOfRangeException) {
+					savepass.print(e.Message, true);
+					Environment.ExitCode = 2;
+					return;
+				}
+				throw;
 			}
 			_p.add(password0, note);
-			return 0;
 		}
 
 		/* return 0 if user sure */
-		private static int are_you_sure(string str)
+		private bool are_you_sure(string str)
 		{
 			string answer;
 
@@ -184,24 +182,30 @@ namespace savepass
 				Console.Write(String.Format(Catalog.GetString(
 					"Are you sure you want to delete password with note \"{0}\"? (y/n) "), str));
 				answer = Console.ReadLine();
-				if (answer == null)
-					return 1;
-				return answer.Equals("y", StringComparison.CurrentCultureIgnoreCase) ? 0 : 1;
-			} catch (IOException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (Exception e) {
-				savepass.print(e.Message, true);
-				return 2;
+				if (answer == null) {
+					Environment.ExitCode = 1;
+					return false;
+				}
+				if (answer.Equals("y", StringComparison.CurrentCultureIgnoreCase)) {
+					return true;
+				} else {
+					Environment.ExitCode = 1;
+					return false;
+				}
+			} catch (Exception) {
+				Environment.ExitCode = 2;
+				throw;
 			}
 		}
 
 		/* Change password and/or note in n element of array of passwords */
-		public int change(int n)
+		public void change(int n)
 		{
 			string pass, note, str0, str1;
-			if (!_p.get_pass_note(n - 1, out pass, out note))
-				return 1;
+			if (!_p.get_pass_note(n - 1, out pass, out note)) {
+				Environment.ExitCode = 1;
+				return;
+			}
 			try {
 				do {
 					Console.Write(Catalog.GetString(
@@ -219,22 +223,20 @@ namespace savepass
 				Console.Write(Catalog.GetString("Enter new note [{0}]: "), note);
 				str0 = Console.ReadLine();
 				note = str0.Length > 0 ? str0 : null;
-			} catch (IOException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (OutOfMemoryException e) {
-				savepass.print(e.Message, true);
-				return 2;
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, true);
-				return 2;
+			} catch (Exception e) {
+				if (e is IOException || e is OutOfMemoryException
+					|| e is ArgumentOutOfRangeException) {
+					savepass.print(e.Message, true);
+					Environment.ExitCode = 2;
+					return;
+				}
+				throw;
 			}
 			_p.change(n - 1, pass, note);
-			return 0;
 		}
 
 		/* Parse options for configuration file and set _filename */
-		public int config(out conf c)
+		public bool config(out conf c)
 		{
 			string filename = null;
 			c = null;
@@ -245,7 +247,8 @@ namespace savepass
 					_dict.ContainsKey(keys.system) ||
 					String.Equals(config_option, "system", StringComparison.OrdinalIgnoreCase));
 			} catch (Exception) {
-				return 2;
+				Environment.ExitCode = 2;
+				return false;
 			}
 			if (_dict.ContainsKey(keys.file) && !String.IsNullOrWhiteSpace((string) _dict[keys.file])) {
 				c.default_file = (string) _dict[keys.file];
@@ -264,9 +267,9 @@ namespace savepass
 				else {
 					savepass.print(Catalog.GetString(
 						"wrong argument for config option"), false);
-					return 1;
+					Environment.ExitCode = 2;
+					return false;
 				}
-				Environment.ExitCode = 0;
 				throw new AllOKException();
 			} else if (_dict.ContainsKey(keys.filename))
 				filename = (string) _dict[keys.filename];
@@ -292,68 +295,68 @@ namespace savepass
 					savepass.print(string.Format(Catalog.GetString(
 						"File name must be specified\nTry run {0} --help for more information"),
 						Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)), false);
-					return 1;
+					Environment.ExitCode = 2;
+					return false;
 				}
 			}
 			_file = new file(filename);
-			return 0;
+			return true;
 		}
 
 		/* Remove password with number n from array of passwords */
-		public int del(int n)
+		public void del(int n)
 		{
 			string pass, note;
-			int return_value;
 
 			--n;
-			if (_p.check_limits(n, true))
-				return 1;
+			if (_p.check_limits(n, true)) {
+				Environment.ExitCode = 1;
+				return;
+			}
 			_p.get_pass_note(n, out pass, out note);
-			return_value = are_you_sure(note);
-			if (return_value == 0) {
+			if (are_you_sure(note)) {
 				_p.del(n);
 				savepass.print(Catalog.GetString("password was deleted"), false);
 			}
-			return return_value == 2 ? 2 : 0;
 		}
 
 		/* Show password with number n
 		 * if on_screen == true then password will be
 		 * printed on the screen, otherwise it will be
 		 * copied to clipboard */
-		public int get_nth_pass(int n, bool on_screen)
+		public void get_nth_pass(int n, bool on_screen)
 		{
 			string pass, note;
 
 			--n;
-			if (_p.check_limits(n, true))
-				return 1;
+			if (_p.check_limits(n, true)) {
+				Environment.ExitCode = 1;
+				return;
+			}
 			_p.get_pass_note(n, out pass, out note);
 			put(on_screen, pass);
-			return 0;
 		}
 
 		/* Show the list of notes */
-		public int list()
+		public void list()
 		{
-			int result;
-
-			if (_p.check_limits(0, true))
-				return 1;
+			if (_p.check_limits(0, true)){
+				Environment.ExitCode = 1;
+				return;
+			}
 			Console.WriteLine(Catalog.GetString("Passwords' notes:"));
 			int i = 0;
 			foreach (passwd p in _p)
-				if ((result = print_note(++i, p.note, p.time)) != 0)
-					return result;
-			return 0;
+				if (!print_note(++i, p.note, p.time))
+					return;
 		}
 
 		/* Print note with given format */
-		private static int print_note(int i, string note, DateTime time)
+		private bool print_note(int i, string note, DateTime time)
 		{
 			if (!savepass.c.show_date_time) {
 				Console.WriteLine("{0,3}) {1}", i, note);
-				return 0;
+				return true;
 			}
 
 			try {
@@ -363,16 +366,14 @@ namespace savepass
 			} catch (FormatException e) {
 				savepass.print(String.Format(Catalog.GetString(
 					"date_time_format is invalid: {0}"), e.Message), false);
-				return 1;
-			} catch (Exception e) {
-				savepass.print(e.Message, true);
-				return 2;
+				Environment.ExitCode = 1;
+				return false;
 			}
-			return 0;
+			return true;
 		}
 
 		/* Print string or put it into clipboard */
-		private static void put(bool on_screen, string str)
+		private void put(bool on_screen, string str)
 		{
 			if (on_screen  || !savepass.c.always_in_clipboard)
 				Console.WriteLine(str);
@@ -388,7 +389,7 @@ namespace savepass
 		}
 
 		/* Read characters from stdin but do not echo them */
-		private static String read_password()
+		private String read_password()
 		{
 			var password = new StringBuilder();
 			ConsoleKeyInfo key;
@@ -415,7 +416,6 @@ namespace savepass
 		/* Process the other command line parameters */
 		public void run()
 		{
-			int exit_value = 0;
 			string master = null;
 			byte[] data;
 			bool on_screen = _dict.ContainsKey(keys.on_screen) ? (bool) _dict[keys.on_screen] :
@@ -440,14 +440,13 @@ namespace savepass
 					else
 						break;
 				}
-			} catch (IOException e) {
-				savepass.print(e.Message, true);
-				Environment.ExitCode = 2;
-				return;
-			} catch (InvalidOperationException e) {
-				savepass.print(e.Message, true);
-				Environment.ExitCode = 2;
-				return;
+			} catch (Exception e) {
+				if (e is IOException || e is InvalidOperationException) {
+					savepass.print(e.Message, true);
+					Environment.ExitCode = 2;
+					return;
+				}
+				throw;
 			}
 			_file.master = master;
 			data = _file.read();
@@ -462,28 +461,26 @@ namespace savepass
 #endif
 
 			if (_dict.ContainsKey(keys.list))
-				exit_value = list();
+				list();
 			else if (_dict.ContainsKey(keys.search))
-				exit_value = search((string) _dict[keys.search]);
+				search((string) _dict[keys.search]);
 			else if (_dict.ContainsKey(keys.get))
-				exit_value = get_nth_pass((int) _dict[keys.get], on_screen);
+				get_nth_pass((int) _dict[keys.get], on_screen);
 			else if (_dict.ContainsKey(keys.get_pass))
-				exit_value = search_and_get_pass((string) _dict[keys.get_pass], on_screen);
+				search_and_get_pass((string) _dict[keys.get_pass], on_screen);
 			else if (_dict.ContainsKey(keys.add))
-				exit_value = add();
+				add();
 			else if (_dict.ContainsKey(keys.change))
-				exit_value = change((int) _dict[keys.change]);
+				change((int) _dict[keys.change]);
 			else if (_dict.ContainsKey(keys.del))
-				exit_value = del((int) _dict[keys.del]);
-			Environment.ExitCode = exit_value;
+				del((int) _dict[keys.del]);
 			if (_p.changed)
 				_file.write(_p);
 		}
 
 		/* Find and print all notes in array with given note as a substring */
-		public int search(string note)
+		public void search(string note)
 		{
-			int result;
 			int[] indexes;
 			string[] notes;
 			DateTime[] times;
@@ -492,26 +489,29 @@ namespace savepass
 				savepass.print(Catalog.GetString(
 					"string for search cannot be an empty string.\n" +
 					"If you want to see all passwords use --list"), false);
-				return 1;
+				Environment.ExitCode = 1;
+				return;
 			}
-			if (_p.check_limits(0, true))
-				return 1;
+			if (_p.check_limits(0, true)) {
+				Environment.ExitCode = 1;
+				return;
+			}
 			try {
 				_p.search(note, out indexes, out notes, out times);
 			} catch (EmptyArrayException e) {
 				savepass.print(e.Message, false);
-				return 1;
+				Environment.ExitCode = 1;
+				return;
 			}
 			Console.WriteLine(Catalog.GetString(
 				"Passwords' notes contains \"{0}\":"), note);
 			for (int i = 0; i < notes.Length; ++i)
-				if ((result = print_note(indexes[i], notes[i], times[i])) != 0)
-					return result;
-			return 0;
+				if (!print_note(indexes[i], notes[i], times[i]))
+					return;
 		}
 
 		/* Search password in array with given note */
-		public int search_and_get_pass(string note, bool on_screen)
+		public void search_and_get_pass(string note, bool on_screen)
 		{
 			string pass;
 
@@ -520,21 +520,24 @@ namespace savepass
 					"string for search cannot be an empty string\n" +
 					"or cosists exclusively of white-space characters.\n" +
 					"If you want to see all passwords use --list"), true);
-				return 1;
+				Environment.ExitCode = 1;
+				return;
 			}
-			if (_p.check_limits(0, true))
-				return 1;
+			if (_p.check_limits(0, true)) {
+				Environment.ExitCode = 1;
+				return;
+			}
 			try {
 				_p.search_and_get_pass(note, out pass);
-			} catch (EmptyArrayException e) {
-				savepass.print(e.Message, false);
-				return 1;
-			} catch (ArgumentOutOfRangeException e) {
-				savepass.print(e.Message, false);
-				return 1;
+			} catch (Exception e) {
+				if (e is EmptyArrayException || e is ArgumentOutOfRangeException) {
+					savepass.print(e.Message, true);
+					Environment.ExitCode = 1;
+					return;
+				}
+				throw;
 			}
 			put(on_screen, pass);
-			return 0;
 		}
 	}
 }

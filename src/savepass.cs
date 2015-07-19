@@ -41,23 +41,22 @@ namespace savepass
 
 		static int Main(string[] args)
 		{
-			int exit_value = 0;
 			Mono.Unix.Catalog.Init(program_name, "po");
 			IUI ui;
 			try {
+				Environment.ExitCode = 0;
 #if GUI
 				ui = new gui(args);
 #else
 				ui = new console(args);
 #endif
-				exit_value = ui.config(out c);
+				if (!ui.config(out c))
+					return Environment.ExitCode;
+				ui.run();
 			} catch (Exception e) {
 				Console.WriteLine(e.Message);
 				return Environment.ExitCode;
 			}
-			if (exit_value != 0)
-				return exit_value;
-			ui.run();
 			return Environment.ExitCode;
 		}
 

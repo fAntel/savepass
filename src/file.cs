@@ -36,19 +36,17 @@ namespace savepass
 				_b = new blowfish(master);
 		}
 
-		public string path {
-			get;
-			set;
-		}
+		public string path { get; set; }
 
 		public string master
 		{
 			set { _b = new blowfish(value); }
 		}
 
+		/* Read passwords from file _path */
 		public byte[] read()
 		{
-			byte[] data = null;
+			byte[] data;
 
 			try {
 				using (var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None)) {
@@ -59,9 +57,11 @@ namespace savepass
 			} catch (FileNotFoundException) {
 				savepass.print(String.Format(Catalog.GetString(
 					"file {0} doesn't exists"), path), false);
+				return null;
 			} catch (Exception e) {
 				savepass.print(String.Format(Catalog.GetString(
 					"reading file {0} failed: {1}"), path, e.Message), true);
+				return null;
 			}
 			if (data != null) {
 				try {
@@ -75,7 +75,8 @@ namespace savepass
 			return data;
 		}
 
-		public bool write(passwds p)
+		/* Write passwords to file _path */
+		public void write(passwds p)
 		{
 			byte[] data = _b.encrypt(p.to_data());
 			try {
@@ -87,10 +88,10 @@ namespace savepass
 			} catch (Exception e) {
 				savepass.print(String.Format(Catalog.GetString(
 					"saving file {0} failed: {1}"), path, e.Message), true);
-				return false;
+				return;
 			}
 			p.changed = false;
-			return true;
+			return;
 		}
 	}
 }
