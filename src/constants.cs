@@ -1,5 +1,5 @@
 ﻿//
-//  ui.cs
+//  constants.cs
 //
 //  Author:
 //       keldzh <keldzh@gmail.com>
@@ -18,13 +18,14 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+using System;
 
 namespace savepass
 {
-	public interface IUI
+	public static class constants
 	{
-		bool config(out conf c);
-		void run();
+		public static readonly string program_name = "savepass";
+		public static readonly string version_number = "0.8";
+		public static bool gui = true;
 	}
 }
-

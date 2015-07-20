@@ -26,7 +26,7 @@ using System.Text;
 
 namespace savepass
 {
-	public class gui: IUI
+	public class gui
 	{
 		private passwds _p;
 		private file _file;
@@ -83,9 +83,8 @@ namespace savepass
 		}
 
 		/* Create main window */
-		public gui(string[] args)
+		public gui(file f, passwds p)
 		{
-			Application.Init(savepass.program_name, ref args);
 			// Create window
 			_window = new Window("savepass");
 			_window.DeleteEvent += delegate(object o, DeleteEventArgs e) {
@@ -250,6 +249,9 @@ namespace savepass
 					open_file();
 			};
 			_window.ShowAll();
+
+			_file = f;
+			_p = p;
 		}
 
 		public static Window window
@@ -257,26 +259,21 @@ namespace savepass
 			get { return _window; }
 		}
 			
-		public bool config(out conf c)
+		public void run()
 		{
-			c = null;
-			try {
-				c = new conf();
-			} catch (Exception) {
-				Environment.ExitCode = 2;
-				return false;
-			}
-			string file = c.default_file;
-			if (!String.IsNullOrWhiteSpace(file)) {
-				_default_file_item.Label = file;
-				_unset_default_file_item.Sensitive = true;
-				_file = new file(file);
-			}
+			if (_file == null) {
+				string file = savepass.c.default_file;
+				if (!String.IsNullOrWhiteSpace(file)) {
+					_default_file_item.Label = file;
+					_unset_default_file_item.Sensitive = true;
+					_file = new file(file);
+				}
+			} else
+				open_file();
 			_date_time_column.Visible = savepass.c.show_date_time;
-			return true;
-		}
 
-		public void run() { Application.Run(); }
+			Application.Run();
+		}
 
 		/************************
 		 * Additional functions *
@@ -322,20 +319,22 @@ namespace savepass
 		/* Ask master password and open file*/
 		private void open_file()
 		{
-			string master;
-			master = get_master_password(true);
-			if (master == null) {
-				_file = null;
-				return;
-			}
-			_file.master = master;
+			if (_file.master == null) {
+				string master;
+				master = get_master_password(true);
+				if (master == null) {
+					_file = null;
+					return;
+				}
+				_file.master = master;
 
-			byte[] data = _file.read();
-			if (data == null) {
-				_file = null;
-				return;
+				byte [] data = _file.read();
+				if (data == null) {
+					_file = null;
+					return;
+				}
+				_p = new passwds(data);
 			}
-			_p = new passwds(data);
 
 			_model.Clear();
 			foreach (passwd i in _p)
@@ -895,9 +894,9 @@ namespace savepass
 			dialog.Copyright = "Copyright (C) Kovalyov Anton 2015";
 			dialog.Documenters = savepass.documenters;
 			dialog.LicenseType = License.Gpl30;
-			dialog.ProgramName = savepass.program_name;
+			dialog.ProgramName = constants.program_name;
 			dialog.TranslatorCredits = savepass.translator_credits;
-			dialog.Version = savepass.version_number;
+			dialog.Version = constants.version_number;
 
 			dialog.Run();
 			dialog.Destroy();

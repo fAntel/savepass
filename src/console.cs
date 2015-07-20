@@ -19,6 +19,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GTK
+#define GUI
 using System;
 using System.IO;
 using System.Text;
@@ -39,6 +40,14 @@ namespace savepass
 		private passwds _p;
 		private file _file;
 		private Dictionary<keys, object> _dict;
+
+		#if GTK
+		private void run_gui()
+		{
+			var ui = new gui(_file, _p);
+			ui.run();
+		}
+		#endif
 
 		public console(string[] args)
 		{
@@ -96,6 +105,10 @@ namespace savepass
 				Catalog.GetString("Report bugs to: keldzh@gmail.com")
 			};
 			if (args.Length == 0) {
+				#if GTK
+				if (constants.gui)
+					return;
+				#endif
 				options.WriteOptionDescriptions(Console.Out);
 				Environment.ExitCode = 1;
 				throw new ArgumentException();
@@ -132,7 +145,7 @@ namespace savepass
 					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law.\n" +
 					"This is free software, and you are welcome to redistribute it\n" +
 					"under certain conditions.",
-					savepass.program_name, savepass.version_number);
+					constants.program_name, constants.version_number);
 				Environment.ExitCode = 0;
 				throw new AllOKException();
 			}
@@ -292,6 +305,12 @@ namespace savepass
 				if (c.default_file != null) {
 					filename = c.default_file;
 				} else {
+					#if GTK
+					if (constants.gui) {
+						run_gui();
+						return false;
+					}
+					#endif
 					savepass.print(string.Format(Catalog.GetString(
 						"File name must be specified\nTry run {0} --help for more information"),
 						Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName)), false);
@@ -418,13 +437,9 @@ namespace savepass
 		{
 			string master = null;
 			byte[] data;
-			bool on_screen = _dict.ContainsKey(keys.on_screen) ? (bool) _dict[keys.on_screen] :
-				#if WINDOWS || GTK
-					false;
-				#else
-					true;
-				#endif
-				
+			bool on_screen = _dict.ContainsKey(keys.on_screen)
+				? (bool) _dict[keys.on_screen]
+				: !(constants.gui);
 			try {
 				while (true) {
 					Console.Write(Catalog.GetString("Enter master password: "));
@@ -456,10 +471,6 @@ namespace savepass
 			}
 			_p = new passwds(data);
 
-#if GTK
-			Gtk.Application.Init();
-#endif
-
 			if (_dict.ContainsKey(keys.list))
 				list();
 			else if (_dict.ContainsKey(keys.search))
@@ -474,6 +485,11 @@ namespace savepass
 				change((int) _dict[keys.change]);
 			else if (_dict.ContainsKey(keys.del))
 				del((int) _dict[keys.del]);
+			#if GTK
+			else {
+				run_gui();
+			}
+			#endif
 			if (_p.changed)
 				_file.write(_p);
 		}

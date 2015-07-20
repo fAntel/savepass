@@ -80,6 +80,7 @@
     <Compile Include="src\ui.cs" />
     <Compile Include="src\console.cs" />
     <Compile Include="src\gui.cs" />
+    <Compile Include="src\constants.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mono-source-libs\" />

@@ -26,7 +26,7 @@ namespace savepass
 {
 	public class file
 	{
-		private blowfish _b;
+		internal blowfish _b;
 
 		public file(string filename = null, string master = null)
 		{
@@ -40,6 +40,7 @@ namespace savepass
 
 		public string master
 		{
+			get { return _b == null ? null : ""; }
 			set { _b = new blowfish(value); }
 		}
 

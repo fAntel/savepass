@@ -32,8 +32,6 @@ namespace savepass
 {
 	public class savepass
 	{
-		public const string program_name = "savepass";
-		public const string version_number = "0.8";
 		public static readonly string[] authors = {"Anton Kovalov <keldzh@gmail.com>"};
 		public static readonly string[] documenters = {"Anton Kovalov <keldzh@gmail.com>"};
 		public const string translator_credits = "Anton Kovalov <keldzh@gmail.com>";
@@ -41,15 +39,14 @@ namespace savepass
 
 		static int Main(string[] args)
 		{
-			Mono.Unix.Catalog.Init(program_name, "po");
+			Mono.Unix.Catalog.Init(constants.program_name, "po");
 			IUI ui;
 			try {
 				Environment.ExitCode = 0;
-#if GUI
-				ui = new gui(args);
-#else
+				#if GTK
+				Application.Init(constants.program_name, ref args);
+				#endif
 				ui = new console(args);
-#endif
 				if (!ui.config(out c))
 					return Environment.ExitCode;
 				ui.run();
@@ -63,14 +60,17 @@ namespace savepass
 		/* Print errors to the screen in certain format */
 		public static void print(string msg, bool full, [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
 		{
-#if GUI
-			var dialog = new MessageDialog(gui.window,
-				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				MessageType.Other, ButtonsType.Ok, msg);
-			dialog.TransientFor = gui.window;
-			dialog.Run();
-			dialog.Destroy();
-#else
+			#if GTK
+			if (constants.gui) {
+				var dialog = new MessageDialog(gui.window,
+					             DialogFlags.DestroyWithParent | DialogFlags.Modal,
+					             MessageType.Other, ButtonsType.Ok, msg);
+				dialog.TransientFor = gui.window;
+				dialog.Run();
+				dialog.Destroy();
+				return;
+			}
+			#endif
 			if (full)
 				Console.WriteLine("{0}:{1}:{2}: {3}",
 					Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
@@ -79,7 +79,6 @@ namespace savepass
 				Console.WriteLine("{0}: {1}",
 			        	          Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName),
 			                	  msg);
-#endif
 		}
 	}
 
