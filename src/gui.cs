@@ -23,6 +23,7 @@ using System;
 using Gtk;
 using System.Globalization;
 using System.Text;
+using Mono.Unix;
 
 namespace savepass
 {
@@ -42,6 +43,14 @@ namespace savepass
 		private MenuItem _default_file_item;
 		private MenuItem _unset_default_file_item;
 		private TreeViewColumn _date_time_column;
+
+		private static string default_file_string = Catalog.GetString("<default file>");
+		private static string yes_string = Catalog.GetString("Yes");
+		private static string no_string = Catalog.GetString("No");
+		private static string ok_string = Catalog.GetString("OK");
+		private static string cancel_string = Catalog.GetString("Cancel");
+		private static string apply_string = Catalog.GetString("Apply");
+
 
 		/* Function to create buttons */
 		private Button create_button(string lable, string name, EventHandler handler, bool sensitive = true)
@@ -73,12 +82,12 @@ namespace savepass
 			var renderer = new CellRendererText();
 			renderer.WrapWidth = 1;
 			renderer.WrapMode = Pango.WrapMode.Word;
-			var column = new TreeViewColumn("Note", renderer, "text", 0);
+			var column = new TreeViewColumn(Catalog.GetString("Note"), renderer, "text", 0);
 			column.Resizable = true;
 			column.Expand = true;
 			_treeview.AppendColumn(column);
 
-			_date_time_column = new TreeViewColumn("Date/time", new CellRendererText(), "text", 1);
+			_date_time_column = new TreeViewColumn(Catalog.GetString("Date/time"), new CellRendererText(), "text", 1);
 			_treeview.AppendColumn(_date_time_column);
 		}
 
@@ -86,7 +95,7 @@ namespace savepass
 		public gui(file f, passwds p)
 		{
 			// Create window
-			_window = new Window("savepass");
+			_window = new Window(constants.program_name);
 			_window.DeleteEvent += delegate(object o, DeleteEventArgs e) {
 				if (is_changed()) {
 					e.RetVal = true;
@@ -103,54 +112,54 @@ namespace savepass
 			var menu_bar = new MenuBar();
 			vbox.PackStart(menu_bar, false, true, 0);
 			// File
-			var item = new MenuItem("File");
+			var item = new MenuItem(Catalog.GetString("File"));
 			menu_bar.Append(item);
 			var menu = new Menu();
 			item.Submenu = menu;
 
-			var new_item = new MenuItem("New");
+			var new_item = new MenuItem(Catalog.GetString("New..."));
 			menu.Append(new_item);
 			new_item.Activated += new_activated;
-			var open_item = new MenuItem("Open");
+			var open_item = new MenuItem(Catalog.GetString("Open..."));
 			menu.Append(open_item);
 			open_item.Activated += open_activated;
-			_save_item = new MenuItem("Save");
+			_save_item = new MenuItem(Catalog.GetString("Save"));
 			menu.Append(_save_item);
 			_save_item.Activated += save_activated;
-			_save_as_item = new MenuItem("Save as");
+			_save_as_item = new MenuItem(Catalog.GetString("Save as..."));
 			menu.Append(_save_as_item);
 			_save_as_item.Activated += save_activated;
 			var separator = new SeparatorMenuItem();
 			menu.Append(separator);
-			var preferences_item = new MenuItem("Preferences");
+			var preferences_item = new MenuItem(Catalog.GetString("Preferences..."));
 			menu.Append(preferences_item);
 			preferences_item.Activated += preferences_activated;
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
-			item = new MenuItem("Default file");
+			item = new MenuItem(Catalog.GetString("Default file"));
 			menu.Append(item);
 			var default_file_menu = new Menu();
 			item.Submenu = default_file_menu;
-			_default_file_item = new MenuItem("<default file>");
+			_default_file_item = new MenuItem(default_file_string);
 			default_file_menu.Append(_default_file_item);
 			_default_file_item.Activated += default_file_activated;
 			separator = new SeparatorMenuItem();
 			default_file_menu.Append(separator);
-			_unset_default_file_item = new MenuItem("Unset default file");
+			_unset_default_file_item = new MenuItem(Catalog.GetString("Unset default file"));
 			default_file_menu.Append(_unset_default_file_item);
 			_unset_default_file_item.Sensitive = false;
 			_unset_default_file_item.Activated += delegate {
 				savepass.c.default_file = null;
 				_unset_default_file_item.Sensitive = false;
-				_default_file_item.Label = "<default file>";
+				_default_file_item.Label = default_file_string;
 				savepass.c.Save();
 			};
 			separator = new SeparatorMenuItem();
 			menu.Append(separator);
-			_close_item = new MenuItem("Close");
+			_close_item = new MenuItem(Catalog.GetString("Close"));
 			menu.Append(_close_item);
 			_close_item.Activated += close_activated;
-			var quit_item = new MenuItem("Quit");
+			var quit_item = new MenuItem(Catalog.GetString("Quit"));
 			menu.Append(quit_item);
 			quit_item.Activated += delegate {
 				if (is_changed())
@@ -159,41 +168,41 @@ namespace savepass
 			};
 
 			// Edit
-			item = new MenuItem("Edit");
+			item = new MenuItem(Catalog.GetString("Edit"));
 			menu_bar.Append(item);
 			menu = new Menu();
 			item.Submenu = menu;
 
-			_add_item = new MenuItem("Add");
+			_add_item = new MenuItem(Catalog.GetString("Add..."));
 			menu.Append(_add_item);
 			_add_item.Activated += add_clicked;
-			var edit_item = new MenuItem("Edit");
+			var edit_item = new MenuItem(Catalog.GetString("Edit..."));
 			menu.Append(edit_item);
 			edit_item.Activated += edit_clicked;
 			edit_item.Sensitive = false;
-			var delete_item = new MenuItem("Delete");
+			var delete_item = new MenuItem(Catalog.GetString("Delete"));
 			menu.Append(delete_item);
 			delete_item.Activated += delete_clicked;
 			delete_item.Sensitive = false;
-			var copy_item = new MenuItem("Copy");
+			var copy_item = new MenuItem(Catalog.GetString("Copy"));
 			menu.Append(copy_item);
 			copy_item.Activated += copy_clicked;
 			copy_item.Sensitive = false;
-			var show_item = new MenuItem("Show");
+			var show_item = new MenuItem(Catalog.GetString("Show..."));
 			menu.Append(show_item);
 			show_item.Activated += show_clicked;
 			show_item.Sensitive = false;
 
 			// Help
-			item = new MenuItem("Help");
+			item = new MenuItem(Catalog.GetString("Help"));
 			menu_bar.Append(item);
 			menu = new Menu();
 			item.Submenu = menu;
 
-			var help_item = new MenuItem("Help");
+			var help_item = new MenuItem(Catalog.GetString("Help"));
 			menu.Append(help_item);
 			//help_item.Activated += help_activated;
-			var about_item = new MenuItem("About");
+			var about_item = new MenuItem(Catalog.GetString("About..."));
 			menu.Append(about_item);
 			about_item.Activated += about_activated;
 
@@ -205,15 +214,15 @@ namespace savepass
 			// Create buttons
 			var buttons_box = new Box(Orientation.Vertical, 3);
 			_hbox.PackStart(buttons_box, false, true, 3);
-			var add_button = create_button("Add", "list-add", add_clicked);
+			var add_button = create_button(Catalog.GetString("Add"), "list-add", add_clicked);
 			buttons_box.PackStart(add_button, false, true, 0);
-			var edit_button = create_button("Edit", null, edit_clicked, false);
+			var edit_button = create_button(Catalog.GetString("Edit"), null, edit_clicked, false);
 			buttons_box.PackStart(edit_button, false, true, 0);
-			var delete_button = create_button("Delete", "edit-delete", delete_clicked, false);
+			var delete_button = create_button(Catalog.GetString("Delete"), "edit-delete", delete_clicked, false);
 			buttons_box.PackStart(delete_button, false, true, 0);
-			var copy_button = create_button("Copy", "edit-copy", copy_clicked, false);
+			var copy_button = create_button(Catalog.GetString("Copy"), "edit-copy", copy_clicked, false);
 			buttons_box.PackStart(copy_button, false, true, 0);
-			var show_button = create_button("Show", null, show_clicked, false);
+			var show_button = create_button(Catalog.GetString("Show"), null, show_clicked, false);
 			buttons_box.PackStart(show_button, false, true, 0);
 
 			var selection = _treeview.Selection;
@@ -284,14 +293,15 @@ namespace savepass
 		{
 			bool answer;
 
-			var dialog = new Dialog("savepass", _window,
+			var dialog = new Dialog(constants.program_name, _window,
 				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"Yes", ResponseType.Yes, "No", ResponseType.Yes, null);
+				yes_string, ResponseType.Yes,
+				no_string, ResponseType.Yes, null);
 			dialog.Resizable = false;
 			dialog.DefaultResponse = ResponseType.Ok;
 			var content_area = dialog.ContentArea;
-			var label = new Label(String.Format(
-				"Are you sure you want to delete password with note \"{0}\"?", str));
+			var label = new Label(String.Format(Catalog.GetString(
+				"Are you sure you want to delete password with note \"{0}\"?"), str));
 			content_area.PackStart(label, true, true, 3);
 			dialog.ShowAll();
 
@@ -399,7 +409,8 @@ namespace savepass
 			public add_edit_dialog(string caption, string pass = null, string note = null)
 			{
 				dialog = new Dialog(caption, _window, DialogFlags.DestroyWithParent,
-					"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel, null);
+					ok_string, ResponseType.Ok,
+					cancel_string, ResponseType.Cancel, null);
 				dialog.Resizable = false;
 				dialog.TransientFor = _window;
 				dialog.DefaultResponse = ResponseType.Ok;
@@ -411,12 +422,12 @@ namespace savepass
 				grid.RowSpacing = 3;
 				grid.ColumnSpacing = 3;
 
-				var label = new Label("Password:");
+				var label = new Label(Catalog.GetString("Password:"));
 				grid.Attach(label, 0, 0, 1, 1);
 				label.Halign = Align.Start;
-				var pass_again_label = new Label("Password again:");
+				var pass_again_label = new Label(Catalog.GetString("Password again:"));
 				grid.Attach(pass_again_label, 0, 1, 1, 1);
-				label = new Label("Note:");
+				label = new Label(Catalog.GetString("Note:"));
 				grid.Attach(label, 0, 2, 1, 1);
 				label.Halign = Align.Start;
 
@@ -435,7 +446,7 @@ namespace savepass
 				if (note != null)
 					note_entry.Text = note;
 
-				visibility_checkbox = new CheckButton("Show password");
+				visibility_checkbox = new CheckButton(Catalog.GetString("Show password"));
 				grid.Attach(visibility_checkbox, 0, 3, 2, 1);
 				visibility_checkbox.Toggled += delegate {
 					pass_entry.Visibility = !pass_entry.Visibility;
@@ -490,20 +501,23 @@ namespace savepass
 
 			public void passs_doesnt_match()
 			{
-				error_label.Markup = "<span foreground=\"red\">Passwords doesn't match</span>";
+				error_label.Markup = String.Format("<span foreground=\"red\">{0}</span>",
+					Catalog.GetString("Passwords doesn't match"));
 				error_label.Visible = true;
 			}
 
 			public void entry_is_empty()
 			{
-				const string msg = "<span foreground=\"red\">{0} is empty</span>";
+				string msg = "<span foreground=\"red\">"
+					+ Catalog.GetString("{0} is empty")
+					+ "</span>";
 				string name;
 				if (String.IsNullOrEmpty(pass))
-					name = "Password";
+					name = Catalog.GetString("Password");
 				else if (String.IsNullOrEmpty(pass_again) && !show_pass)
-					name = "Password again";
+					name = Catalog.GetString("Password again");
 				else
-					name = "Note";
+					name = Catalog.GetString("Note");
 				error_label.Markup = String.Format(msg, name);
 				error_label.Visible = true;
 			}
@@ -517,9 +531,10 @@ namespace savepass
 		private string get_master_password(bool open = false)
 		{
 			string  str = null;
-			var dialog = new Dialog("Master password", _window,
+			var dialog = new Dialog(Catalog.GetString("Master password"), _window,
 				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"OK", ResponseType.Ok, "Cancel", ResponseType.Cancel);
+				ok_string, ResponseType.Ok,
+				cancel_string, ResponseType.Cancel);
 			dialog.Resizable = false;
 			dialog.TransientFor = _window;
 			dialog.DefaultResponse = ResponseType.Ok;
@@ -533,11 +548,12 @@ namespace savepass
 
 			Label label;
 			if (open) {
-				label = new Label(String.Format("Opening file {0}", _file.path));
+				label = new Label(String.Format(Catalog.GetString("Opening file {0}"),
+					_file.path));
 				grid.Attach(label, 0, 0, 2, 1);
 
 			}
-			label = new Label("Master password:");
+			label = new Label(Catalog.GetString("Master password:"));
 			grid.Attach(label, 0, 1, 1, 1);
 			label.Halign = Align.End;
 			var entry = new Entry();
@@ -558,14 +574,16 @@ namespace savepass
 			while (dialog.Run() == (int) ResponseType.Ok) {
 				if (entry.Text.Length < 4) {
 					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be 4 or more characters" +
+						Catalog.GetString(
+							"The length of the master password must be 4 or more characters") +
 						"</span>";
 					label.Visible = true;
 					continue;
 				}
 				if (entry.Text.Length > 56) {
 					label.Markup = "<span foreground=\"red\">" +
-						"The length of the master password must be no more than 56 characters" +
+						Catalog.GetString(
+							"The length of the master password must be no more than 56 characters") +
 						"</span>";
 					label.Visible = true;
 					continue;
@@ -582,19 +600,20 @@ namespace savepass
 		private string open_save_dialog(bool open)
 		{
 			string result = null;
-			var dialog = new FileChooserDialog(open ? "Open File" : "Save",
+			var dialog = new FileChooserDialog(
+				open ? Catalog.GetString("Open File") : Catalog.GetString("Save"),
 				_window, 
 				open ? FileChooserAction.Open : FileChooserAction.Save,
-				"Cancel", ResponseType.Cancel,
-				open ? "Open" : "Save",	ResponseType.Accept);
+				cancel_string, ResponseType.Cancel,
+				open ? Catalog.GetString("Open") : Catalog.GetString("Save"), ResponseType.Accept);
 			dialog.DoOverwriteConfirmation = true;
 			dialog.SkipTaskbarHint = true;
 			var filter = new FileFilter();
-			filter.Name = "*.pds files";
+			filter.Name = Catalog.GetString("*.pds files");
 			filter.AddPattern("*.pds");
 			dialog.AddFilter(filter);
 			filter = new FileFilter();
-			filter.Name = "All files";
+			filter.Name = Catalog.GetString("All files");
 			filter.AddPattern("*");
 			dialog.AddFilter(filter);
 
@@ -609,10 +628,11 @@ namespace savepass
 		/* Dialog to ask the user what to do with changed file */
 		private int save_changes()
 		{
-			var dialog = new Dialog("Save changes", _window,
+			var dialog = new Dialog(Catalog.GetString("Save changes"), _window,
 				DialogFlags.DestroyWithParent | DialogFlags.Modal,
-				"No", ResponseType.No, "Cancel", ResponseType.Cancel,
-				"Yes", ResponseType.Yes);
+				no_string, ResponseType.No,
+				cancel_string, ResponseType.Cancel,
+				yes_string, ResponseType.Yes);
 			dialog.Resizable = false;
 			dialog.TransientFor = _window;
 			dialog.DefaultResponse = ResponseType.Cancel;
@@ -625,7 +645,7 @@ namespace savepass
 			var image = new Image();
 			image.SetFromIconName("dialog-information", IconSize.Dialog);
 			box.PackStart(image, false, false, 0);
-			var label = new Label("Save changes in the file?");
+			var label = new Label(Catalog.GetString("Save changes in the file?"));
 			box.PackStart(label, false, false, 0);
 
 			dialog.ShowAll();
@@ -639,11 +659,11 @@ namespace savepass
 		private void run_preferences_dialog()
 		{
 			int response;
-			var dialog = new Dialog("Preferences", _window,
+			var dialog = new Dialog(Catalog.GetString("Preferences"), _window,
 				DialogFlags.DestroyWithParent,
-				"Apply", ResponseType.Apply,
-				"Ok", ResponseType.Ok,
-				"Cancel", ResponseType.Cancel);
+				apply_string, ResponseType.Apply,
+				ok_string, ResponseType.Ok,
+				cancel_string, ResponseType.Cancel);
 			dialog.TransientFor = _window;
 			dialog.Resizable = false;
 			dialog.DefaultResponse = ResponseType.Cancel;
@@ -653,23 +673,23 @@ namespace savepass
 			var hbox = new Box(Orientation.Vertical, 3);
 			content_area.PackStart(hbox, true, true, 2);
 
-			var always_save_time_of_change = new CheckButton("Always save time of change");
+			var always_save_time_of_change = new CheckButton(Catalog.GetString("Always save time of change"));
 			hbox.PackStart(always_save_time_of_change, false, false, 0);
 			always_save_time_of_change.Active = savepass.c.always_save_time_of_change;
 			always_save_time_of_change.TooltipText =
-				"Check it if you want the program to save date/time of changes always, " +
-				"not just only when changing password";
+				Catalog.GetString("Check it if you want the program to save date/time of changes always, " +
+					"not just only when changing password");
 			var show_date_time = new CheckButton("Show date/time");
 			hbox.PackStart(show_date_time, false, false, 0);
 			show_date_time.Active = savepass.c.show_date_time;
-			show_date_time.TooltipText =
-				"Show another column with date/time of creation/changing password and/or note";
+			show_date_time.TooltipText = Catalog.GetString(
+				"Show another column with date/time of creation/changing password and/or note");
 
 			var format_date_time_box = new Box(Orientation.Horizontal, 3);
 			hbox.PackStart(format_date_time_box, false, false, 2);
 			format_date_time_box.MarginLeft = 20;
 			format_date_time_box.Sensitive = show_date_time.Active;
-			var format_date_time_label = new Label("Format of date/time column: ");
+			var format_date_time_label = new Label(Catalog.GetString("Format of date/time column: "));
 			format_date_time_box.PackStart(format_date_time_label, false, false, 0);
 			var format_date_time_combo = new ComboBoxText();
 			format_date_time_box.PackStart(format_date_time_combo, false, false, 0);
@@ -704,7 +724,7 @@ namespace savepass
 		/* Add new password */
 		private void add_clicked(object sender, EventArgs e)
 		{
-			var dialog = new add_edit_dialog("Add new password");
+			var dialog = new add_edit_dialog(Catalog.GetString("Add new password"));
 
 			while (dialog.run() == (int) ResponseType.Ok) {
 				if (String.IsNullOrEmpty(dialog.pass) ||
@@ -736,7 +756,7 @@ namespace savepass
 			_p.get_pass_note(int.Parse(_model.GetStringFromIter(iter)),
 				out pass, out note);
 
-			var dialog = new add_edit_dialog("Edit password", pass, note);
+			var dialog = new add_edit_dialog(Catalog.GetString("Edit password"), pass, note);
 
 			while (dialog.run() == (int) ResponseType.Ok) {
 				if (String.IsNullOrEmpty(dialog.pass) ||
@@ -890,8 +910,9 @@ namespace savepass
 			var dialog = new AboutDialog();
 			dialog.TransientFor = _window;
 			dialog.Authors = savepass.authors;
-			dialog.Comments = "savepass is a password saver";
-			dialog.Copyright = "Copyright (C) Kovalyov Anton 2015";
+			dialog.Comments = String.Format(Catalog.GetString("{0} is a password saver"),
+				constants.program_name);
+			dialog.Copyright = Catalog.GetString("Copyright (C) Kovalyov Anton 2015");
 			dialog.Documenters = savepass.documenters;
 			dialog.LicenseType = License.Gpl30;
 			dialog.ProgramName = constants.program_name;

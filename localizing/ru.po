@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-29 18:37:11+0300\n"
+"POT-Creation-Date: 2015-07-24 21:57:59+0300\n"
 "PO-Revision-Date: 2015-06-09 18:46:11+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
@@ -16,35 +16,35 @@ msgstr ""
 msgid "OptionName"
 msgstr ""
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "file {0} doesn't exists"
 msgstr "не существует файла {0}"
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "reading file {0} failed: {1}"
 msgstr "ошибка при чтении файла {0}: {1}"
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "wrong master password"
 msgstr "неверный мастер-пароль"
 
-#: ../src/file.cs:3
+#: ../src/file.cs:7
 msgid "saving file {0} failed: {1}"
 msgstr "ошибка при сохранении файла {0}: {1}"
 
-#: ../src/passwds.cs:5
+#: ../src/passwds.cs:9
 msgid "there are no passwords in this file"
 msgstr "в этом файле нет паролей"
 
-#: ../src/passwds.cs:5
+#: ../src/passwds.cs:9
 msgid "there is no password with number {0} in this file"
 msgstr "в этом файле нет пароля с номером {0}"
 
-#: ../src/passwds.cs:11 ../src/passwds.cs:13
+#: ../src/passwds.cs:13 ../src/passwds.cs:15
 msgid "there is no notes containing \"{0}\" as a substring."
 msgstr "нет комментария содержащего \"{0}\" в качестве подстроки"
 
-#: ../src/passwds.cs:13
+#: ../src/passwds.cs:15
 msgid "too much notes compare to \"{0}\". Try to refine your query."
 msgstr ""
 "слишком много комментариев сравнимы с \"{0}\". Попробуйте уточнить запрос"
@@ -80,106 +80,111 @@ msgstr "ошибка при сохранении настройки default_file
 msgid "{0} (default)"
 msgstr "{0} (значение по умолчанию)"
 
-#: ../src/console.cs:3
+#: ../src/savepass.cs:1
+#, fuzzy
+msgid "Anton Kovalov <keldzh@gmail.com>"
+msgstr "Об ошибках сообщайте по адресу: <keldzh@gmail.com>"
+
+#: ../src/console.cs:4
 msgid "savepass is password saver"
 msgstr "savepass - хранитель паролей"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Usage: savepass [OPTIONS] [FILE]"
 msgstr "Использование: savepass [ПАРАМЕТРЫ] [ФАЙЛ]"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Options:"
 msgstr "Параметры:"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Add new password to the list"
 msgstr "Добавить новый пароель в список"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Change password with number {N}"
 msgstr "Изменить пароль с номером {N}"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Delete password with number {N}"
 msgstr "Удалить пароль с номером {N}"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password with number {N}"
 msgstr "Получить пароль с номером {N}"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password on screen and not in the clipboard"
 msgstr "Получать пароль на экран, а не в буффер обмена"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password with note {NOTE}"
 msgstr "Получить пароль с комментарием {NOTE}"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show list of passwords' notes"
 msgstr "Показать список комментариев к паролям"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show list of passwords' notes like {NOTE}"
 msgstr "Показать список комментариев к паролям похожих на {NOTE}"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set the default {FILE}"
 msgstr "Установить {файл} по умолчанию"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show version"
 msgstr "Показать версию"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show this text"
 msgstr "Показать этот текст"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Settings' options:"
 msgstr "Параметры настроек:"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "{*.conf} file with settings"
 msgstr "{*.conf} файл настроек"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {mod} of --get option"
 msgstr "Установить {режим работы} параметра --get"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {mod} of --change option"
 msgstr "Установить {режим работы} параметра --change"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show date and time when used --list and --search options"
 msgstr "Показывать дату и время когда используются параметры --list и --search"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {format} for date and time output"
 msgstr "Установить {формат} вывода даты и времени"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 #, fuzzy
 msgid "Save new settings passed via the command line and exit"
 msgstr "Сохранить новые настройки переданные через параметры командной строки"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Work with settings in system configuration file"
 msgstr "Работать с настройками из системного файла настроек"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show values of all/setted/system/user settings"
 msgstr ""
 "Показать all(все)/setted(установленные)/system(системные)/"
 "user(пользовательсткие) настройки"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Report bugs to: keldzh@gmail.com"
 msgstr "Об ошибках сообщайте по адресу: <keldzh@gmail.com>"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid ""
 "option parsing failed: {0}\n"
 "Try `{1} --help' for more information."
@@ -188,49 +193,49 @@ msgstr ""
 "Для получения информации по параметрам командной строки попробуйте '{1} --"
 "help'"
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "too much options"
 msgstr "слишком много параметров командной строки"
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter password: "
 msgstr "Введите пароль: "
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter password again: "
 msgstr "Введите пароль снова: "
 
-#: ../src/console.cs:9 ../src/console.cs:12
+#: ../src/console.cs:6 ../src/console.cs:9
 msgid "Passwords doesn't match. Try again"
 msgstr "Пароле не совпадают. Попробуйте снова"
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter note: "
 msgstr "Введите комментарий: "
 
-#: ../src/console.cs:11
+#: ../src/console.cs:8
 #, fuzzy
 msgid "Are you sure you want to delete password with note \"{0}\"? (y/n) "
 msgstr " вы хотите удалить пароль с комментарием \"{0}\""
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new password (if you press ENTER password will stay the same): "
 msgstr ""
 "Введите новый пароль (если нажмёте Enter, то пароль останется прежним): "
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new password again: "
 msgstr "Введите новый пароль снова: "
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new note [{0}]: "
 msgstr "Введите новый комментарий [{0}]: "
 
-#: ../src/console.cs:13
+#: ../src/console.cs:10
 msgid "wrong argument for config option"
 msgstr "неверный аргумент параметра командной строки"
 
-#: ../src/console.cs:13
+#: ../src/console.cs:10
 msgid ""
 "File name must be specified\n"
 "Try run {0} --help for more information"
@@ -238,34 +243,34 @@ msgstr ""
 "Должно быть указано имя файла\\nДля получения информации по параметрам "
 "командной строки попробуйте '{1} --help'"
 
-#: ../src/console.cs:15
+#: ../src/console.cs:12
 msgid "password was deleted"
 msgstr "пароль был удалён"
 
-#: ../src/console.cs:19
+#: ../src/console.cs:15
 msgid "Passwords' notes:"
 msgstr "Комментарии к паролям:"
 
-#: ../src/console.cs:21
+#: ../src/console.cs:17
 msgid "date_time_format is invalid: {0}"
 msgstr "Формат даты/времени в настройке date_time_format неверен: {0}"
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid "Enter master password: "
 msgstr "Введите мастер-пароль: "
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid ""
 "The length of the master password must be 4 or more characters. Try again"
 msgstr ""
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid ""
 "The length of the master password must be no more than 56 characters. Try "
 "again"
 msgstr ""
 
-#: ../src/console.cs:30
+#: ../src/console.cs:24
 msgid ""
 "string for search cannot be an empty string.\n"
 "If you want to see all passwords use --list"
@@ -273,11 +278,11 @@ msgstr ""
 "строка для поиска не может быть пустой.\n"
 "Если вы хотите увидеть все пароли используйте --list"
 
-#: ../src/console.cs:30
+#: ../src/console.cs:24
 msgid "Passwords' notes contains \"{0}\":"
 msgstr "Комментарии к паролям содержащие \"{0}\":"
 
-#: ../src/console.cs:32
+#: ../src/console.cs:26
 msgid ""
 "string for search cannot be an empty string\n"
 "or cosists exclusively of white-space characters.\n"
@@ -287,9 +292,248 @@ msgstr ""
 "пробельные символы.\n"
 "Если вы хотите увидеть все пароли, то используйте --list"
 
+#: ../src/gui.cs:3
+msgid "<default file>"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Yes"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "No"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "OK"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Cancel"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Apply"
+msgstr ""
+
+#: ../src/gui.cs:8 ../src/gui.cs:51
+msgid "Note"
+msgstr ""
+
+#: ../src/gui.cs:9
+msgid "Date/time"
+msgstr ""
+
+#: ../src/gui.cs:11
+msgid "File"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "New..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Open..."
+msgstr ""
+
+#: ../src/gui.cs:12 ../src/gui.cs:59
+msgid "Save"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Save as..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Preferences..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Default file"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Unset default file"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Close"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Quit"
+msgstr ""
+
+#: ../src/gui.cs:13 ../src/gui.cs:17
+msgid "Edit"
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Add..."
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Edit..."
+msgstr ""
+
+#: ../src/gui.cs:14 ../src/gui.cs:17
+msgid "Delete"
+msgstr ""
+
+#: ../src/gui.cs:14 ../src/gui.cs:17
+msgid "Copy"
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Show..."
+msgstr ""
+
+#: ../src/gui.cs:15 ../src/gui.cs:16
+msgid "Help"
+msgstr ""
+
+#: ../src/gui.cs:16
+msgid "About..."
+msgstr ""
+
+#: ../src/gui.cs:17
+msgid "Add"
+msgstr ""
+
+#: ../src/gui.cs:17
+msgid "Show"
+msgstr ""
+
+#: ../src/gui.cs:28
+#, fuzzy
+msgid "Are you sure you want to delete password with note \"{0}\"?"
+msgstr " вы хотите удалить пароль с комментарием \"{0}\""
+
+#: ../src/gui.cs:39
+#, fuzzy
+msgid "Password:"
+msgstr "Комментарии к паролям:"
+
+#: ../src/gui.cs:39
+#, fuzzy
+msgid "Password again:"
+msgstr "Введите пароль снова: "
+
+#: ../src/gui.cs:39
+msgid "Note:"
+msgstr ""
+
+#: ../src/gui.cs:41
+#, fuzzy
+msgid "Show password"
+msgstr "Введите пароль: "
+
+#: ../src/gui.cs:50
+#, fuzzy
+msgid "Passwords doesn't match"
+msgstr "Пароле не совпадают. Попробуйте снова"
+
+#: ../src/gui.cs:51
+msgid "{0} is empty"
+msgstr ""
+
+#: ../src/gui.cs:51
+#, fuzzy
+msgid "Password"
+msgstr "Комментарии к паролям:"
+
+#: ../src/gui.cs:51
+#, fuzzy
+msgid "Password again"
+msgstr "Введите пароль снова: "
+
+#: ../src/gui.cs:53
+#, fuzzy
+msgid "Master password"
+msgstr "неверный мастер-пароль"
+
+#: ../src/gui.cs:54
+msgid "Opening file {0}"
+msgstr ""
+
+#: ../src/gui.cs:55
+#, fuzzy
+msgid "Master password:"
+msgstr "Введите пароль: "
+
+#: ../src/gui.cs:57
+msgid "The length of the master password must be 4 or more characters"
+msgstr ""
+
+#: ../src/gui.cs:57
+msgid "The length of the master password must be no more than 56 characters"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "Open File"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "Open"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "*.pds files"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "All files"
+msgstr ""
+
+#: ../src/gui.cs:62
+msgid "Save changes"
+msgstr ""
+
+#: ../src/gui.cs:63
+msgid "Save changes in the file?"
+msgstr ""
+
+#: ../src/gui.cs:66
+msgid "Preferences"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid "Always save time of change"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid ""
+"Check it if you want the program to save date/time of changes always, not "
+"just only when changing password"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid ""
+"Show another column with date/time of creation/changing password and/or note"
+msgstr ""
+
+#: ../src/gui.cs:68
+msgid "Format of date/time column: "
+msgstr ""
+
+#: ../src/gui.cs:73
+#, fuzzy
+msgid "Add new password"
+msgstr "Добавить новый пароель в список"
+
+#: ../src/gui.cs:77
+#, fuzzy
+msgid "Edit password"
+msgstr "Введите пароль: "
+
+#: ../src/gui.cs:92
+#, fuzzy
+msgid "{0} is a password saver"
+msgstr "savepass - хранитель паролей"
+
+#: ../src/gui.cs:92
+msgid "Copyright (C) Kovalyov Anton 2015"
+msgstr ""
+
 #~ msgid "Are you sure{0}? (y/n) "
 #~ msgstr "Вы уверены{0}? (y/n) "
-
-#, fuzzy
-#~ msgid "Are you sure you want to delete password with note \"{0}\"?"
-#~ msgstr " вы хотите удалить пароль с комментарием \"{0}\""

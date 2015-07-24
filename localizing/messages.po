@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2015-06-29 18:37:11+0300\n"
-"PO-Revision-Date: 2015-06-29 18:37:11+0300\n"
+"POT-Creation-Date: 2015-07-24 21:57:59+0300\n"
+"PO-Revision-Date: 2015-07-24 21:57:59+0300\n"
 "Last-Translator: keldzh <keldzh@gmail.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -14,36 +14,36 @@ msgstr ""
 msgid "OptionName"
 msgstr ""
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "file {0} doesn't exists"
 msgstr ""
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "reading file {0} failed: {1}"
 msgstr ""
 
-#: ../src/file.cs:2
+#: ../src/file.cs:6
 msgid "wrong master password"
 msgstr ""
 
-#: ../src/file.cs:3
+#: ../src/file.cs:7
 msgid "saving file {0} failed: {1}"
 msgstr ""
 
-#: ../src/passwds.cs:5
+#: ../src/passwds.cs:9
 msgid "there are no passwords in this file"
 msgstr ""
 
-#: ../src/passwds.cs:5
+#: ../src/passwds.cs:9
 msgid "there is no password with number {0} in this file"
 msgstr ""
 
-#: ../src/passwds.cs:11
 #: ../src/passwds.cs:13
+#: ../src/passwds.cs:15
 msgid "there is no notes containing \"{0}\" as a substring."
 msgstr ""
 
-#: ../src/passwds.cs:13
+#: ../src/passwds.cs:15
 msgid "too much notes compare to \"{0}\". Try to refine your query."
 msgstr ""
 
@@ -76,196 +76,437 @@ msgstr ""
 msgid "{0} (default)"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/savepass.cs:1
+msgid "Anton Kovalov <keldzh@gmail.com>"
+msgstr ""
+
+#: ../src/console.cs:4
 msgid "savepass is password saver"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Usage: savepass [OPTIONS] [FILE]"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Options:"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Add new password to the list"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Change password with number {N}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Delete password with number {N}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password with number {N}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password on screen and not in the clipboard"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Get password with note {NOTE}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show list of passwords' notes"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show list of passwords' notes like {NOTE}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set the default {FILE}"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show version"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show this text"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Settings' options:"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "{*.conf} file with settings"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {mod} of --get option"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {mod} of --change option"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show date and time when used --list and --search options"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Set {format} for date and time output"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Save new settings passed via the command line and exit"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Work with settings in system configuration file"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Show values of all/setted/system/user settings"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "Report bugs to: keldzh@gmail.com"
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid ""
 "option parsing failed: {0}\n"
 "Try `{1} --help' for more information."
 msgstr ""
 
-#: ../src/console.cs:3
+#: ../src/console.cs:4
 msgid "too much options"
 msgstr ""
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter password: "
 msgstr ""
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter password again: "
 msgstr ""
 
+#: ../src/console.cs:6
 #: ../src/console.cs:9
-#: ../src/console.cs:12
 msgid "Passwords doesn't match. Try again"
 msgstr ""
 
-#: ../src/console.cs:9
+#: ../src/console.cs:6
 msgid "Enter note: "
 msgstr ""
 
-#: ../src/console.cs:11
+#: ../src/console.cs:8
 msgid "Are you sure you want to delete password with note \"{0}\"? (y/n) "
 msgstr ""
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new password (if you press ENTER password will stay the same): "
 msgstr ""
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new password again: "
 msgstr ""
 
-#: ../src/console.cs:12
+#: ../src/console.cs:9
 msgid "Enter new note [{0}]: "
 msgstr ""
 
-#: ../src/console.cs:13
+#: ../src/console.cs:10
 msgid "wrong argument for config option"
 msgstr ""
 
-#: ../src/console.cs:13
+#: ../src/console.cs:10
 msgid ""
 "File name must be specified\n"
 "Try run {0} --help for more information"
 msgstr ""
 
-#: ../src/console.cs:15
+#: ../src/console.cs:12
 msgid "password was deleted"
 msgstr ""
 
-#: ../src/console.cs:19
+#: ../src/console.cs:15
 msgid "Passwords' notes:"
 msgstr ""
 
-#: ../src/console.cs:21
+#: ../src/console.cs:17
 msgid "date_time_format is invalid: {0}"
 msgstr ""
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid "Enter master password: "
 msgstr ""
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid ""
 "The length of the master password must be 4 or more characters. Try again"
 msgstr ""
 
-#: ../src/console.cs:25
+#: ../src/console.cs:21
 msgid ""
 "The length of the master password must be no more than 56 characters. Try "
 "again"
 msgstr ""
 
-#: ../src/console.cs:30
+#: ../src/console.cs:24
 msgid ""
 "string for search cannot be an empty string.\n"
 "If you want to see all passwords use --list"
 msgstr ""
 
-#: ../src/console.cs:30
+#: ../src/console.cs:24
 msgid "Passwords' notes contains \"{0}\":"
 msgstr ""
 
-#: ../src/console.cs:32
+#: ../src/console.cs:26
 msgid ""
 "string for search cannot be an empty string\n"
 "or cosists exclusively of white-space characters.\n"
 "If you want to see all passwords use --list"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "<default file>"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Yes"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "No"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "OK"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Cancel"
+msgstr ""
+
+#: ../src/gui.cs:3
+msgid "Apply"
+msgstr ""
+
+#: ../src/gui.cs:8
+#: ../src/gui.cs:51
+msgid "Note"
+msgstr ""
+
+#: ../src/gui.cs:9
+msgid "Date/time"
+msgstr ""
+
+#: ../src/gui.cs:11
+msgid "File"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "New..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Open..."
+msgstr ""
+
+#: ../src/gui.cs:12
+#: ../src/gui.cs:59
+msgid "Save"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Save as..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Preferences..."
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Default file"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Unset default file"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Close"
+msgstr ""
+
+#: ../src/gui.cs:12
+msgid "Quit"
+msgstr ""
+
+#: ../src/gui.cs:13
+#: ../src/gui.cs:17
+msgid "Edit"
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Add..."
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Edit..."
+msgstr ""
+
+#: ../src/gui.cs:14
+#: ../src/gui.cs:17
+msgid "Delete"
+msgstr ""
+
+#: ../src/gui.cs:14
+#: ../src/gui.cs:17
+msgid "Copy"
+msgstr ""
+
+#: ../src/gui.cs:14
+msgid "Show..."
+msgstr ""
+
+#: ../src/gui.cs:15
+#: ../src/gui.cs:16
+msgid "Help"
+msgstr ""
+
+#: ../src/gui.cs:16
+msgid "About..."
+msgstr ""
+
+#: ../src/gui.cs:17
+msgid "Add"
+msgstr ""
+
+#: ../src/gui.cs:17
+msgid "Show"
+msgstr ""
+
+#: ../src/gui.cs:28
+msgid "Are you sure you want to delete password with note \"{0}\"?"
+msgstr ""
+
+#: ../src/gui.cs:39
+msgid "Password:"
+msgstr ""
+
+#: ../src/gui.cs:39
+msgid "Password again:"
+msgstr ""
+
+#: ../src/gui.cs:39
+msgid "Note:"
+msgstr ""
+
+#: ../src/gui.cs:41
+msgid "Show password"
+msgstr ""
+
+#: ../src/gui.cs:50
+msgid "Passwords doesn't match"
+msgstr ""
+
+#: ../src/gui.cs:51
+msgid "{0} is empty"
+msgstr ""
+
+#: ../src/gui.cs:51
+msgid "Password"
+msgstr ""
+
+#: ../src/gui.cs:51
+msgid "Password again"
+msgstr ""
+
+#: ../src/gui.cs:53
+msgid "Master password"
+msgstr ""
+
+#: ../src/gui.cs:54
+msgid "Opening file {0}"
+msgstr ""
+
+#: ../src/gui.cs:55
+msgid "Master password:"
+msgstr ""
+
+#: ../src/gui.cs:57
+msgid "The length of the master password must be 4 or more characters"
+msgstr ""
+
+#: ../src/gui.cs:57
+msgid "The length of the master password must be no more than 56 characters"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "Open File"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "Open"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "*.pds files"
+msgstr ""
+
+#: ../src/gui.cs:59
+msgid "All files"
+msgstr ""
+
+#: ../src/gui.cs:62
+msgid "Save changes"
+msgstr ""
+
+#: ../src/gui.cs:63
+msgid "Save changes in the file?"
+msgstr ""
+
+#: ../src/gui.cs:66
+msgid "Preferences"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid "Always save time of change"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid ""
+"Check it if you want the program to save date/time of changes always, not "
+"just only when changing password"
+msgstr ""
+
+#: ../src/gui.cs:67
+msgid ""
+"Show another column with date/time of creation/changing password and/or note"
+msgstr ""
+
+#: ../src/gui.cs:68
+msgid "Format of date/time column: "
+msgstr ""
+
+#: ../src/gui.cs:73
+msgid "Add new password"
+msgstr ""
+
+#: ../src/gui.cs:77
+msgid "Edit password"
+msgstr ""
+
+#: ../src/gui.cs:92
+msgid "{0} is a password saver"
+msgstr ""
+
+#: ../src/gui.cs:92
+msgid "Copyright (C) Kovalyov Anton 2015"
 msgstr ""
 

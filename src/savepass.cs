@@ -24,6 +24,7 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using Mono.Unix;
 #if GUI
 using Gtk;
 #endif
@@ -32,9 +33,9 @@ namespace savepass
 {
 	public class savepass
 	{
-		public static readonly string[] authors = {"Anton Kovalov <keldzh@gmail.com>"};
-		public static readonly string[] documenters = {"Anton Kovalov <keldzh@gmail.com>"};
-		public const string translator_credits = "Anton Kovalov <keldzh@gmail.com>";
+		public static readonly string[] authors = {Catalog.GetString("Anton Kovalov <keldzh@gmail.com>")};
+		public static readonly string[] documenters = {Catalog.GetString("Anton Kovalov <keldzh@gmail.com>")};
+		public static readonly string translator_credits = Catalog.GetString("Anton Kovalov <keldzh@gmail.com>");
 		public static conf c;
 
 		static int Main(string[] args)
